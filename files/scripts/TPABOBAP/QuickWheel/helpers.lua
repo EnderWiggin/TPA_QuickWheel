@@ -1,3 +1,10 @@
+local I = require('openmw.interfaces')
+local core = require('openmw.core')
+local ui = require('openmw.ui')
+local util = require('openmw.util')
+
+local v2 = util.vector2
+
 local Helpers = {}
 
 Helpers.deepPrint = function(tbl, indent)
@@ -24,6 +31,30 @@ Helpers.deepPrint = function(tbl, indent)
     end
     toprint = toprint .. string.rep(" ", indent - 2) .. "}"
     return toprint
+end
+
+local TEXTURES = {}
+Helpers.createTexture = function(path, size, offset)
+    size = size or v2(0, 0)
+    offset = offset or v2(0, 0)
+    if TEXTURES[path]
+            and TEXTURES[path][size.x] and TEXTURES[path][size.x][size.y]
+            and TEXTURES[path][size.x][size.y][offset.x] and TEXTURES[path][size.x][size.y][offset.x][offset.y] then
+        return TEXTURES[path][size.x][size.y][offset.x][offset.y]
+    else
+        local tex = ui.texture { path = path, size = size, offset = offset }
+        TEXTURES[path] = TEXTURES[path] or {}
+        TEXTURES[path][size.x] = TEXTURES[path][size.x] or {}
+        TEXTURES[path][size.x][size.y] = TEXTURES[path][size.x][size.y] or {}
+        TEXTURES[path][size.x][size.y][offset.x] = TEXTURES[path][size.x][size.y][offset.x] or {}
+        TEXTURES[path][size.x][size.y][offset.x][offset.y] = tex
+        return tex
+    end
+end
+
+Helpers.effectIconTexture = function(effectId)
+    local effectRecord = core.magic.effects.records[effectId] or (I.MagicWindow and I.MagicWindow.Spells.getCustomEffect(effectId))
+    return Helpers.createTexture(effectRecord.icon)
 end
 
 return Helpers

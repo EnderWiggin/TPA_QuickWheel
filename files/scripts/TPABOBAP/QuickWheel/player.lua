@@ -9,14 +9,31 @@ local omwself = require('openmw.self')
 
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local wheel = require('scripts.TPABOBAP.QuickWheel.wheel')
+local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
+local PotionIcon = require('scripts.TPABOBAP.QuickWheel.icons.potion_icon')
 
 local isWheelModeOn = false
 local lastUIMode
 
+---@function
+---@param icon PotionIcon
+local function usePotion(icon)
+    core.sendGlobalEvent('UseItem', {
+        object = icon.item,
+        actor = omwself,
+    })
+end
+
+---@function
+---@return table<number, Icon>
 local function findPotions()
     local inventory = types.Actor.inventory(omwself)
     local pots = inventory:getAll(types.Potion)
-    return pots
+    local result = {}
+    for k, v in ipairs(pots) do
+        result[k] = PotionIcon:new({ item = v, activate = usePotion })
+    end
+    return result
 end
 
 local function setWheelMode(isOn)

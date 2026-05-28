@@ -28,6 +28,7 @@ local Wheel = {}
 Wheel.ctx = {
     shown = false,
 
+    ---@type table<number, Icon>
     items = nil,
     selected = 0,
     widget = nil,
@@ -35,7 +36,9 @@ Wheel.ctx = {
     dirty = 0,
     lastOffset = nil,
 
-    itemProvider = function() return {} end,
+    ---@function
+    ---@return table<number, Icon>
+    itemProvider = nil,
 }
 
 local function getSectorIdx(c, n, z)
@@ -58,21 +61,6 @@ local function getSectorIdx(c, n, z)
     if a > pi2 then a = a - pi2 end
 
     return 1 + math.floor(a / step)
-end
-
-local function icon(item, p)
-    local recordName = item.type.record(item.recordId).name
-    return {
-        type = ui.TYPE.Text,
-        props = {
-            relativePosition = v2(0.5, 0.5),
-            anchor = v2(0.5, 0.5),
-            text = tostring(recordName) .. ' (' .. tostring(item.count) .. ')',
-            textSize = 14,
-            textColor = util.color.rgb(0, 1, 0),
-            position = p
-        },
-    }
 end
 
 local function makeWheel(self)
@@ -119,7 +107,10 @@ function Wheel:init(target)
     self.ctx.target = target
 end
 
-function Wheel:show (show, provider)
+---@function
+---@param show boolean
+---@param provider fun():table<number, Icon>
+function Wheel:show(show, provider)
     if self.ctx.shown == show then return end
 
     self.ctx.shown = show
@@ -164,7 +155,8 @@ function Wheel:update ()
 
         for i, p in ipairs(self.ctx.items) do
             --container:add(ui.create(txt(i, circle_pos(n, i - 1, r))))
-            container:add(ui.create(icon(p, circle_pos(n, i - 1, R))))
+            --container:add(ui.create(icon(p, circle_pos(n, i - 1, R))))
+            container:add(p:makeElement(circle_pos(n, i - 1, R)))
         end
 
         self:updateIcons()
@@ -200,20 +192,8 @@ function Wheel:onMouseMove(evt)
 end
 
 function Wheel:updateIcons()
-    local wheel = self.ctx.widget
-    if not wheel.layout.content then return end
-    local container = self:getIconContainer().content
-    if not container then return end
-    for i, w in ipairs(container) do
-        local props = w.layout.props
-        if i == self.ctx.selected then
-            props.textSize = 24
-            props.textColor = util.color.rgb(1, 0, 1)
-        else
-            props.textSize = 14
-            props.textColor = util.color.rgb(0, 1, 0)
-        end
-        w:update()
+    for i, v in ipairs(self.ctx.items) do
+        v:update(i == self.ctx.selected)
     end
 end
 
@@ -227,10 +207,7 @@ end
 
 function Wheel:onMouseClick()
     if self.ctx.shown and self.ctx.selected > 0 and self.ctx.items then
-        core.sendGlobalEvent('UseItem', {
-            object = self.ctx.items[self.ctx.selected],
-            actor = self.ctx.target,
-        })
+        self.ctx.items[self.ctx.selected]:activate()
 
         self.ctx.dirty = DIRTY_DELAY
     end

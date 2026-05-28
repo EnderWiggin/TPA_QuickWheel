@@ -1,0 +1,4 @@
+PLAYER: scripts/TPABOBAP/QuickWheel/api.lua
+
+GLOBAL: scripts/TPABOBAP/QuickWheel/global.lua
+PLAYER: scripts/TPABOBAP/QuickWheel/player.lua

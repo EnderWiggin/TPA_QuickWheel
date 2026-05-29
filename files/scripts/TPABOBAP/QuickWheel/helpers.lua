@@ -2,6 +2,7 @@ local I = require('openmw.interfaces')
 local core = require('openmw.core')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
+local auxUi = require('openmw_aux.ui')
 
 local v2 = util.vector2
 
@@ -55,6 +56,14 @@ end
 Helpers.effectIconTexture = function(effectId)
     local effectRecord = core.magic.effects.records[effectId] or (I.MagicWindow and I.MagicWindow.Spells.getCustomEffect(effectId))
     return Helpers.createTexture(effectRecord.icon)
+end
+
+Helpers.destroyContentChildren = function(content)
+    local wdg = table.remove(content)
+    while wdg do
+        auxUi.deepDestroy(wdg)
+        wdg = table.remove(content)
+    end
 end
 
 return Helpers

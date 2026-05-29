@@ -51,4 +51,12 @@ function Icon:activate()
    
 end
 
+function Icon:makeTip()
+   return nil
+end
+
+function Icon:tipId()
+    return nil
+end
+
 return Icon

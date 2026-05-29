@@ -53,18 +53,19 @@ function PotionIcon:makeElement(p)
 
     }
 
-    local n = #record.effects
     for i, effect in ipairs(record.effects) do
+        local x = math.floor((i - 1) / 3)
+        local y = (i - 1) % 3
+        local c = v2(0.25 * x, 0.125 + y * 0.25)
         icons:add(ui.create {
             name = "background",
             type = ui.TYPE.Image,
             props = {
-                relativePosition = v2(0.5, 0.5),
-                anchor = v2(0.5, 0.5),
+                relativePosition = c,
+                anchor = v2(0, 0.5),
                 resource = helpers.effectIconTexture(effect.id),
-                --size = v2(16, 16),
                 relativeSize = v2(0.25, 0.25),
-                position = circle_pos(n, i - 1, 16)
+                position = v2(0, 0)
             },
         })
     end
@@ -92,6 +93,20 @@ function PotionIcon:update(selected)
         props.size = v2(64, 64)
     end
     self.element:update()
+end
+
+function PotionIcon:makeTip()
+    --TODO: make separate tip if no IE detected
+    local I = require('openmw.interfaces')
+    local IE = I.InventoryExtender
+    local tip = IE.Templates.MAGIC.itemTooltip(self.item, false, IE.getContext())
+    tip.props.anchor = v2(0.5, 0.5)
+    tip.props.relativePosition = v2(0.5, 0.5)
+    return tip
+end
+
+function PotionIcon:tipId()
+    return self.item.id
 end
 
 return PotionIcon

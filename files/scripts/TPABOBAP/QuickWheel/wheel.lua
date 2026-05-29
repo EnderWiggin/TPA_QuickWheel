@@ -35,6 +35,7 @@ Wheel.ctx = {
     target = nil,
     dirty = 0,
     lastOffset = nil,
+    tipId = nil,
 
     ---@function
     ---@return table<number, Icon>
@@ -93,6 +94,24 @@ local function makeWheel(self)
                     anchor = v2(0.5, 0.5),
                 },
             },
+            {
+                name = 'icons',
+                props = {
+                    relativeSize = v2(1, 1),
+                    relativePosition = v2(0.5, 0.5),
+                    anchor = v2(0.5, 0.5),
+                },
+                content = ui.content {}
+            },
+            {
+                name = 'tooltip',
+                props = {
+                    relativeSize = v2(1, 1),
+                    relativePosition = v2(0.5, 0.5),
+                    anchor = v2(0.5, 0.5),
+                },
+                content = ui.content {}
+            }
         }),
     }
 end
@@ -122,26 +141,8 @@ function Wheel:update ()
     local wheel = self.ctx.widget
     wheel.layout.props.visible = self.ctx.shown
     if self.ctx.shown then
-        local container = self:getIconContainer()
-        if container then
-            if not container.content then container.content = ui.content {} end
-            container = container.content
-            local wdg = table.remove(container)
-            while wdg do
-                auxUi.deepDestroy(wdg)
-                wdg = table.remove(container)
-            end
-        else
-            container = ui.content {}
-            wheel.layout.content:add({
-                props = {
-                    relativeSize = v2(1, 1),
-                    relativePosition = v2(0.5, 0.5),
-                    anchor = v2(0.5, 0.5),
-                },
-                content = container
-            })
-        end
+        local container = wheel.layout.content.icons.content
+        helpers.destroyContentChildren(container)
 
         self.ctx.items = type(self.ctx.itemProvider) == 'function' and self.ctx.itemProvider() or {}
 
@@ -183,7 +184,8 @@ end
 function Wheel:onMouseMove(evt)
     local p = evt.offset - CENTER
     self.ctx.lastOffset = p
-    local container = self:getIconContainer().content
+    local wheel = self.ctx.widget
+    local container = wheel.layout.content.icons.content
     if not container then return end
     local selectedIdx = getSectorIdx(p, #container, DEAD_ZONE)
     self.ctx.selected = selectedIdx
@@ -192,17 +194,33 @@ function Wheel:onMouseMove(evt)
 end
 
 function Wheel:updateIcons()
+    local tipId = self.ctx.tipId
+    local newTipId
+    local tip
     for i, v in ipairs(self.ctx.items) do
-        v:update(i == self.ctx.selected)
+        if i == self.ctx.selected then
+            v:update(true)
+            newTipId = v:tipId()
+            if newTipId ~= tipId then
+                tip = v:makeTip()
+            end
+        else
+            v:update(false)
+        end
     end
-end
 
-function Wheel:getIconContainer()
-    local wheel = self.ctx.widget
-    if not wheel.layout.content then return nil end
-    if #wheel.layout.content < 2 then return nil end
+    if newTipId ~= tipId then
+        self.ctx.tipId = newTipId
+        local wheel = self.ctx.widget
+        local place = wheel.layout.content.tooltip
 
-    return wheel.layout.content[2]
+        helpers.destroyContentChildren(place.content)
+
+        if tip then
+            place.content:add(tip)
+        end
+        wheel:update()
+    end
 end
 
 function Wheel:onMouseClick()

@@ -3,6 +3,8 @@ local core = require('openmw.core')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
 local auxUi = require('openmw_aux.ui')
+local isPlayer, self = pcall(require, 'openmw.self')
+local mwui = I.MWUI
 
 local v2 = util.vector2
 
@@ -92,6 +94,72 @@ Helpers.padding = function(size)
             },
         }
     }
+end
+
+Helpers.makeTooltip = function(title, body)
+    local content = ui.content {
+        {
+            name = 'title',
+            template = mwui.templates.textHeader,
+            props = {
+                text = title,
+                autoSize = true,
+                textAlignH = ui.ALIGNMENT.Center,
+            }
+        },
+    }
+
+    if type(body) == 'string' then
+        body = {
+            name = 'body',
+            template = mwui.templates.textNormal,
+            props = {
+                text = body,
+                autoSize = true,
+                multiline = true,
+                textAlignH = ui.ALIGNMENT.Center,
+            }
+        }
+    end
+
+    if body then content:add(body) end
+
+    return {
+        template = mwui.templates.boxSolid,
+        props = {
+            relativePosition = v2(0.5, 0.5),
+            anchor = v2(0.5, 0.5),
+        },
+        content = ui.content {
+            {
+                name = 'padding',
+                template = Helpers.padding(4),
+                content = ui.content {
+                    {
+                        type = ui.TYPE.Flex,
+                        props = {
+                            arrange = ui.ALIGNMENT.Center,
+                        },
+                        content = content
+                    }
+                },
+            }
+        }
+    }
+end
+
+Helpers.getKnownAlchemyEffectCount = function(isPotion)
+    if not self or not self.type or not self.type.stats or not self.type.stats.skills or not self.type.stats.skills.alchemy then
+        return 0
+    end
+
+    local alchemy = self.type.stats.skills.alchemy(self).base
+    local threshold = core.getGMST('fWortChanceValue')
+    local visibleEffectCount = math.floor(alchemy / threshold)
+    if isPotion then
+        visibleEffectCount = visibleEffectCount * 2
+    end
+    return visibleEffectCount
 end
 
 return Helpers

@@ -17,6 +17,7 @@ local R = 0.85 * math.floor(math.min(screenSize.x, screenSize.y) / uiScale) / 2
 local DEAD_ZONE = v2(R / 5, 0.95 * R / 0.85)
 local SIZE = v2(screenSize.x / uiScale, screenSize.y / uiScale)
 local CENTER = v2(SIZE.x / 2, SIZE.y / 2)
+local MIN_SECTORS = 8
 
 local MWUIConstants = require('scripts.omw.mwui.constants')
 
@@ -43,6 +44,7 @@ Wheel.ctx = {
 }
 
 local function getSectorIdx(c, n, z)
+    if MIN_SECTORS and  n < MIN_SECTORS then n = MIN_SECTORS end
     local x = -c.y
     local y = c.x
     local r = math.sqrt(x * x + y * y)
@@ -88,7 +90,7 @@ local function makeWheel(self)
                 props = {
                     resource = MWUIConstants.whiteTexture,
                     color = util.color.rgb(0, 0, 0),
-                    alpha = 0.35,
+                    alpha = 0.5,
                     relativeSize = v2(1, 1),
                     relativePosition = v2(0.5, 0.5),
                     anchor = v2(0.5, 0.5),
@@ -117,6 +119,7 @@ local function makeWheel(self)
 end
 
 local function circle_pos(n, i, r)
+    if MIN_SECTORS and  n < MIN_SECTORS then n = MIN_SECTORS end
     local a = 2 * i * math.pi / n - math.pi / 2
     return v2(r * math.cos(a), r * math.sin(a))
 end
@@ -155,8 +158,6 @@ function Wheel:update ()
         end
 
         for i, p in ipairs(self.ctx.items) do
-            --container:add(ui.create(txt(i, circle_pos(n, i - 1, r))))
-            --container:add(ui.create(icon(p, circle_pos(n, i - 1, R))))
             container:add(p:makeElement(circle_pos(n, i - 1, R)))
         end
 

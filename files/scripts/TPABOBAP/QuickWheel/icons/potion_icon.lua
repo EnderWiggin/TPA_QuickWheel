@@ -1,8 +1,8 @@
 local core = require('openmw.core')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
-local mwui = require('openmw.interfaces').MWUI
-
+local I = require('openmw.interfaces')
+local mwui = I.MWUI
 local v2 = util.vector2
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
@@ -28,17 +28,21 @@ function PotionIcon:makeElement(p)
         }
     }
 
+    local knownCount = helpers.getKnownAlchemyEffectCount(true)
     for i, effect in ipairs(record.effects) do
-        local x = math.floor((i - 1) / 3)
-        local y = (i - 1) % 3
-        local c = v2(0.25 * x, 0.125 + y * 0.25)
+        local texture
+        if i <= knownCount then
+            texture = helpers.effectIconTexture(effect.id)
+        else
+            texture = helpers.createTexture('icons/TPABOBAP/QuickWheel/unknown-effect.png')
+        end
         icons:add({
             name = "effect_" .. i,
             type = ui.TYPE.Image,
             props = {
-                relativePosition = c,
-                anchor = v2(0, 0.5),
-                resource = helpers.effectIconTexture(effect.id),
+                relativePosition = v2(math.floor((i - 1) / 3), (i - 1) % 3) * 0.25,
+                anchor = v2(0, 0),
+                resource = texture,
                 relativeSize = v2(0.25, 0.25),
                 position = v2(0, 0)
             },
@@ -85,12 +89,19 @@ function PotionIcon:update(selected)
 end
 
 function PotionIcon:makeTip()
-    --TODO: make separate tip if no IE detected
-    local I = require('openmw.interfaces')
     local IE = I.InventoryExtender
-    local tip = IE.Templates.MAGIC.itemTooltip(self.item, false, IE.getContext())
-    tip.props.anchor = v2(0.5, 0.5)
-    tip.props.relativePosition = v2(0.5, 0.5)
+    local isOK, makeIETip = pcall(function() return IE and IE.Templates.MAGIC.itemTooltip end)
+    local tip
+    if isOK and type(makeIETip) == 'function' then
+        tip = makeIETip(self.item, false, IE.getContext())
+        tip.props.anchor = v2(0.5, 0.5)
+        tip.props.relativePosition = v2(0.5, 0.5)
+    else
+        --TODO: improve this tooltip
+        local item = self.item
+        local record = item.type.record(item.recordId)
+        return helpers.makeTooltip(record.name)
+    end
     return tip
 end
 

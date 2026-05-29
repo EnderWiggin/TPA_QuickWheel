@@ -1,0 +1,22 @@
+Category_Title_Health: Healing
+Category_Desc_Health: All health restoring potions.
+Category_Title_Stamina: Fatigue
+Category_Desc_Stamina: All fatigue restoring potions.
+Category_Title_Magicka: Magicka
+Category_Desc_Magicka: All magicka restoring potions.
+Category_Title_Combat: Combat
+Category_Desc_Combat: |-
+  Potions that grant elemental resistances and shields.
+  Or provide spell resistance, reflection or absorption.
+Category_Title_Cure: Cures
+Category_Desc_Cure: |-
+  Potions that cure poisons, paralyzation and diseases 
+  or restore attributes.
+Category_Title_Poison: Poisons
+Category_Desc_Poison: Potions with negative effects.
+Category_Title_Buffs: Buffs
+Category_Desc_Buffs: |-
+  Potions that provide attribute or skill bonuses
+  or grant other positive effects like feather, levitate etc.
+Category_Title_Other: Other
+Category_Desc_Other: Potions that didn't fit into any other category.

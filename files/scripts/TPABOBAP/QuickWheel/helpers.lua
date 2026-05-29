@@ -55,7 +55,7 @@ end
 
 Helpers.effectIconTexture = function(effectId)
     local effectRecord = core.magic.effects.records[effectId] or (I.MagicWindow and I.MagicWindow.Spells.getCustomEffect(effectId))
-    return Helpers.createTexture(effectRecord.icon)
+    return effectRecord and Helpers.createTexture(effectRecord.icon)
 end
 
 Helpers.destroyContentChildren = function(content)

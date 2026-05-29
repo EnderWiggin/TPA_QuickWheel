@@ -1,6 +1,7 @@
 local core = require('openmw.core')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
+local mwui = require('openmw.interfaces').MWUI
 
 local v2 = util.vector2
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
@@ -10,37 +11,12 @@ local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
 ---@field item table
 local PotionIcon = Icon:new()
 
-local function circle_pos(n, i, r)
-    local a = 2 * i * math.pi / n - math.pi / 2
-    return v2(r * math.cos(a), r * math.sin(a))
-end
-
-function PotionIcon:makeElement2(p)
-    local item = self.item
-    local record = item.type.record(item.recordId)
-    local recordName = record.name
-
-    self.element = ui.create {
-        type = ui.TYPE.Image,
-        props = {
-            relativePosition = v2(0.5, 0.5),
-            anchor = v2(0.5, 0.5),
-            resource = helpers.createTexture(record.icon),
-            size = v2(96, 96),
-            position = p
-        },
-    }
-
-    return self.element
-end
-
 function PotionIcon:makeElement(p)
     local item = self.item
     local record = item.type.record(item.recordId)
-    local recordName = record.name
 
     local icons = ui.content {
-        ui.create {
+        {
             name = "item_icon",
             type = ui.TYPE.Image,
             props = {
@@ -50,15 +26,14 @@ function PotionIcon:makeElement(p)
                 relativeSize = v2(0.5, 0.5),
             },
         }
-
     }
 
     for i, effect in ipairs(record.effects) do
         local x = math.floor((i - 1) / 3)
         local y = (i - 1) % 3
         local c = v2(0.25 * x, 0.125 + y * 0.25)
-        icons:add(ui.create {
-            name = "background",
+        icons:add({
+            name = "effect_" .. i,
             type = ui.TYPE.Image,
             props = {
                 relativePosition = c,
@@ -69,6 +44,17 @@ function PotionIcon:makeElement(p)
             },
         })
     end
+
+    icons:add({
+        name = 'item_count',
+        template = mwui.templates.textNormal,
+        props = {
+            relativePosition = v2(0.75, 0.75),
+            anchor = v2(1, 1),
+            text = tostring(item.count),
+            textSize = 14,
+        },
+    })
 
     self.element = ui.create {
         name = "wheel_icon",
@@ -87,10 +73,13 @@ end
 
 function PotionIcon:update(selected)
     local props = self.element.layout.props
+    local content = self.element.layout.content
     if selected then
         props.size = v2(96, 96)
+        content.item_count.props.textSize = 21
     else
         props.size = v2(64, 64)
+        content.item_count.props.textSize = 14
     end
     self.element:update()
 end

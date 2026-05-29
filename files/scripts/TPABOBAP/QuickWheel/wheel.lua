@@ -130,7 +130,7 @@ end
 ---@param show boolean
 ---@param provider fun():table<number, Icon>
 function Wheel:show(show, provider)
-    if self.ctx.shown == show then return end
+    --if self.ctx.shown == show then return end
 
     self.ctx.shown = show
     self.ctx.itemProvider = provider

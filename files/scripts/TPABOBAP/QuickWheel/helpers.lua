@@ -66,4 +66,32 @@ Helpers.destroyContentChildren = function(content)
     end
 end
 
+Helpers.padding = function(size)
+    size = util.vector2(1, 1) * size
+    return {
+        type = ui.TYPE.Container,
+        content = ui.content {
+            {
+                props = {
+                    size = size,
+                },
+            },
+            {
+                external = { slot = true },
+                props = {
+                    position = size,
+                    relativeSize = util.vector2(1, 1),
+                },
+            },
+            {
+                props = {
+                    position = size,
+                    relativePosition = util.vector2(1, 1),
+                    size = size,
+                },
+            },
+        }
+    }
+end
+
 return Helpers

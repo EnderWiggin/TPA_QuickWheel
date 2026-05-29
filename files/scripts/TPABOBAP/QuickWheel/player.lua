@@ -29,10 +29,25 @@ end
 local function findPotions()
     local inventory = types.Actor.inventory(omwself)
     local pots = inventory:getAll(types.Potion)
+    ---@type table<number, PotionIcon>
     local result = {}
-    for k, v in ipairs(pots) do
-        result[k] = PotionIcon:new({ item = v, activate = usePotion })
+    for _, v in ipairs(pots) do
+        table.insert(result, PotionIcon:new({ item = v, activate = usePotion }))
     end
+    table.sort(result, function(a, b)
+        local ra = a.item.type.record(a.item.recordId)
+        local rb = b.item.type.record(b.item.recordId)
+
+        if ra.name ~= rb.name then
+            return ra.name < rb.name
+        end
+
+        if ra.value ~= rb.value then
+            return ra.value < rb.value --cheaper first
+        end
+
+        return a.item.id < b.item.id --id as tie breaker
+    end)
     return result
 end
 

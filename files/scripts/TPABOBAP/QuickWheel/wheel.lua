@@ -11,12 +11,9 @@ local pi2 = 2 * math.pi
 
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 
-local uiScale = 1.25 --TODO: get from settings?
-local screenSize = ui.screenSize()
-local R = 0.85 * math.floor(math.min(screenSize.x, screenSize.y) / uiScale) / 2
-local DEAD_ZONE = v2(R / 5, 0.95 * R / 0.85)
-local SIZE = v2(screenSize.x / uiScale, screenSize.y / uiScale)
-local CENTER = v2(SIZE.x / 2, SIZE.y / 2)
+local R
+local DEAD_ZONE
+local CENTER
 local MIN_SECTORS = 8
 
 local MWUIConstants = require('scripts.omw.mwui.constants')
@@ -43,6 +40,22 @@ Wheel.ctx = {
     ---@return table<number, Icon>
     itemProvider = nil,
 }
+
+local function updateSizeConfigs()
+    local windowsIndex = ui.layers.indexOf('Windows')
+    local layer = ui.layers[windowsIndex]
+    local screenSize = ui.screenSize()
+    local uiScale = screenSize.x / layer.size.x
+    
+    R = 0.85 * math.floor(math.min(screenSize.x, screenSize.y) / uiScale) / 2
+    DEAD_ZONE = v2(R / 5, 0.95 * R / 0.85)
+    CENTER = screenSize * 0.5 / uiScale
+
+    --TODO: get from settings and allow for it to be nil?
+    MIN_SECTORS = 8
+end
+
+updateSizeConfigs()
 
 local function getSectorIdx(c, n, z)
     if MIN_SECTORS and n < MIN_SECTORS then n = MIN_SECTORS end
@@ -135,6 +148,10 @@ end
 ---@param provider fun():table<number, Icon>
 function Wheel:show(show, provider)
     --if self.ctx.shown == show then return end
+
+    if show then
+        updateSizeConfigs()
+    end
 
     self.ctx.dirty = 0
     self.ctx.shown = show

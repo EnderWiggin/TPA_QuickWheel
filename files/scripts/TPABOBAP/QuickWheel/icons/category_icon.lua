@@ -3,10 +3,12 @@ local ui = require('openmw.ui')
 local util = require('openmw.util')
 local mwui = require('openmw.interfaces').MWUI
 local l10n = core.l10n('TPA_QuickWheel')
+local input = require('openmw.input')
 
 local v2 = util.vector2
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
+local PotionIcon = require('scripts.TPABOBAP.QuickWheel.icons.potion_icon')
 
 local iconMap = {
     Health = 'icons/TPABOBAP/QuickWheel/category-health.png',
@@ -78,7 +80,13 @@ function CategoryIcon:update(selected)
     self.element:update()
 end
 
-function CategoryIcon:makeTip()
+--- potions can be nil - uses provider in this case
+function CategoryIcon:makeTip(potions)
+    local quickUse = self:getQuickUsePotion(potions)
+    if quickUse then
+        return PotionIcon.makeTipForItem(quickUse)
+    end
+
     local tip = helpers.makeTooltip(
             l10n('Category_Title_' .. self.name),
             l10n('Category_Desc_' .. self.name)
@@ -87,8 +95,25 @@ function CategoryIcon:makeTip()
     return tip
 end
 
-function CategoryIcon:tipId()
-    return 'categoery:' .. self.name
+--- potions can be nil - uses provider in this case
+function CategoryIcon:getQuickUsePotion(potions)
+    if not self.quickUse then return nil end
+    if input.isShiftPressed() then
+        potions = potions or self:provider()
+        if #potions == 0 then return nil end
+        return potions[1]
+    end
+    return nil
+end
+
+--- quickUse can be nil - uses provider in this case
+function CategoryIcon:tipId(quickUse)
+    local id = 'category:' .. self.name
+    quickUse = quickUse or self:getQuickUsePotion()
+    if quickUse then
+        id = id .. ':' .. quickUse.id
+    end
+    return id
 end
 
 return CategoryIcon

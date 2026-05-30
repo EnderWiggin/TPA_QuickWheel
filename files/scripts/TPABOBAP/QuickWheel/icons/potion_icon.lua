@@ -89,16 +89,19 @@ function PotionIcon:update(selected)
 end
 
 function PotionIcon:makeTip()
+    return PotionIcon.makeTipForItem(self.item)
+end
+
+function PotionIcon.makeTipForItem(item)
     local IE = I.InventoryExtender
     local isOK, makeIETip = pcall(function() return IE and IE.Templates.MAGIC.itemTooltip end)
     local tip
     if isOK and type(makeIETip) == 'function' then
-        tip = makeIETip(self.item, false, IE.getContext())
+        tip = makeIETip(item, false, IE.getContext())
         tip.props.anchor = v2(0.5, 0.5)
         tip.props.relativePosition = v2(0.5, 0.5)
     else
         --TODO: improve this tooltip
-        local item = self.item
         local record = item.type.record(item.recordId)
         return helpers.makeTooltip(record.name)
     end

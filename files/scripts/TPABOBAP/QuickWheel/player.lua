@@ -15,6 +15,8 @@ local CategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.category_icon')
 
 local isWheelModeOn = false
 local lastUIMode
+---@type string
+local lastModifiers
 
 local PotionTypes = {
     Health = {
@@ -166,8 +168,9 @@ end
 ---@function
 ---@param icon PotionIcon
 local function usePotion(icon)
+    local potion = icon.item or icon
     core.sendGlobalEvent('UseItem', {
-        object = icon.item,
+        object = potion,
         actor = omwself,
     })
 end
@@ -229,22 +232,28 @@ end
 ---@param icon CategoryIcon
 local function openCategory(icon)
     if not wheel.ctx.shown then return end
-    if #icon:provider() == 0 then return end
-    wheel:show(true, function()
-        return makePotionIcons(icon:provider())
-    end)
+    local items = icon:provider()
+    if #items == 0 then return end
+    local quickUse = icon:getQuickUsePotion(items)
+    if quickUse then
+        usePotion(quickUse)
+    else
+        wheel:show(true, function()
+            return makePotionIcons(icon:provider())
+        end)
+    end
 end
 
 local function getCategories()
     return {
-        CategoryIcon:new({ name = 'Health', activate = openCategory, provider = potionCategoryProvider }),
-        CategoryIcon:new({ name = 'Stamina', activate = openCategory, provider = potionCategoryProvider }),
+        CategoryIcon:new({ name = 'Health', activate = openCategory, provider = potionCategoryProvider, quickUse = true }),
+        CategoryIcon:new({ name = 'Stamina', activate = openCategory, provider = potionCategoryProvider, quickUse = true }),
         CategoryIcon:new({ name = 'Combat', activate = openCategory, provider = potionCategoryProvider }),
         CategoryIcon:new({ name = 'Cure', activate = openCategory, provider = potionCategoryProvider }),
         CategoryIcon:new({ name = 'Poison', activate = openCategory, provider = potionCategoryProvider }),
         CategoryIcon:new({ name = 'Other', activate = openCategory, provider = potionCategoryProvider }),
         CategoryIcon:new({ name = 'Buffs', activate = openCategory, provider = potionCategoryProvider }),
-        CategoryIcon:new({ name = 'Magicka', activate = openCategory, provider = potionCategoryProvider }),
+        CategoryIcon:new({ name = 'Magicka', activate = openCategory, provider = potionCategoryProvider, quickUse = true }),
     }
 end
 
@@ -267,16 +276,23 @@ local function setWheelMode(isOn)
 end
 
 local function onUpdate(dt)
+    local wasModifiers = lastModifiers
     local wasMode = lastUIMode
     lastUIMode = I.UI.getMode()
+    lastModifiers = tostring(input.isShiftPressed()) .. ':' .. tostring(input.isCtrlPressed()) .. ':' .. tostring(input.isAltPressed())
     if isWheelModeOn then
-        wheel:checkDirty()
         if wasMode ~= lastUIMode then
             if wasMode == I.UI.MODE.Interface and lastUIMode ~= I.UI.MODE.Interface then
                 setWheelMode(false)
                 return
             end
         end
+
+        if wasModifiers ~= lastModifiers then
+            wheel:updateIcons()
+        end
+
+        wheel:checkDirty()
     end
 end
 

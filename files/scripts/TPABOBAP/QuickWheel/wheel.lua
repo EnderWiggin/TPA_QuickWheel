@@ -36,6 +36,7 @@ Wheel.ctx = {
     target = nil,
     dirty = 0,
     lastOffset = nil,
+    ---@type nil | string | boolean
     tipId = nil,
 
     ---@function
@@ -44,7 +45,7 @@ Wheel.ctx = {
 }
 
 local function getSectorIdx(c, n, z)
-    if MIN_SECTORS and  n < MIN_SECTORS then n = MIN_SECTORS end
+    if MIN_SECTORS and n < MIN_SECTORS then n = MIN_SECTORS end
     local x = -c.y
     local y = c.x
     local r = math.sqrt(x * x + y * y)
@@ -119,7 +120,7 @@ local function makeWheel(self)
 end
 
 local function circle_pos(n, i, r)
-    if MIN_SECTORS and  n < MIN_SECTORS then n = MIN_SECTORS end
+    if MIN_SECTORS and n < MIN_SECTORS then n = MIN_SECTORS end
     local a = 2 * i * math.pi / n - math.pi / 2
     return v2(r * math.cos(a), r * math.sin(a))
 end
@@ -183,6 +184,7 @@ function Wheel:checkDirty()
     end
 
     if self.ctx.dirty == 0 then
+        self.ctx.tipId = false --false is used to make sure tip will get re-evaluated
         self:update()
     end
 end
@@ -230,7 +232,7 @@ function Wheel:updateIcons()
 end
 
 function Wheel:onMouseClick()
-    if self.ctx.shown and self.ctx.selected > 0 and self.ctx.items then
+    if self.ctx.shown and self.ctx.dirty <= 0 and self.ctx.selected > 0 and self.ctx.items then
         self.ctx.items[self.ctx.selected]:activate()
         self:markDirty()
     end

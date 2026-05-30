@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact name="files">
+    <output-path>$PROJECT_DIR$/artifacts/</output-path>
+    <root id="root">
+      <element id="archive" name="TPA_QuickWheel.zip">
+        <element id="directory" name="TPA_QuickWheel">
+          <element id="module-source" name="TPA_QuickWheel" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

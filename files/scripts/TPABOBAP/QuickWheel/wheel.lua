@@ -1,10 +1,6 @@
-local I = require('openmw.interfaces')
-local core = require('openmw.core')
-local types = require('openmw.types')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
 local async = require('openmw.async')
-local auxUi = require('openmw_aux.ui')
 
 local v2 = util.vector2
 local pi2 = 2 * math.pi

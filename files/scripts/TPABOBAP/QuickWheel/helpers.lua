@@ -3,7 +3,7 @@ local core = require('openmw.core')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
 local auxUi = require('openmw_aux.ui')
-local isPlayer, self = pcall(require, 'openmw.self')
+local _, self = pcall(require, 'openmw.self')
 local mwui = I.MWUI
 
 local v2 = util.vector2

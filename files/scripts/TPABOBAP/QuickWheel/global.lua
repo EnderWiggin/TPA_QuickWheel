@@ -1,6 +1,4 @@
-local I = require('openmw.interfaces')
 local world = require("openmw.world")
-local auxUtil = require('openmw_aux.util')
 
 local enabled
 

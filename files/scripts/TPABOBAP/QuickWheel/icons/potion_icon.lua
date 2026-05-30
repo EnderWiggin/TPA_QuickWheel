@@ -1,4 +1,3 @@
-local core = require('openmw.core')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
 local I = require('openmw.interfaces')

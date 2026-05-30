@@ -1,3 +1,18 @@
+PageName: Quick Potion Wheel
+PageDesc: Quick Potion Wheel for fast and smart use of potions.
+SettingsName: Main Settings
+SettingKeyPotionWheel: Button to open Potion Wheel
+SettingKeyPotionWheelDesc: Hold this button to open the wheel.
+SettingKeyMode: Key Mode
+SettingKeyModeDesc: |-
+  Smart - tap to toggle wheel or hold to close on key release. 
+  Hold - hold to open, close on key release. 
+  Toggle - tap to toggle wheel. 
+
+SettingKeyModeSmart: Smart
+SettingKeyModeHold: Hold
+SettingKeyModeToggle: Toggle
+
 Category_Title_Health: Healing
 Category_Desc_Health: All health restoring potions.
 Category_Title_Stamina: Fatigue

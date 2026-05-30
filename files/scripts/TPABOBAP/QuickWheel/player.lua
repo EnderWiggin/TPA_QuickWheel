@@ -2,152 +2,22 @@ local I = require('openmw.interfaces')
 local core = require('openmw.core')
 local input = require('openmw.input')
 local types = require('openmw.types')
-local ui = require('openmw.ui')
-local util = require('openmw.util')
-local async = require('openmw.async')
 local omwself = require('openmw.self')
 
-local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
+local config = require('scripts.TPABOBAP.QuickWheel.config')
 local wheel = require('scripts.TPABOBAP.QuickWheel.wheel')
-local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
 local PotionIcon = require('scripts.TPABOBAP.QuickWheel.icons.potion_icon')
 local CategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.category_icon')
+local C = require('scripts.TPABOBAP.QuickWheel.constants')
 
 local isWheelModeOn = false
+local pressedAt = 0
+local wasToggled = false
 local lastUIMode
 ---@type string
 local lastModifiers
 
-local PotionTypes = {
-    Health = {
-        restorehealth = true,
-    },
-    Stamina = {
-        restorefatigue = true,
-    },
-    Magicka = {
-        restoremagicka = true,
-    },
-    Poison = { --TODO: filter out alcohol?
-        -- Direct damage
-        damagehealth = true,
-        damagefatigue = true,
-        damagemagicka = true,
-        damageattribute = true,
-        damageskill = true,
-        drainhealth = true,
-        drainfatigue = true,
-        drainmagicka = true,
-        drainattribute = true,
-        drainskill = true,
-        absorbhealth = true,
-        absorbfatigue = true,
-        absorbmagicka = true,
-        absorbattribute = true,
-        absorbskill = true,
-
-        -- Elemental damage
-        firedamage = true,
-        frostdamage = true,
-        shockdamage = true,
-        poison = true,
-
-        -- Control / debuff
-        paralyze = true,
-        silence = true,
-        blind = true,
-        sound = true,
-        burden = true,
-        weaknesstofire = true,
-        weaknesstofrost = true,
-        weaknesstoshock = true,
-        weaknesstomagicka = true,
-        weaknesstocommondisease = true,
-        weaknesstoblightdisease = true,
-        weaknesstocorprusdisease = true,
-        weaknesstonormalweapons = true,
-        weaknesstopoison = true,
-
-        -- Mind effects (hostile when cast on player)
-        demoralizecreature = true,
-        demoralizehumanoid = true,
-        frenzycreature = true,
-        frenzyhumanoid = true,
-        charm = true,
-        commandcreature = true,
-        commandhumanoid = true,
-
-        -- Equipment destruction
-        disintegratearmor = true,
-        disintegrateweapon = true,
-    },
-    Cure = {
-        cureblightdisease = true,
-        curecommondisease = true,
-        curecorprusdisease = true,
-        cureparalyzation = true,
-        curepoison = true,
-        dispel = true,
-        restoreattribute = true,
-        restoreskill = true,
-        removecurse = true,
-
-    },
-    Combat = {
-        boundbattleaxe = true,
-        boundboots = true,
-        boundcuirass = true,
-        bounddagger = true,
-        boundgloves = true,
-        boundhelm = true,
-        boundlongbow = true,
-        boundlongsword = true,
-        boundmace = true,
-        boundshield = true,
-        boundspear = true,
-        fireshield = true,
-        fortifyattack = true,
-        frostshield = true,
-        lightningshield = true,
-        reflect = true,
-        resistfire = true,
-        resistfrost = true,
-        resistmagicka = true,
-        resistnormalweapons = true,
-        resistparalysis = true,
-        resistpoison = true,
-        resistshock = true,
-        sanctuary = true,
-        shield = true,
-        spellabsorption = true,
-    },
-    Buffs = {
-        chameleon = true,
-        detectanimal = true,
-        detectenchantment = true,
-        detectkey = true,
-        feather = true,
-        fortifyattribute = true,
-        fortifyfatigue = true,
-        fortifyhealth = true,
-        fortifymagicka = true,
-        fortifymaximummagicka = true,
-        fortifyskill = true,
-        invisibility = true,
-        jump = true,
-        levitate = true,
-        light = true,
-        nighteye = true,
-        resistblightdisease = true,
-        resistcommondisease = true,
-        resistcorprusdisease = true,
-        slowfall = true,
-        swiftswim = true,
-        telekinesis = true,
-        waterbreathing = true,
-        waterwalking = true,
-    },
-}
+local PotionTypes = C.PotionTypes
 
 local function isPotionOfType(potion, type)
     local record = potion.type.record(potion.recordId)
@@ -258,6 +128,7 @@ local function getCategories()
 end
 
 local function setWheelMode(isOn)
+    if not isOn then wasToggled = false end
     if isOn == isWheelModeOn then return end
 
     if lastUIMode ~= nil and not isWheelModeOn then return end
@@ -297,13 +168,38 @@ local function onUpdate(dt)
 end
 
 local function onKeyPress(key)
-    if key.code == input.KEY.X then
+    if key.code ~= config.main.k_PotionWheel then return end
+
+    if not isWheelModeOn then
+        pressedAt = core.getRealTime()
         setWheelMode(true)
     end
 end
 
 local function onKeyRelease(key)
-    if key.code == input.KEY.X then
+    if key.code == input.KEY.Escape then
+        setWheelMode(false)
+        return
+    end
+
+    if key.code ~= config.main.k_PotionWheel then return end
+    local now = core.getRealTime()
+
+    local mode = config.main.s_KeyMode
+
+    if mode == C.KeyModes.Smart then
+        if (now - pressedAt) > 0.35 or wasToggled then
+            setWheelMode(false)
+        else
+            wasToggled = true
+        end
+    elseif mode == C.KeyModes.Toggle then
+        if wasToggled then
+            setWheelMode(false)
+        else
+            wasToggled = true
+        end
+    elseif mode == C.KeyModes.Hold then
         setWheelMode(false)
     end
 end

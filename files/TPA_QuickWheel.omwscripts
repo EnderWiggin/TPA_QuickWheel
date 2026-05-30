@@ -1,3 +1,4 @@
+MENU: scripts/TPABOBAP/QuickWheel/settings.lua
 PLAYER: scripts/TPABOBAP/QuickWheel/api.lua
 
 GLOBAL: scripts/TPABOBAP/QuickWheel/global.lua

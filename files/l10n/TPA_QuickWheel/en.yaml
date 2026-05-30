@@ -13,6 +13,14 @@ SettingKeyModeSmart: Smart
 SettingKeyModeHold: Hold
 SettingKeyModeToggle: Toggle
 
+SettingTimeMode: Wheel Time Slowdown
+SettingTimeModeDesc: How slow should time get while the wheel is open.
+
+SettingTimeModeNormal: Normal
+SettingTimeModeSlow: Slow
+SettingTimeModeVerySlow: Very Slow
+SettingTimeModePaused: Paused
+
 Category_Title_Health: Healing
 Category_Desc_Health: All health restoring potions.
 Category_Title_Stamina: Fatigue

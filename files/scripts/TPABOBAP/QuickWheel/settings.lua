@@ -76,5 +76,21 @@ I.Settings.registerGroup {
                 },
             }
         },
+        {
+            key = 's_TimeMode',
+            renderer = 'select',
+            name = 'SettingTimeMode',
+            description = 'SettingTimeModeDesc',
+            default = C.TimeModes.VerySlow,
+            argument = {
+                l10n = MODNAME,
+                items = {
+                    C.TimeModes.Normal,
+                    C.TimeModes.Slow,
+                    C.TimeModes.VerySlow,
+                    C.TimeModes.Paused,
+                },
+            }
+        },
     },
 }

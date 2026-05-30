@@ -6,7 +6,7 @@ return {
     eventHandlers = {
         QW_UpdateWheelState = function(data)
             enabled = data and data.state
-            world.setSimulationTimeScale(enabled and 0.1 or 1)
+            world.setSimulationTimeScale(enabled and data.scale or 1)
         end,
         Toxicology_ConfirmApply = function(data)
             if data and data.actor then

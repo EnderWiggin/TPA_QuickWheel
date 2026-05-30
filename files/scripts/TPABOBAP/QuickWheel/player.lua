@@ -143,7 +143,7 @@ local function setWheelMode(isOn)
 
     wheel:show(isWheelModeOn, getCategories)
 
-    core.sendGlobalEvent('QW_UpdateWheelState', { state = isWheelModeOn })
+    core.sendGlobalEvent('QW_UpdateWheelState', { state = isWheelModeOn, scale = C.getTimeScale(config.main.s_TimeMode) })
 end
 
 local function onUpdate(dt)

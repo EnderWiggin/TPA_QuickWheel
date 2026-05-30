@@ -128,12 +128,33 @@ local PotionTypes = {
         waterwalking = true,
     },
 }
+local KeyModes = {
+    Smart = 'SettingKeyModeSmart',
+    Hold = 'SettingKeyModeHold',
+    Toggle = 'SettingKeyModeToggle'
+}
+local TimeModes = {
+    Normal = 'SettingTimeModeNormal',
+    Slow = 'SettingTimeModeSlow',
+    VerySlow = 'SettingTimeModeVerySlow',
+    Paused = 'SettingTimeModePaused',
+}
+local getTimeScale = function(mode)
+    if mode == TimeModes.Normal then
+        return 1
+    elseif mode == TimeModes.Slow then
+        return 0.3
+    elseif mode == TimeModes.VerySlow then
+        return 0.1
+    elseif mode == TimeModes.Paused then
+        return 0
+    end
+    return 1
+end
 
 return {
     PotionTypes = PotionTypes,
-    KeyModes = {
-        Smart = 'SettingKeyModeSmart',
-        Hold = 'SettingKeyModeHold',
-        Toggle = 'SettingKeyModeToggle'
-    },
+    KeyModes = KeyModes,
+    TimeModes = TimeModes,
+    getTimeScale = getTimeScale,
 }

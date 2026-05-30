@@ -135,6 +135,7 @@ end
 function Wheel:show(show, provider)
     --if self.ctx.shown == show then return end
 
+    self.ctx.dirty = 0
     self.ctx.shown = show
     self.ctx.itemProvider = provider
     self:update()
@@ -167,6 +168,10 @@ function Wheel:update ()
     end
 
     wheel:update()
+end
+
+function Wheel:markDirty()
+    self.ctx.dirty = DIRTY_DELAY
 end
 
 ---called each frame from player.lua
@@ -227,8 +232,7 @@ end
 function Wheel:onMouseClick()
     if self.ctx.shown and self.ctx.selected > 0 and self.ctx.items then
         self.ctx.items[self.ctx.selected]:activate()
-
-        self.ctx.dirty = DIRTY_DELAY
+        self:markDirty()
     end
 end
 

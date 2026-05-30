@@ -9,7 +9,12 @@ return {
         QW_UpdateWheelState = function(data)
             enabled = data and data.state
             world.setSimulationTimeScale(enabled and 0.1 or 1)
-        end
+        end,
+        Toxicology_ConfirmApply = function(data)
+            if data and data.actor then
+                data.actor:sendEvent('QW_UpdateWheelState')
+            end
+        end,
     },
     engineHandlers = {
         onUpdate = function(dt)

@@ -303,5 +303,15 @@ return {
         onInit = function()
             wheel:init(omwself)
         end,
-    }
+    },
+    eventHandlers = {
+        IE_Update = function()
+            wheel:markDirty()
+        end,
+        QW_UpdateWheelState = function()
+            if wheel.ctx.shown then
+                wheel:markDirty()
+            end
+        end,
+    },
 }

@@ -22,11 +22,17 @@ SettingTimeModeVerySlow: Very Slow
 SettingTimeModePaused: Paused
 
 Category_Title_Health: Healing
-Category_Desc_Health: All health restoring potions.
+Category_Desc_Health: |-
+  All health restoring potions.
+  Hold SHIFT to consume first potion.
 Category_Title_Stamina: Fatigue
-Category_Desc_Stamina: All fatigue restoring potions.
+Category_Desc_Stamina: |-
+  All fatigue restoring potions.
+  Hold SHIFT to consume first potion.
 Category_Title_Magicka: Magicka
-Category_Desc_Magicka: All magicka restoring potions.
+Category_Desc_Magicka: |-
+  All magicka restoring potions.
+  Hold SHIFT to consume first potion.
 Category_Title_Combat: Combat
 Category_Desc_Combat: |-
   Potions that grant elemental resistances and shields.

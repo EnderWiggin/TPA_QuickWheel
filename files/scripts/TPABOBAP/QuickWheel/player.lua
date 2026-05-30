@@ -3,6 +3,7 @@ local core = require('openmw.core')
 local input = require('openmw.input')
 local types = require('openmw.types')
 local omwself = require('openmw.self')
+local async = require('openmw.async')
 
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local config = require('scripts.TPABOBAP.QuickWheel.config')
@@ -170,13 +171,36 @@ local function onUpdate(dt)
     end
 end
 
-local function onKeyPress(key)
-    if key.code ~= config.main.k_PotionWheel then return end
-
-    if not isWheelModeOn then
-        pressedAt = core.getRealTime()
-        setWheelMode(true)
+local function handleWheelAction(isPressed)
+    if isPressed then
+        if not isWheelModeOn then
+            pressedAt = core.getRealTime()
+            setWheelMode(true)
+        end
+    else
+        local mode = config.main.s_KeyMode
+        if mode == C.KeyModes.Smart then
+            local now = core.getRealTime()
+            if (now - pressedAt) > C.KeyHoldThreshold or wasToggled then
+                setWheelMode(false)
+            else
+                wasToggled = true
+            end
+        elseif mode == C.KeyModes.Toggle then
+            if wasToggled then
+                setWheelMode(false)
+            else
+                wasToggled = true
+            end
+        elseif mode == C.KeyModes.Hold then
+            setWheelMode(false)
+        end
     end
+end
+
+local function Init()
+    wheel:init(omwself)
+    input.registerActionHandler(C.actionOpenWheel, async:callback(handleWheelAction))
 end
 
 local function onKeyRelease(key)
@@ -184,40 +208,14 @@ local function onKeyRelease(key)
         setWheelMode(false)
         return
     end
-
-    if key.code ~= config.main.k_PotionWheel then return end
-    local now = core.getRealTime()
-
-    local mode = config.main.s_KeyMode
-
-    if mode == C.KeyModes.Smart then
-        if (now - pressedAt) > 0.35 or wasToggled then
-            setWheelMode(false)
-        else
-            wasToggled = true
-        end
-    elseif mode == C.KeyModes.Toggle then
-        if wasToggled then
-            setWheelMode(false)
-        else
-            wasToggled = true
-        end
-    elseif mode == C.KeyModes.Hold then
-        setWheelMode(false)
-    end
 end
 
 return {
     engineHandlers = {
         onUpdate = onUpdate,
-        onKeyPress = onKeyPress,
         onKeyRelease = onKeyRelease,
-        onLoad = function(_)
-            wheel:init(omwself)
-        end,
-        onInit = function()
-            wheel:init(omwself)
-        end,
+        onLoad = Init,
+        onInit = Init,
     },
     eventHandlers = {
         IE_Update = function()

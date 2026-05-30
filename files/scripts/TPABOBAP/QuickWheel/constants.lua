@@ -157,4 +157,6 @@ return {
     KeyModes = KeyModes,
     TimeModes = TimeModes,
     getTimeScale = getTimeScale,
+    KeyHoldThreshold = 0.35, --- if key is held longer than this in smart mode, assume we want hold variant
+    actionOpenWheel = "TPA_QuickWheel_Open",
 }

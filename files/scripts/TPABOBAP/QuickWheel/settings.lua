@@ -1,6 +1,4 @@
-local ui = require('openmw.ui')
 local I = require('openmw.interfaces')
-local async = require('openmw.async')
 local input = require('openmw.input')
 local core = require('openmw.core')
 
@@ -8,37 +6,14 @@ local MODNAME = 'TPA_QuickWheel'
 local l10n = core.l10n(MODNAME)
 local C = require('scripts.TPABOBAP.QuickWheel.constants')
 
--- inputKeySelection by Pharis
-local inputKeyRenderer = function(value, set)
-    local name = l10n('No_Key_Set')
-    if value then
-        name = input.getKeyName(value)
-    end
-    return {
-        template = I.MWUI.templates.box,
-        content = ui.content {
-            {
-                template = I.MWUI.templates.padding,
-                content = ui.content {
-                    {
-                        template = I.MWUI.templates.textEditLine,
-                        props = {
-                            text = name,
-                        },
-                        events = {
-                            keyPress = async:callback(function(e)
-                                if e.code == input.KEY.Escape then return end
-                                set(e.code)
-                            end),
-                        },
-                    },
-                },
-            },
-        },
-    }
-end
-
-I.Settings.registerRenderer('TPA_QuickWheel/inputKeySelection', inputKeyRenderer)
+input.registerAction {
+    key = C.actionOpenWheel,
+    type = input.ACTION_TYPE.Boolean,
+    l10n = MODNAME,
+    name = '',
+    description = '',
+    defaultValue = false,
+}
 
 I.Settings.registerPage {
     key = MODNAME,
@@ -56,10 +31,14 @@ I.Settings.registerGroup {
     settings = {
         {
             key = 'k_PotionWheel',
-            renderer = 'TPA_QuickWheel/inputKeySelection',
+            renderer = 'inputBinding',
             name = 'SettingKeyPotionWheel',
             description = 'SettingKeyPotionWheelDesc',
-            default = nil
+            default = C.actionOpenWheel,
+            argument = {
+                type = "action",
+                key = C.actionOpenWheel
+            },
         },
         {
             key = 's_KeyMode',

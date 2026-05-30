@@ -3,7 +3,7 @@ local storage = require('openmw.storage')
 
 local main = storage.playerSection('TPA_QuickWheel/MainSettings')
 
----@type {main: {k_PotionWheel: number, s_KeyMode: string, s_TimeMode: string}}
+---@type {main: {k_PotionWheel: number, s_KeyMode: string, s_TimeMode: string, b_NoUnknownCategory: boolean}}
 local config = {
 
 }

@@ -92,5 +92,12 @@ I.Settings.registerGroup {
                 },
             }
         },
+        {
+            key = 'b_NoUnknownCategory',
+            renderer = 'checkbox',
+            name = 'SettingNoUnknownCategory',
+            description = 'SettingNoUnknownCategoryDesc',
+            default = false,
+        },
     },
 }

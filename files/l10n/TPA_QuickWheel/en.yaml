@@ -3,7 +3,7 @@ PageDesc: Quick Potion Wheel for fast and smart use of potions.
 SettingsName: Main Settings
 SettingKeyPotionWheel: Button to open Potion Wheel
 SettingKeyPotionWheelDesc: Hold this button to open the wheel.
-SettingKeyMode: Key Mode
+SettingKeyMode: Key mode
 SettingKeyModeDesc: |-
   Smart - tap to toggle wheel or hold to close on key release. 
   Hold - hold to open, close on key release. 
@@ -13,13 +13,16 @@ SettingKeyModeSmart: Smart
 SettingKeyModeHold: Hold
 SettingKeyModeToggle: Toggle
 
-SettingTimeMode: Wheel Time Slowdown
+SettingTimeMode: Wheel time slowdown
 SettingTimeModeDesc: How slow should time get while the wheel is open.
 
 SettingTimeModeNormal: Normal
 SettingTimeModeSlow: Slow
 SettingTimeModeVerySlow: Very Slow
 SettingTimeModePaused: Paused
+
+SettingNoUnknownCategory: Ignore unknown effects
+SettingNoUnknownCategoryDesc: If turned on, unknown effects will not be checked when filtering potions into categories.
 
 Category_Title_Health: Healing
 Category_Desc_Health: |-

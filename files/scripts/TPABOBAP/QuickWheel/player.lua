@@ -4,6 +4,7 @@ local input = require('openmw.input')
 local types = require('openmw.types')
 local omwself = require('openmw.self')
 
+local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local config = require('scripts.TPABOBAP.QuickWheel.config')
 local wheel = require('scripts.TPABOBAP.QuickWheel.wheel')
 local PotionIcon = require('scripts.TPABOBAP.QuickWheel.icons.potion_icon')
@@ -22,9 +23,11 @@ local PotionTypes = C.PotionTypes
 local function isPotionOfType(potion, type)
     local record = potion.type.record(potion.recordId)
     local test = PotionTypes[type]
+    local limit = config.main.b_NoUnknownCategory and helpers.getKnownAlchemyEffectCount(true) or math.huge
 
     local valid = false
-    for _, effect in ipairs(record.effects) do
+    for i, effect in ipairs(record.effects) do
+        if i > limit then return valid end
         local t = test[effect.id]
         if t == false then
             return false

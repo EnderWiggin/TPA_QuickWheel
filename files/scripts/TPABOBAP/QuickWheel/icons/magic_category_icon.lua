@@ -10,7 +10,7 @@ local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
 local PotionIcon = require('scripts.TPABOBAP.QuickWheel.icons.potion_icon')
 
-local UNKNOWN = 'icons/TPABOBAP/QuickWheel/unknown-effect.png'
+local UNKNOWN = 'icons/TPABOBAP/QuickWheel/magic-spell.png'
 local iconMap = {
     Restore = nil,
     Util = nil,
@@ -89,8 +89,8 @@ function SpellCategoryIcon:makeTip(potions)
     end
 
     local tip = helpers.makeTooltip(
-            l10n('Category_Magic_Title_' .. self.name),
-            l10n('Category_Magic_Desc_' .. self.name)
+            l10n('Magic_Category_Title_' .. self.name),
+            l10n('Magic_Category_Desc_' .. self.name)
     )
     tip.name = self:tipId()
     return tip

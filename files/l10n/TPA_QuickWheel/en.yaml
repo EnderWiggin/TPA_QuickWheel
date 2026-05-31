@@ -1,13 +1,17 @@
-PageName: Quick Potion Wheel
-PageDesc: Quick Potion Wheel for fast and smart use of potions.
+PageName: Quick Wheel
+PageDesc: Quick Wheel for fast and smart use of potions, spells and magic items.
   
 SettingResetKeyBinds: Reset keybinds
 SettingResetKeyBindsDesc: |-
-  Removes all keybinds - changes will be seen only after re-opening settings.
+  Removes all keybinds for all types of wheels.
 
 SettingsName: Main Settings
+SettingKeyOmniWheel: Button to open Omni Wheel
+SettingKeyOmniWheelDesc: Hold this button to open the wheel that contains all potions, spells and magic items.
 SettingKeyPotionWheel: Button to open Potion Wheel
-SettingKeyPotionWheelDesc: Hold this button to open the wheel.
+SettingKeyPotionWheelDesc: Hold this button to open the wheel that contains all potions.
+SettingKeyMagicWheel: Button to open Magic Wheel
+SettingKeyMagicWheelDesc: Hold this button to open the wheel that contains all spells and magic items.
 SettingKeyMode: Key mode
 SettingKeyModeDesc: |-
   Smart - tap to toggle wheel or hold to close on key release. 
@@ -57,3 +61,47 @@ Potion_Category_Desc_Buffs: |-
   or grant other positive effects like feather, levitate etc.
 Potion_Category_Title_Other: Other
 Potion_Category_Desc_Other: Potions that didn't fit into any other category.
+  
+Magic_Category_Title_Damage: Damage
+Magic_Category_Desc_Damage: |- 
+  Magic that deals damage.
+
+Magic_Category_Title_Combat: Combat
+Magic_Category_Desc_Combat: |-
+  Various combat related buffs and resistances.
+
+Magic_Category_Title_Debuff: Debuff
+Magic_Category_Desc_Debuff: |-
+ Various debuffs, like weaknesses or silence.
+
+Magic_Category_Title_Util: Utility
+Magic_Category_Desc_Util: |-
+  Various utility spells like open locks and detections.
+
+Magic_Category_Title_Other: Other
+Magic_Category_Desc_Other: |-
+  Magic that didn't fit other categories
+
+Magic_Category_Title_Transport: Travel
+Magic_Category_Desc_Transport: |-
+  Magic that helps travel - teleports, jumps, levitate.
+
+Magic_Category_Title_Control: Control
+Magic_Category_Desc_Control: |-
+  Magic that charms, frenzies and calms.
+
+Magic_Category_Title_Buff: Buff
+Magic_Category_Desc_Buff: |-
+  Non-combat related buffs, like attribute increases, feather or resist disease.
+
+Magic_Category_Title_Cure: Cure
+Magic_Category_Desc_Cure: |-
+  Cure poisons and diseases, restore attributes.
+
+Magic_Category_Title_Restore: Restore
+Magic_Category_Desc_Restore: |-
+  Restore health and fatigue.
+
+Magic_Category_Title_Summon: Summon
+Magic_Category_Desc_Summon: |-
+  Summons creatures, weapons and armors.

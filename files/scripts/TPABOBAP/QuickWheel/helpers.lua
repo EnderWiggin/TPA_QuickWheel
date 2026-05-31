@@ -6,6 +6,8 @@ local auxUi = require('openmw_aux.ui')
 local _, self = pcall(require, 'openmw.self')
 local mwui = I.MWUI
 
+local C = require('scripts.TPABOBAP.QuickWheel.constants')
+
 local v2 = util.vector2
 
 local Helpers = {}
@@ -160,6 +162,56 @@ Helpers.getKnownAlchemyEffectCount = function(isPotion)
         visibleEffectCount = visibleEffectCount * 2
     end
     return visibleEffectCount
+end
+
+local function hasWord(str, word)
+    if string.find(str, "[^%a]+" .. word .. "[^%a]+")
+            or string.find(str, "^" .. word .. "[^%a]+")
+            or string.find(str, "[^%a]+" .. word .. "$")
+            or string.find(str, "^" .. word .. "$")
+    then return true end
+    return false
+end
+
+local function startsWith(text, prefix)
+    return text:sub(1, #prefix) == prefix
+end
+
+local function getEffectType(id)
+    for type, values in pairs(C.MagicEffectTypes) do
+        if values[id] == true then return type end
+    end
+
+    if startsWith(id, 'summon') or hasWord(id, 'summon') then
+        return 'Summon'
+    elseif startsWith(id, 'bound')  or hasWord(id, 'bound') then
+        return 'Bound'
+    end
+
+    return 'Unknown'
+end
+
+Helpers.categorizeMagicEffectWithParams = function(effectParams)
+    local effect = core.magic.effects.records[effectParams.id]
+    local isCustom = false
+    if not effect then
+        effect = I.MagicWindow.Spells.getCustomEffect(effectParams.id)
+        if not effect then
+            --fill with defaults
+            effect = { harmful = false }
+        end
+        isCustom = true
+    end
+
+    local result = {
+        id = effectParams.id,
+        range = effectParams.range,
+        harmful = effect.harmful,
+        type = getEffectType(effectParams.id),
+        custom = isCustom
+    }
+
+    return result
 end
 
 return Helpers

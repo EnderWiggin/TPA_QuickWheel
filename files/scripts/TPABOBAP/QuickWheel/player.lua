@@ -4,12 +4,15 @@ local input = require('openmw.input')
 local types = require('openmw.types')
 local omwself = require('openmw.self')
 local async = require('openmw.async')
+local auxUtil = require('openmw_aux.util')
 
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local config = require('scripts.TPABOBAP.QuickWheel.config')
 local wheel = require('scripts.TPABOBAP.QuickWheel.wheel')
 local PotionIcon = require('scripts.TPABOBAP.QuickWheel.icons.potion_icon')
-local CategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.category_icon')
+local MagicIcon = require('scripts.TPABOBAP.QuickWheel.icons.magic_icon')
+local PotionCategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.potion_category_icon')
+local SpellCategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.magic_category_icon')
 local C = require('scripts.TPABOBAP.QuickWheel.constants')
 
 local isWheelModeOn = false
@@ -103,8 +106,8 @@ local function potionCategoryProvider(icon)
 end
 
 ---@function
----@param icon CategoryIcon
-local function openCategory(icon)
+---@param icon PotionCategoryIcon
+local function openPotionCategory(icon)
     if not wheel.ctx.shown then return end
     local items = icon:provider()
     if #items == 0 then return end
@@ -118,16 +121,227 @@ local function openCategory(icon)
     end
 end
 
-local function getCategories()
+local function getPotionCategories()
     return {
-        CategoryIcon:new({ name = 'Health', activate = openCategory, provider = potionCategoryProvider, quickUse = true }),
-        CategoryIcon:new({ name = 'Stamina', activate = openCategory, provider = potionCategoryProvider, quickUse = true }),
-        CategoryIcon:new({ name = 'Combat', activate = openCategory, provider = potionCategoryProvider }),
-        CategoryIcon:new({ name = 'Cure', activate = openCategory, provider = potionCategoryProvider }),
-        CategoryIcon:new({ name = 'Poison', activate = openCategory, provider = potionCategoryProvider }),
-        CategoryIcon:new({ name = 'Other', activate = openCategory, provider = potionCategoryProvider }),
-        CategoryIcon:new({ name = 'Buffs', activate = openCategory, provider = potionCategoryProvider }),
-        CategoryIcon:new({ name = 'Magicka', activate = openCategory, provider = potionCategoryProvider, quickUse = true }),
+        PotionCategoryIcon:new({ name = 'Health', activate = openPotionCategory, provider = potionCategoryProvider, quickUse = true }),
+        PotionCategoryIcon:new({ name = 'Stamina', activate = openPotionCategory, provider = potionCategoryProvider, quickUse = true }),
+        PotionCategoryIcon:new({ name = 'Combat', activate = openPotionCategory, provider = potionCategoryProvider }),
+        PotionCategoryIcon:new({ name = 'Cure', activate = openPotionCategory, provider = potionCategoryProvider }),
+        PotionCategoryIcon:new({ name = 'Poison', activate = openPotionCategory, provider = potionCategoryProvider }),
+        PotionCategoryIcon:new({ name = 'Other', activate = openPotionCategory, provider = potionCategoryProvider }),
+        PotionCategoryIcon:new({ name = 'Buffs', activate = openPotionCategory, provider = potionCategoryProvider }),
+        PotionCategoryIcon:new({ name = 'Magicka', activate = openPotionCategory, provider = potionCategoryProvider, quickUse = true }),
+    }
+end
+
+local function activateMagic(icon)
+    if icon.spell then
+        omwself.type.setSelectedSpell(omwself, icon.spell)
+    elseif icon.item then
+        omwself.type.setSelectedEnchantedItem(omwself, icon.item)
+    end
+end
+
+local function isSpellOfType(effects, type)
+    for _, effect in ipairs(effects) do
+        local data = helpers.categorizeMagicEffectWithParams(effect)
+        local etype = data.type
+        if type == C.SpellCategories.Combat then
+            if etype == 'Combat' then return true end
+        elseif type == C.SpellCategories.Restore then
+            if etype == 'Restore' then return true end
+        elseif type == C.SpellCategories.Damage then
+            if etype == 'Damage' then return true end
+        elseif type == C.SpellCategories.Debuff then
+            if etype == 'Debuff' then return true end
+        elseif type == C.SpellCategories.Util then
+            if etype == 'Util' then return true end
+        elseif type == C.SpellCategories.Buff then
+            if etype == 'Buff' then return true end
+        elseif type == C.SpellCategories.Cure then
+            if etype == 'Cure' then return true end
+        elseif type == C.SpellCategories.Transport then
+            if etype == 'Transport' then return true end
+        elseif type == C.SpellCategories.Control then
+            if etype == 'Control' then return true end
+        elseif type == C.SpellCategories.Summon then
+            if etype == 'Summon' or etype == 'Bound' then return true end
+        end
+    end
+    return false
+end
+
+local function otherSpellsFilter(effects)
+    for k, _ in pairs(C.SpellCategories) do
+        if k ~= C.SpellCategories.Other then
+            if isSpellOfType(effects, k) then return false end
+        end
+    end
+    return true
+end
+
+local function findMagics(filter)
+
+    local pinned
+    local hidden
+
+    -- ----------- START Collect Spells ----------------------
+    if I.MagicWindow then
+        pinned = I.MagicWindow.getStat('pinned')
+        pinned = pinned and pinned.spells
+        hidden = I.MagicWindow.getStat('hidden')
+        hidden = hidden and hidden.spells
+    end
+
+    pinned = pinned or {}
+    hidden = hidden or {}
+
+    local result_spells = {}
+    local spells = omwself.type.spells(omwself)
+    for _, spell in ipairs(spells) do
+        if spell.type == core.magic.SPELL_TYPE.Spell and filter(spell.effects) and not hidden[spell.id] then
+            table.insert(result_spells, spell)
+        end
+    end
+
+    table.sort(result_spells, function(a, b)
+        if pinned[a.id] ~= pinned[b.id] then
+            return pinned[a.id]
+        end
+
+        if a.name ~= b.name then
+            return a.name < b.name
+        end
+
+        return a.id < b.id --id as tie breaker
+    end)
+
+    -- ----------- Collect Items ----------------------
+    if I.MagicWindow then
+        pinned = I.MagicWindow.getStat('pinned')
+        pinned = pinned and pinned.magicItems
+        hidden = I.MagicWindow.getStat('hidden')
+        hidden = hidden and hidden.magicItems
+    end
+
+    pinned = pinned or {}
+    hidden = hidden or {}
+
+    local result_items = {}
+    local magicItems = auxUtil.mapFilter(omwself.type.inventory(omwself):getAll(), function(item)
+        local enchantId = item.type.record(item).enchant
+        local enchant = enchantId and core.magic.enchantments.records[enchantId]
+        return enchant ~= nil and enchant.type ~= core.magic.ENCHANTMENT_TYPE.ConstantEffect and enchant.type ~= core.magic.ENCHANTMENT_TYPE.CastOnStrike
+    end)
+
+    for _, item in ipairs(magicItems) do
+
+        if not hidden[item.id] then
+            local enchantId = item.type.record(item).enchant
+            local enchant = enchantId and core.magic.enchantments.records[enchantId]
+            if filter(enchant.effects) then
+                table.insert(result_items, item)
+            end
+        end
+    end
+
+    table.sort(result_items, function(a, b)
+        if pinned[a.id] ~= pinned[b.id] then
+            return pinned[a.id]
+        end
+
+        local ra = a.type.record(a.recordId)
+        local rb = b.type.record(b.recordId)
+
+        if ra.name ~= rb.name then
+            return ra.name < rb.name
+        end
+
+        return a.id < b.id --id as tie breaker
+    end)
+
+    -- ----------- Combine Results ----------------------
+    local result = {}
+    for _, s in ipairs(result_spells) do
+        table.insert(result, { spell = s })
+    end
+    for _, i in ipairs(result_items) do
+        table.insert(result, { item = i })
+    end
+
+    return result
+end
+
+local function spellCategoryProvider(icon)
+    if icon.name == C.SpellCategories.Other then
+        return findMagics(otherSpellsFilter)
+    else
+        return findMagics(function(p) return isSpellOfType(p, icon.name) end)
+    end
+end
+
+---@function
+---@return table<number, Icon>
+local function makeMagicIcons(magics)
+    ---@type table<number, MagicIcon>
+    local result = {}
+
+    for _, v in ipairs(magics) do
+        table.insert(result, MagicIcon:new({ spell = v.spell, item = v.item, activate = activateMagic }))
+    end
+
+    return result
+end
+
+---@function
+---@param icon SpellCategoryIcon
+local function openSpellCategory(icon)
+    if not wheel.ctx.shown then return end
+    local spells = icon:provider()
+    if #spells == 0 then return end
+    wheel:show(true, function()
+        return makeMagicIcons(icon:provider())
+    end)
+end
+
+local function getSpellCategories()
+    return {
+        SpellCategoryIcon:new({ name = C.SpellCategories.Damage, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Combat, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Debuff, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Util, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Other, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Buff, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Cure, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Summon, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Transport, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Control, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Restore, activate = openSpellCategory, provider = spellCategoryProvider }),
+    }
+end
+
+local function getALLCategories()
+    return {
+        PotionCategoryIcon:new({ name = 'Health', activate = openPotionCategory, provider = potionCategoryProvider, quickUse = true }),
+        PotionCategoryIcon:new({ name = 'Stamina', activate = openPotionCategory, provider = potionCategoryProvider, quickUse = true }),
+        PotionCategoryIcon:new({ name = 'Combat', activate = openPotionCategory, provider = potionCategoryProvider }),
+        PotionCategoryIcon:new({ name = 'Cure', activate = openPotionCategory, provider = potionCategoryProvider }),
+        PotionCategoryIcon:new({ name = 'Poison', activate = openPotionCategory, provider = potionCategoryProvider }),
+        PotionCategoryIcon:new({ name = 'Other', activate = openPotionCategory, provider = potionCategoryProvider }),
+        PotionCategoryIcon:new({ name = 'Buffs', activate = openPotionCategory, provider = potionCategoryProvider }),
+        PotionCategoryIcon:new({ name = 'Magicka', activate = openPotionCategory, provider = potionCategoryProvider, quickUse = true }),
+
+        SpellCategoryIcon:new({ name = C.SpellCategories.Damage, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Combat, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Debuff, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Util, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Other, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Buff, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Cure, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Summon, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Transport, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Control, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Restore, activate = openSpellCategory, provider = spellCategoryProvider }),
     }
 end
 
@@ -145,7 +359,9 @@ local function setWheelMode(isOn)
         I.UI.setMode()
     end
 
-    wheel:show(isWheelModeOn, getCategories)
+    --wheel:show(isWheelModeOn, getPotionCategories)
+    --wheel:show(isWheelModeOn, getSpellCategories)
+    wheel:show(isWheelModeOn, getALLCategories)
 
     core.sendGlobalEvent('QW_UpdateWheelState', { state = isWheelModeOn, scale = C.getTimeScale(config.main.s_TimeMode) })
 end

@@ -1,0 +1,120 @@
+local core = require('openmw.core')
+local ui = require('openmw.ui')
+local util = require('openmw.util')
+local mwui = require('openmw.interfaces').MWUI
+local l10n = core.l10n('TPA_QuickWheel')
+local input = require('openmw.input')
+
+local v2 = util.vector2
+local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
+local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
+local PotionIcon = require('scripts.TPABOBAP.QuickWheel.icons.potion_icon')
+
+local UNKNOWN = 'icons/TPABOBAP/QuickWheel/unknown-effect.png'
+local iconMap = {
+    Restore = nil,
+    Util = nil,
+    Debuff = nil,
+    Damage = nil,
+    Cure = nil,
+    Combat = nil,
+    Buff = nil,
+    Other = nil,
+    Transport = nil,
+    Control = nil,
+    Summon = nil,
+}
+
+---@class SpellCategoryIcon: Icon
+---@field name string
+local SpellCategoryIcon = Icon:new()
+
+function SpellCategoryIcon:makeElement(p)
+    local count = #self:provider()
+
+    self.element = ui.create {
+        name = "wheel_icon",
+        type = ui.TYPE.Widget,
+        props = {
+            relativePosition = v2(0.5, 0.5),
+            anchor = v2(0.5, 0.5),
+            size = v2(128, 128),
+            position = p
+        },
+        content = ui.content {
+            {
+                name = "item_icon",
+                type = ui.TYPE.Image,
+                props = {
+                    relativePosition = v2(0.5, 0.5),
+                    anchor = v2(0.5, 0.5),
+                    resource = helpers.createTexture(iconMap[self.name] or UNKNOWN),
+                    relativeSize = v2(0.5, 0.5),
+                },
+            },
+            {
+                name = 'item_count',
+                template = mwui.templates.textNormal,
+                props = {
+                    relativePosition = v2(0.8, 0.85),
+                    anchor = v2(1, 1),
+                    text = tostring(count),
+                    textSize = 16,
+                },
+            }
+        }
+    }
+
+    return self.element
+end
+
+function SpellCategoryIcon:update(selected)
+    local props = self.element.layout.props
+    local content = self.element.layout.content
+    if selected then
+        props.size = v2(160, 160)
+        content.item_count.props.textSize = 24
+    else
+        props.size = v2(128, 128)
+        content.item_count.props.textSize = 16
+    end
+    self.element:update()
+end
+
+--- potions can be nil - uses provider in this case
+function SpellCategoryIcon:makeTip(potions)
+    local quickUse = self:getQuickUsePotion(potions)
+    if quickUse then
+        return PotionIcon.makeTipForItem(quickUse)
+    end
+
+    local tip = helpers.makeTooltip(
+            l10n('Category_Magic_Title_' .. self.name),
+            l10n('Category_Magic_Desc_' .. self.name)
+    )
+    tip.name = self:tipId()
+    return tip
+end
+
+--- potions can be nil - uses provider in this case
+function SpellCategoryIcon:getQuickUsePotion(potions)
+    if not self.quickUse then return nil end
+    if input.isShiftPressed() then
+        potions = potions or self:provider()
+        if #potions == 0 then return nil end
+        return potions[1]
+    end
+    return nil
+end
+
+--- quickUse can be nil - uses provider in this case
+function SpellCategoryIcon:tipId(quickUse)
+    local id = 'category:' .. self.name
+    quickUse = quickUse or self:getQuickUsePotion()
+    if quickUse then
+        id = id .. ':' .. quickUse.id
+    end
+    return id
+end
+
+return SpellCategoryIcon

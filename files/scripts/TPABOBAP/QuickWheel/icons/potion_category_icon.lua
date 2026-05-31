@@ -21,11 +21,11 @@ local iconMap = {
     Other = 'icons/TPABOBAP/QuickWheel/category-other.png',
 }
 
----@class CategoryIcon: Icon
+---@class PotionCategoryIcon: Icon
 ---@field name string
-local CategoryIcon = Icon:new()
+local PotionCategoryIcon = Icon:new()
 
-function CategoryIcon:makeElement(p)
+function PotionCategoryIcon:makeElement(p)
     local count = 0
     for _, v in ipairs(self:provider()) do
         count = count + v.count
@@ -67,7 +67,7 @@ function CategoryIcon:makeElement(p)
     return self.element
 end
 
-function CategoryIcon:update(selected)
+function PotionCategoryIcon:update(selected)
     local props = self.element.layout.props
     local content = self.element.layout.content
     if selected then
@@ -81,22 +81,22 @@ function CategoryIcon:update(selected)
 end
 
 --- potions can be nil - uses provider in this case
-function CategoryIcon:makeTip(potions)
+function PotionCategoryIcon:makeTip(potions)
     local quickUse = self:getQuickUsePotion(potions)
     if quickUse then
         return PotionIcon.makeTipForItem(quickUse)
     end
 
     local tip = helpers.makeTooltip(
-            l10n('Category_Title_' .. self.name),
-            l10n('Category_Desc_' .. self.name)
+            l10n('Potion_Category_Title_' .. self.name),
+            l10n('Potion_Category_Desc_' .. self.name)
     )
     tip.name = self:tipId()
     return tip
 end
 
 --- potions can be nil - uses provider in this case
-function CategoryIcon:getQuickUsePotion(potions)
+function PotionCategoryIcon:getQuickUsePotion(potions)
     if not self.quickUse then return nil end
     if input.isShiftPressed() then
         potions = potions or self:provider()
@@ -107,7 +107,7 @@ function CategoryIcon:getQuickUsePotion(potions)
 end
 
 --- quickUse can be nil - uses provider in this case
-function CategoryIcon:tipId(quickUse)
+function PotionCategoryIcon:tipId(quickUse)
     local id = 'category:' .. self.name
     quickUse = quickUse or self:getQuickUsePotion()
     if quickUse then
@@ -116,4 +116,4 @@ function CategoryIcon:tipId(quickUse)
     return id
 end
 
-return CategoryIcon
+return PotionCategoryIcon

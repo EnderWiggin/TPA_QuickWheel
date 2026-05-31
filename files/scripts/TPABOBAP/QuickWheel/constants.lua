@@ -348,7 +348,9 @@ return {
     TimeModes = TimeModes,
     getTimeScale = getTimeScale,
     KeyHoldThreshold = 0.35, --- if key is held longer than this in smart mode, assume we want hold variant
-    actionOpenWheel = "TPA_QuickWheel_Open",
+    actionOpenOmniWheel = "TPA_QuickWheel_Open_Omni",
+    actionOpenPotionWheel = "TPA_QuickWheel_Open_Potion",
+    actionOpenMagicWheel = "TPA_QuickWheel_Open_Magic",
     SpellCategories = {
         Damage = 'Damage',
         Combat = 'Combat',

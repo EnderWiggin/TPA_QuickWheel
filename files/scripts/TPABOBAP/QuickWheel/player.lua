@@ -16,6 +16,7 @@ local SpellCategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.magic_categ
 local C = require('scripts.TPABOBAP.QuickWheel.constants')
 
 local isWheelModeOn = false
+local currentWheelMode
 local pressedAt = 0
 local wasToggled = false
 local lastUIMode
@@ -327,9 +328,6 @@ local function getALLCategories()
         PotionCategoryIcon:new({ name = 'Combat', activate = openPotionCategory, provider = potionCategoryProvider }),
         PotionCategoryIcon:new({ name = 'Cure', activate = openPotionCategory, provider = potionCategoryProvider }),
         PotionCategoryIcon:new({ name = 'Poison', activate = openPotionCategory, provider = potionCategoryProvider }),
-        PotionCategoryIcon:new({ name = 'Other', activate = openPotionCategory, provider = potionCategoryProvider }),
-        PotionCategoryIcon:new({ name = 'Buffs', activate = openPotionCategory, provider = potionCategoryProvider }),
-        PotionCategoryIcon:new({ name = 'Magicka', activate = openPotionCategory, provider = potionCategoryProvider, quickUse = true }),
 
         SpellCategoryIcon:new({ name = C.SpellCategories.Damage, activate = openSpellCategory, provider = spellCategoryProvider }),
         SpellCategoryIcon:new({ name = C.SpellCategories.Combat, activate = openSpellCategory, provider = spellCategoryProvider }),
@@ -342,12 +340,16 @@ local function getALLCategories()
         SpellCategoryIcon:new({ name = C.SpellCategories.Transport, activate = openSpellCategory, provider = spellCategoryProvider }),
         SpellCategoryIcon:new({ name = C.SpellCategories.Control, activate = openSpellCategory, provider = spellCategoryProvider }),
         SpellCategoryIcon:new({ name = C.SpellCategories.Restore, activate = openSpellCategory, provider = spellCategoryProvider }),
+
+        PotionCategoryIcon:new({ name = 'Other', activate = openPotionCategory, provider = potionCategoryProvider }),
+        PotionCategoryIcon:new({ name = 'Buffs', activate = openPotionCategory, provider = potionCategoryProvider }),
+        PotionCategoryIcon:new({ name = 'Magicka', activate = openPotionCategory, provider = potionCategoryProvider, quickUse = true }),
     }
 end
 
-local function setWheelMode(isOn)
+local function setWheelMode(isOn, mode)
     if not isOn then wasToggled = false end
-    if isOn == isWheelModeOn then return end
+    if isOn == isWheelModeOn and currentWheelMode == mode then return end
 
     if lastUIMode ~= nil and not isWheelModeOn then return end
 
@@ -359,9 +361,14 @@ local function setWheelMode(isOn)
         I.UI.setMode()
     end
 
-    --wheel:show(isWheelModeOn, getPotionCategories)
-    --wheel:show(isWheelModeOn, getSpellCategories)
-    wheel:show(isWheelModeOn, getALLCategories)
+    currentWheelMode = mode
+    if currentWheelMode == 'potions' then
+        wheel:show(isWheelModeOn, getPotionCategories)
+    elseif currentWheelMode == 'magic' then
+        wheel:show(isWheelModeOn, getSpellCategories)
+    else
+        wheel:show(isWheelModeOn, getALLCategories)
+    end
 
     core.sendGlobalEvent('QW_UpdateWheelState', { state = isWheelModeOn, scale = C.getTimeScale(config.main.s_TimeMode) })
 end
@@ -387,11 +394,18 @@ local function onUpdate(dt)
     end
 end
 
-local function handleWheelAction(isPressed)
+local function handleWheelAction(isPressed, wheelMode)
+    local uiMode = I.UI.getMode()
+    print('handleWheelAction', isPressed, wheelMode, uiMode)
     if isPressed then
+        if uiMode ~= nil and uiMode ~= I.UI.MODE.Interface then return end
         if not isWheelModeOn then
             pressedAt = core.getRealTime()
-            setWheelMode(true)
+            setWheelMode(true, wheelMode)
+        elseif wheelMode ~= currentWheelMode then
+            wasToggled = false
+            pressedAt = core.getRealTime()
+            setWheelMode(true, wheelMode)
         end
     else
         local mode = config.main.s_KeyMode
@@ -413,10 +427,22 @@ local function handleWheelAction(isPressed)
         end
     end
 end
+local function handleOmniWheelAction(isPressed)
+    handleWheelAction(isPressed, 'omni')
+end
+local function handlePotionWheelAction(isPressed)
+    handleWheelAction(isPressed, 'potions')
+end
+
+local function handleMagicWheelAction(isPressed)
+    handleWheelAction(isPressed, 'magic')
+end
 
 local function Init()
     wheel:init(omwself)
-    input.registerActionHandler(C.actionOpenWheel, async:callback(handleWheelAction))
+    input.registerActionHandler(C.actionOpenOmniWheel, async:callback(handleOmniWheelAction))
+    input.registerActionHandler(C.actionOpenPotionWheel, async:callback(handlePotionWheelAction))
+    input.registerActionHandler(C.actionOpenMagicWheel, async:callback(handleMagicWheelAction))
 end
 
 local function onKeyRelease(key)

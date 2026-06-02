@@ -142,18 +142,18 @@ function MagicIcon.makeTipForSpell(spell)
 end
 
 function MagicIcon.makeTipForItem(item)
-    local MW = I.MagicWindow
-    local isOKMW, makeMWTip = pcall(function() return MW and MW.Templates.MAGIC.itemTooltip end)
     local tip
-    if isOKMW and type(makeMWTip) == 'function' then
-        tip = makeMWTip(item)
+    local IE = I.InventoryExtender
+    local isOKIE, makeIETip = pcall(function() return IE and IE.Templates.MAGIC.itemTooltip end)
+    if isOKIE and type(makeIETip) == 'function' then
+        tip = makeIETip(item, false, IE.getContext())
         tip.props.anchor = v2(0.5, 0.5)
         tip.props.relativePosition = v2(0.5, 0.5)
     else
-        local IE = I.InventoryExtender
-        local isOKIE, makeIETip = pcall(function() return IE and IE.Templates.MAGIC.itemTooltip end)
-        if isOKIE and type(makeIETip) == 'function' then
-            tip = makeIETip(item, false, IE.getContext())
+        local MW = I.MagicWindow
+        local isOKMW, makeMWTip = pcall(function() return MW and MW.Templates.MAGIC.itemTooltip end)
+        if isOKMW and type(makeMWTip) == 'function' then
+            tip = makeMWTip(item)
             tip.props.anchor = v2(0.5, 0.5)
             tip.props.relativePosition = v2(0.5, 0.5)
         else

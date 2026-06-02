@@ -218,12 +218,8 @@ local MagicEffectTypes = {
         lock = true,
         nighteye = true,
         open = true,
-        slowfall = true,
         soultrap = true,
-        swiftswim = true,
         telekinesis = true,
-        waterbreathing = true,
-        waterwalking = true,
 
         nsp_projection = true,
 
@@ -245,6 +241,10 @@ local MagicEffectTypes = {
         levitate = true,
         mark = true,
         recall = true,
+        slowfall = true,
+        swiftswim = true,
+        waterbreathing = true,
+        waterwalking = true,
 
         multimark_mark = true, --Daisy Lua Multimark
         multimark_recall = true, --Daisy Lua Multimark

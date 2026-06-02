@@ -1,3 +1,4 @@
+---@omw-context player
 local ui = require('openmw.ui')
 local util = require('openmw.util')
 local I = require('openmw.interfaces')
@@ -59,7 +60,7 @@ function PotionIcon:makeElement(p)
         },
     })
 
-    self.element = ui.create {
+    self.element = {
         name = "wheel_icon",
         type = ui.TYPE.Widget,
         props = {
@@ -75,8 +76,8 @@ function PotionIcon:makeElement(p)
 end
 
 function PotionIcon:update(selected)
-    local props = self.element.layout.props
-    local content = self.element.layout.content
+    local props = self.element.props
+    local content = self.element.content
     if selected then
         props.size = v2(96, 96)
         content.item_count.props.textSize = 21
@@ -84,7 +85,6 @@ function PotionIcon:update(selected)
         props.size = v2(64, 64)
         content.item_count.props.textSize = 14
     end
-    self.element:update()
 end
 
 function PotionIcon:makeTip()

@@ -1,3 +1,4 @@
+---@omw-context player
 local I = require('openmw.interfaces')
 local core = require('openmw.core')
 local input = require('openmw.input')
@@ -396,7 +397,6 @@ end
 
 local function handleWheelAction(isPressed, wheelMode)
     local uiMode = I.UI.getMode()
-    print('handleWheelAction', isPressed, wheelMode, uiMode)
     if isPressed then
         if uiMode ~= nil and uiMode ~= I.UI.MODE.Interface then return end
         if not isWheelModeOn then

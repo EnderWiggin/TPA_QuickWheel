@@ -1,3 +1,4 @@
+---@omw-context player
 local core = require('openmw.core')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
@@ -8,8 +9,9 @@ local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
 
 ---@class MagicIcon: Icon
----@field spell table
----@field item table
+---@field spell? openmw.core.Spell
+---@field item? openmw.Object
+---@field custom_count? number
 local MagicIcon = Icon:new()
 
 local CENTER = v2(0.5, 0.5)

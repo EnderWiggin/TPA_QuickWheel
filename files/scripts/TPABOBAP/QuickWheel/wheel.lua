@@ -1,3 +1,4 @@
+---@omw-context player
 local ui = require('openmw.ui')
 local util = require('openmw.util')
 local async = require('openmw.async')
@@ -19,13 +20,14 @@ local DIRTY_DELAY = 2
 
 local Wheel = {}
 
+---@class WheelContext
+---@field widget openmw.ui.Element
 Wheel.ctx = {
     shown = false,
 
     ---@type table<number, Icon>
     items = nil,
     selected = 0,
-    widget = nil,
     target = nil,
     dirty = 0,
     lastOffset = nil,
@@ -42,7 +44,7 @@ local function updateSizeConfigs()
     local layer = ui.layers[windowsIndex]
     local screenSize = ui.screenSize()
     local uiScale = screenSize.x / layer.size.x
-    
+
     R = 0.85 * math.floor(math.min(screenSize.x, screenSize.y) / uiScale) / 2
     DEAD_ZONE = v2(R / 5, 0.95 * R / 0.85)
     CENTER = screenSize * 0.5 / uiScale
@@ -78,6 +80,7 @@ end
 
 local function makeWheel(self)
     return ui.create {
+        name = 'QuickWheel',
         layer = 'Windows',
         type = ui.TYPE.Widget,
         props = {
@@ -155,7 +158,7 @@ function Wheel:show(show, provider)
     self:update()
 end
 
-function Wheel:update ()
+function Wheel:update()
     local wheel = self.ctx.widget
     wheel.layout.props.visible = self.ctx.shown
     if self.ctx.shown then

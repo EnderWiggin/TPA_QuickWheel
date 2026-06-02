@@ -1,3 +1,4 @@
+---@omw-context none
 local PotionTypes = {
     Health = {
         restorehealth = true,

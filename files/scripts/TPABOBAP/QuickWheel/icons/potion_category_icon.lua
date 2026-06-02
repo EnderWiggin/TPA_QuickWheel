@@ -1,3 +1,4 @@
+---@omw-context player
 local core = require('openmw.core')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
@@ -7,7 +8,7 @@ local input = require('openmw.input')
 
 local v2 = util.vector2
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
-local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
+local CategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.category_icon')
 local PotionIcon = require('scripts.TPABOBAP.QuickWheel.icons.potion_icon')
 
 local iconMap = {
@@ -21,9 +22,8 @@ local iconMap = {
     Other = 'icons/TPABOBAP/QuickWheel/category-other.png',
 }
 
----@class PotionCategoryIcon: Icon
----@field name string
-local PotionCategoryIcon = Icon:new()
+---@class PotionCategoryIcon: CategoryIcon
+local PotionCategoryIcon = CategoryIcon:new()
 
 function PotionCategoryIcon:makeElement(p)
     local count = 0
@@ -31,7 +31,7 @@ function PotionCategoryIcon:makeElement(p)
         count = count + v.count
     end
 
-    self.element = ui.create {
+    self.element = {
         name = "wheel_icon",
         type = ui.TYPE.Widget,
         props = {
@@ -68,16 +68,15 @@ function PotionCategoryIcon:makeElement(p)
 end
 
 function PotionCategoryIcon:update(selected)
-    local props = self.element.layout.props
-    local content = self.element.layout.content
+    local props = self.element.props
+    local content = self.element.content
     if selected then
-        props.size = v2(160, 160)
-        content.item_count.props.textSize = 24
+       props.size = v2(160, 160)
+       content.item_count.props.textSize = 24
     else
-        props.size = v2(128, 128)
-        content.item_count.props.textSize = 16
+       props.size = v2(128, 128)
+       content.item_count.props.textSize = 16
     end
-    self.element:update()
 end
 
 --- potions can be nil - uses provider in this case

@@ -56,7 +56,7 @@ function PotionIcon:makeElement(p)
             relativePosition = v2(0.75, 0.75),
             anchor = v2(1, 1),
             text = tostring(item.count),
-            textSize = 14,
+            textSize = 16,
         },
     })
 
@@ -80,10 +80,10 @@ function PotionIcon:update(selected)
     local content = self.element.content
     if selected then
         props.size = v2(96, 96)
-        content.item_count.props.textSize = 21
+        content.item_count.props.textSize = 24
     else
         props.size = v2(64, 64)
-        content.item_count.props.textSize = 14
+        content.item_count.props.textSize = 16
     end
 end
 

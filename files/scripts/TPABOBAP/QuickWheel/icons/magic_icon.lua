@@ -86,7 +86,7 @@ function MagicIcon:makeElement(p)
             relativePosition = v2(1, 1),
             anchor = v2(1, 1),
             text = tostring(count),
-            textSize = 14,
+            textSize = 16,
             visible = not not count
         },
     })
@@ -111,10 +111,12 @@ function MagicIcon:update(selected)
     local content = self.element.layout.content
     if selected then
         props.size = v2(96, 96)
-        content.item_count.props.textSize = 21
+        content.item_count.props.textSize = 24
+        content.item_chance.props.textSize = 24
     else
         props.size = v2(64, 64)
-        content.item_count.props.textSize = 21
+        content.item_count.props.textSize = 16
+        content.item_chance.props.textSize = 16
     end
     self.element:update()
 end

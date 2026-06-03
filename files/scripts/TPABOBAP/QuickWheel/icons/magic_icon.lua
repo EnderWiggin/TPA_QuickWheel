@@ -15,6 +15,10 @@ local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
 local MagicIcon = Icon:new()
 
 local CENTER = v2(0.5, 0.5)
+local ICON_SIZE_NORMAL = v2(64, 64)
+local ICON_SIZE_OVER = v2(96, 96)
+local TEXT_SIZE_NORMAL = 16
+local TEXT_SIZE_OVER = 24
 
 function MagicIcon:makeElement(p)
     local effects
@@ -63,8 +67,8 @@ function MagicIcon:makeElement(p)
             name = "item_icon",
             type = ui.TYPE.Image,
             props = {
-                relativePosition = v2(0.5, 0.5),
-                anchor = v2(0.5, 0.5),
+                relativePosition = CENTER,
+                anchor = CENTER,
                 resource = helpers.createTexture(icon),
                 relativeSize = v2(1, 1),
                 --alpha = 0.5,
@@ -101,7 +105,6 @@ function MagicIcon:makeElement(p)
                 anchor = CENTER,
                 resource = texture,
                 relativeSize = ICON_SZ,
-                --position = v2(0, 0)
             },
         })
     end
@@ -112,7 +115,7 @@ function MagicIcon:makeElement(p)
             relativePosition = v2(1, 1),
             anchor = v2(1, 1),
             text = tostring(count),
-            textSize = 16,
+            textSize = TEXT_SIZE_NORMAL,
             visible = not not count
         },
     })
@@ -124,7 +127,7 @@ function MagicIcon:makeElement(p)
             relativePosition = v2(0, 1),
             anchor = v2(0, 1),
             text = tostring(chance),
-            textSize = 14,
+            textSize = TEXT_SIZE_NORMAL,
             visible = not not chance
         },
     })
@@ -133,9 +136,9 @@ function MagicIcon:makeElement(p)
         name = "wheel_icon",
         type = ui.TYPE.Widget,
         props = {
-            relativePosition = v2(0.5, 0.5),
-            anchor = v2(0.5, 0.5),
-            size = v2(64, 64),
+            relativePosition = CENTER,
+            anchor = CENTER,
+            size = ICON_SIZE_NORMAL,
             position = p
         },
         content = icons
@@ -148,13 +151,13 @@ function MagicIcon:update(selected)
     local props = self.element.props
     local content = self.element.content
     if selected then
-        props.size = v2(96, 96)
-        content.item_count.props.textSize = 24
-        content.item_chance.props.textSize = 24
+        props.size = ICON_SIZE_OVER
+        content.item_count.props.textSize = TEXT_SIZE_OVER
+        content.item_chance.props.textSize = TEXT_SIZE_OVER
     else
-        props.size = v2(64, 64)
-        content.item_count.props.textSize = 16
-        content.item_chance.props.textSize = 16
+        props.size = ICON_SIZE_NORMAL
+        content.item_count.props.textSize = TEXT_SIZE_NORMAL
+        content.item_chance.props.textSize = TEXT_SIZE_NORMAL
     end
 end
 
@@ -173,8 +176,8 @@ function MagicIcon.makeTipForSpell(spell)
     local tip
     if isOK and type(makeMWTip) == 'function' then
         tip = makeMWTip(spell.id)
-        tip.props.anchor = v2(0.5, 0.5)
-        tip.props.relativePosition = v2(0.5, 0.5)
+        tip.props.anchor = CENTER
+        tip.props.relativePosition = CENTER
     else
         --TODO: improve this tooltip
         return helpers.makeTooltip(spell.name)
@@ -188,15 +191,15 @@ function MagicIcon.makeTipForItem(item)
     local isOKIE, makeIETip = pcall(function() return IE and IE.Templates.MAGIC.itemTooltip end)
     if isOKIE and type(makeIETip) == 'function' then
         tip = makeIETip(item, false, IE.getContext())
-        tip.props.anchor = v2(0.5, 0.5)
-        tip.props.relativePosition = v2(0.5, 0.5)
+        tip.props.anchor = CENTER
+        tip.props.relativePosition = CENTER
     else
         local MW = I.MagicWindow
         local isOKMW, makeMWTip = pcall(function() return MW and MW.Templates.MAGIC.itemTooltip end)
         if isOKMW and type(makeMWTip) == 'function' then
             tip = makeMWTip(item)
-            tip.props.anchor = v2(0.5, 0.5)
-            tip.props.relativePosition = v2(0.5, 0.5)
+            tip.props.anchor = CENTER
+            tip.props.relativePosition = CENTER
         else
             --TODO: improve this tooltip
             local record = item.type.record(item.recordId)

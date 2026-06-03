@@ -10,6 +10,11 @@ local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
 ---@class PotionIcon: Icon
 ---@field item table
 local PotionIcon = Icon:new()
+local CENTER = v2(0.5, 0.5)
+local ICON_SIZE_NORMAL = v2(64, 64)
+local ICON_SIZE_OVER = v2(96, 96)
+local TEXT_SIZE_NORMAL = 16
+local TEXT_SIZE_OVER = 24
 
 function PotionIcon:makeElement(p)
     local item = self.item
@@ -20,10 +25,10 @@ function PotionIcon:makeElement(p)
             name = "item_icon",
             type = ui.TYPE.Image,
             props = {
-                relativePosition = v2(0.5, 0.5),
-                anchor = v2(0.5, 0.5),
+                relativePosition = CENTER,
+                anchor = CENTER,
                 resource = helpers.createTexture(record.icon),
-                relativeSize = v2(0.5, 0.5),
+                relativeSize = CENTER,
             },
         }
     }
@@ -56,7 +61,7 @@ function PotionIcon:makeElement(p)
             relativePosition = v2(0.75, 0.75),
             anchor = v2(1, 1),
             text = tostring(item.count),
-            textSize = 16,
+            textSize = TEXT_SIZE_NORMAL,
         },
     })
 
@@ -64,9 +69,9 @@ function PotionIcon:makeElement(p)
         name = "wheel_icon",
         type = ui.TYPE.Widget,
         props = {
-            relativePosition = v2(0.5, 0.5),
-            anchor = v2(0.5, 0.5),
-            size = v2(64, 64),
+            relativePosition = CENTER,
+            anchor = CENTER,
+            size = ICON_SIZE_NORMAL,
             position = p
         },
         content = icons
@@ -79,11 +84,11 @@ function PotionIcon:update(selected)
     local props = self.element.props
     local content = self.element.content
     if selected then
-        props.size = v2(96, 96)
-        content.item_count.props.textSize = 24
+        props.size = ICON_SIZE_OVER
+        content.item_count.props.textSize = TEXT_SIZE_OVER
     else
-        props.size = v2(64, 64)
-        content.item_count.props.textSize = 16
+        props.size = ICON_SIZE_NORMAL
+        content.item_count.props.textSize = TEXT_SIZE_NORMAL
     end
 end
 
@@ -98,15 +103,15 @@ function PotionIcon.makeTipForItem(item)
     isOKIE = false
     if isOKIE and type(makeIETip) == 'function' then
         tip = makeIETip(item, false, IE.getContext())
-        tip.props.anchor = v2(0.5, 0.5)
-        tip.props.relativePosition = v2(0.5, 0.5)
+        tip.props.anchor = CENTER
+        tip.props.relativePosition = CENTER
     else
         local MW = I.MagicWindow
         local isOKMW, makeMWTip = pcall(function() return MW and MW.Templates.MAGIC.itemTooltip end)
         if isOKMW and type(makeMWTip) == 'function' then
             tip = makeMWTip(item)
-            tip.props.anchor = v2(0.5, 0.5)
-            tip.props.relativePosition = v2(0.5, 0.5)
+            tip.props.anchor = CENTER
+            tip.props.relativePosition = CENTER
         else
             --TODO: improve this tooltip
             local record = self.item.type.record(self.item.recordId)

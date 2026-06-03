@@ -21,6 +21,11 @@ local iconMap = {
     Buffs = 'icons/TPABOBAP/QuickWheel/category-buff.png',
     Other = 'icons/TPABOBAP/QuickWheel/category-other.png',
 }
+local CENTER = v2(0.5, 0.5)
+local ICON_SIZE_NORMAL = v2(128, 128)
+local ICON_SIZE_OVER = v2(160, 160)
+local TEXT_SIZE_NORMAL = 16
+local TEXT_SIZE_OVER = 24
 
 ---@class PotionCategoryIcon: CategoryIcon
 local PotionCategoryIcon = CategoryIcon:new()
@@ -35,9 +40,9 @@ function PotionCategoryIcon:makeElement(p)
         name = "wheel_icon",
         type = ui.TYPE.Widget,
         props = {
-            relativePosition = v2(0.5, 0.5),
-            anchor = v2(0.5, 0.5),
-            size = v2(128, 128),
+            relativePosition = CENTER,
+            anchor = CENTER,
+            size = ICON_SIZE_NORMAL,
             position = p
         },
         content = ui.content {
@@ -45,10 +50,10 @@ function PotionCategoryIcon:makeElement(p)
                 name = "item_icon",
                 type = ui.TYPE.Image,
                 props = {
-                    relativePosition = v2(0.5, 0.5),
-                    anchor = v2(0.5, 0.5),
+                    relativePosition = CENTER,
+                    anchor = CENTER,
                     resource = helpers.createTexture(iconMap[self.name]),
-                    relativeSize = v2(0.5, 0.5),
+                    relativeSize = CENTER,
                 },
             },
             {
@@ -58,7 +63,7 @@ function PotionCategoryIcon:makeElement(p)
                     relativePosition = v2(0.8, 0.85),
                     anchor = v2(1, 1),
                     text = tostring(count),
-                    textSize = 16,
+                    textSize = TEXT_SIZE_NORMAL,
                 },
             }
         }
@@ -71,11 +76,11 @@ function PotionCategoryIcon:update(selected)
     local props = self.element.props
     local content = self.element.content
     if selected then
-       props.size = v2(160, 160)
-       content.item_count.props.textSize = 24
+       props.size = ICON_SIZE_OVER
+       content.item_count.props.textSize = TEXT_SIZE_OVER
     else
-       props.size = v2(128, 128)
-       content.item_count.props.textSize = 16
+       props.size = ICON_SIZE_NORMAL
+       content.item_count.props.textSize = TEXT_SIZE_NORMAL
     end
 end
 

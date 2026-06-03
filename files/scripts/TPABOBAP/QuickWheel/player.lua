@@ -4,6 +4,8 @@ local core = require('openmw.core')
 local input = require('openmw.input')
 local types = require('openmw.types')
 local omwself = require('openmw.self')
+local ui = require('openmw.ui')
+local util = require('openmw.util')
 local async = require('openmw.async')
 local auxUtil = require('openmw_aux.util')
 
@@ -136,12 +138,158 @@ local function getPotionCategories()
     }
 end
 
-local function activateMagic(icon)
-    if icon.spell then
-        omwself.type.setSelectedSpell(omwself, icon.spell)
-    elseif icon.item then
-        omwself.type.setSelectedEnchantedItem(omwself, icon.item)
+local QuickCaster = {}
+local QuickCastQueue = {}
+local isQuickCasting = false
+
+---@param cast {item:openmw.Object, spell:openmw.core.Spell, id: string, ignoreUIMode: boolean}
+QuickCaster.quickCast = function(cast)
+    local OSSC = I.OSSC
+    local useOSSC = false --TODO: add option to use OSSC if available
+    if useOSSC then
+        OSSC.triggerQuickCast(cast)
+        --if cast.item then cast.item = cast.item.id end
+        --if cast.spell then cast.spell = cast.spell.id end
+        --omwself:sendEvent('OSSC_QuickCast', cast)
+        isQuickCasting = true
+    elseif I.MagExp_Player then
+        if QuickCaster.isCastSuccessful(cast) then
+            isQuickCasting = true
+            core.sendGlobalEvent('MagExp_CastRequest', {
+                attacker  = omwself,
+                spellId   = cast.spell and cast.spell.id or cast.item.type.record(cast.item).enchant,
+                startPos  = omwself.position + util.vector3(0, 0, 120),
+                direction = omwself.rotation * util.vector3(0, 1, 0),
+                item      = cast.item
+            })
+            -- omwself:sendEvent('MagExp_StartQuickCast', {
+            --     spellId = cast.spell and cast.spell.id or cast.item.type.record(cast.item).enchant,
+            --     item    = cast.item,
+            --     isFree  = false,
+            -- })
+
+            --TODO: add setting for quick cast delay
+            async:newUnsavableSimulationTimer(0.85, function()
+                QuickCaster.CastingState({ isCasting = false })
+            end)
+        else
+            if cast.spell and I.MagExp_Player and I.MagExp_Player.consumeSpellCost then
+                I.MagExp_Player.consumeSpellCost(cast.spell.id, nil)
+            end
+            ui.showMessage(core.getGMST('sMagicSkillFail'))
+            --TODO: add sound variety based on spell school
+            pcall(function() core.sound.playSound3d("spell failure illusion", omwself) end)
+        end
     end
+end
+
+QuickCaster.isCasting = function()
+    return isQuickCasting or I.OSSC and I.OSSC.isCasting()
+end
+
+---@param evt {isCasting: boolean, delay?:number}
+QuickCaster.CastingState = function(evt)
+    local canCast = evt and not evt.isCasting
+    isQuickCasting = not canCast
+    if canCast and #QuickCastQueue > 0 then
+        table.remove(QuickCastQueue, 1)
+        if #QuickCastQueue > 0 then
+            local cast = QuickCastQueue[1]
+            isQuickCasting = true
+            if not evt.delay or evt.delay <= 0 then
+                QuickCaster.quickCast(cast)
+            else
+                async:newUnsavableSimulationTimer(evt.delay, function()
+                    QuickCaster.quickCast(cast)
+                end)
+            end
+        end
+    end
+end
+
+---@param cast {item:openmw.Object, spell:openmw.core.Spell, id: string, ignoreUIMode: boolean}
+QuickCaster.isCastSuccessful = function(cast)
+    local mwHelpersOk, mwHelpers = pcall(require, 'scripts.MagicWindowExtender.util.helpers')
+
+    if not mwHelpersOk or not mwHelpers then return true end
+    if cast.spell then
+        local chance = mwHelpers.getSpellCastChance(cast.spell.id)
+        if chance <= 0 then
+            return false
+        elseif chance >= 100 then
+            return true
+        else
+            return math.random(0, 99) < chance
+        end
+    elseif cast.item then
+        return true
+    else
+        return false
+    end
+end
+
+---@param icon MagicIcon
+local function activateMagic(icon)
+    --TODO: add widget with casting queue
+    --TODO: add options to change default behaviors
+    local justEquip = input.isAltPressed()
+    local enqueue = input.isShiftPressed()
+    local quickCast = input.isCtrlPressed()
+    local useQuickCast = not justEquip and I.MagExp_Player and (enqueue or quickCast)
+
+    if useQuickCast then
+        local data = { ignoreUIMode = true, item = icon.item, spell = icon.spell, id = icon:tipId() }
+        if quickCast then
+            I.UI.setMode()
+            QuickCastQueue = {}
+        end
+
+        if not QuickCaster.isCasting() then
+            QuickCastQueue = { data }
+            QuickCaster.quickCast(data)
+        elseif enqueue then
+            table.insert(QuickCastQueue, data)
+        end
+    else
+        QuickCastQueue = {}
+        I.UI.setMode()
+        if icon.spell then
+            omwself.type.setSelectedSpell(omwself, icon.spell)
+        elseif icon.item then
+            omwself.type.setSelectedEnchantedItem(omwself, icon.item)
+        end
+        if not justEquip then
+            omwself.type.setStance(omwself, types.Actor.STANCE.Spell)
+        end
+    end
+end
+
+local function getMagicItemCountAdjustedByQueue(item)
+    local count = item.count
+    local enchantId = item.type.record(item).enchant
+    local enchant = enchantId and core.magic.enchantments.records[enchantId]
+    if enchant == nil then return count end
+    if enchant.type == core.magic.ENCHANTMENT_TYPE.CastOnce then
+        --do noting - base count already calculated
+    elseif enchant.type == core.magic.ENCHANTMENT_TYPE.CastOnUse then
+        local mwHelpersOk, mwHelpers = pcall(require, 'scripts.MagicWindowExtender.util.helpers')
+        if mwHelpersOk and mwHelpers then
+            local itemData = item.type.itemData(item)
+            local charge = itemData.enchantmentCharge or 0
+            count = math.floor(charge / mwHelpers.getModifiedSpellCost(enchantId, true))
+        else
+            return count
+        end
+    else
+        return count
+    end
+
+    for _, d in ipairs(QuickCastQueue) do
+        if d.item and d.item.id == item.id then
+            count = count - 1
+        end
+    end
+    return count
 end
 
 local function isSpellOfType(effects, type)
@@ -181,7 +329,6 @@ local function otherSpellsFilter(effects)
 end
 
 local function findMagics(filter)
-
     local pinned
     local hidden
 
@@ -231,12 +378,12 @@ local function findMagics(filter)
     local magicItems = auxUtil.mapFilter(omwself.type.inventory(omwself):getAll(), function(item)
         local enchantId = item.type.record(item).enchant
         local enchant = enchantId and core.magic.enchantments.records[enchantId]
-        return enchant ~= nil and enchant.type ~= core.magic.ENCHANTMENT_TYPE.ConstantEffect and enchant.type ~= core.magic.ENCHANTMENT_TYPE.CastOnStrike
+        return enchant ~= nil and enchant.type ~= core.magic.ENCHANTMENT_TYPE.ConstantEffect and
+            enchant.type ~= core.magic.ENCHANTMENT_TYPE.CastOnStrike
     end)
 
     for _, item in ipairs(magicItems) do
-
-        if not hidden[item.id] then
+        if not hidden[item.id] and getMagicItemCountAdjustedByQueue(item) > 0 then
             local enchantId = item.type.record(item).enchant
             local enchant = enchantId and core.magic.enchantments.records[enchantId]
             if filter(enchant.effects) then
@@ -287,7 +434,11 @@ local function makeMagicIcons(magics)
     local result = {}
 
     for _, v in ipairs(magics) do
-        table.insert(result, MagicIcon:new({ spell = v.spell, item = v.item, activate = activateMagic }))
+        local data = { spell = v.spell, item = v.item, activate = activateMagic }
+        if v.item then
+            data.custom_count = getMagicItemCountAdjustedByQueue(v.item)
+        end
+        table.insert(result, MagicIcon:new(data))
     end
 
     return result
@@ -375,7 +526,8 @@ local function onUpdate(dt)
     local wasModifiers = lastModifiers
     local wasMode = lastUIMode
     lastUIMode = I.UI.getMode()
-    lastModifiers = tostring(input.isShiftPressed()) .. ':' .. tostring(input.isCtrlPressed()) .. ':' .. tostring(input.isAltPressed())
+    lastModifiers = tostring(input.isShiftPressed()) ..
+        ':' .. tostring(input.isCtrlPressed()) .. ':' .. tostring(input.isAltPressed())
     if isWheelModeOn then
         if wasMode ~= lastUIMode then
             if wasMode == I.UI.MODE.Interface and lastUIMode ~= I.UI.MODE.Interface then
@@ -460,10 +612,17 @@ return {
         IE_Update = function()
             wheel:markDirty()
         end,
-        QW_UpdateWheelState = function()
-            if wheel.ctx.shown then
-                wheel:markDirty()
+        QW_UpdateWheelState = function(data)
+            if not data then
+                if wheel.ctx.shown then
+                    wheel:markDirty()
+                end
+            else
+                setWheelMode(data.wheelState, data.wheelMode)
             end
+        end,
+        OSSC_CastingState = function(evt)
+            QuickCaster.CastingState({ isCasting = evt and evt.isCasting, delay = 0.3 })
         end,
     },
 }

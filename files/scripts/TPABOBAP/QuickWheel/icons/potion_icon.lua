@@ -114,7 +114,7 @@ function PotionIcon.makeTipForItem(item)
             tip.props.relativePosition = CENTER
         else
             --TODO: improve this tooltip
-            local record = self.item.type.record(self.item.recordId)
+            local record = item.type.record(item.recordId)
             return helpers.makeTooltip(record.name)
         end
     end

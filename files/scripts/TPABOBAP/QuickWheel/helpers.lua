@@ -199,6 +199,7 @@ Helpers.categorizeMagicEffectWithParams = function(effectParams)
         effect = I.MagicWindow.Spells.getCustomEffect(effectParams.id)
         if not effect then
             --fill with defaults
+            ---@diagnostic disable-next-line: missing-fields
             effect = { harmful = false }
         end
         isCustom = true

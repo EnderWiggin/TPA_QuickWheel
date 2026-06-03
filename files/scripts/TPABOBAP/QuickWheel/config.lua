@@ -1,3 +1,5 @@
+---@omw-context player
+
 local async = require('openmw.async')
 local storage = require('openmw.storage')
 

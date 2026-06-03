@@ -522,7 +522,7 @@ local function setWheelMode(isOn, mode)
     core.sendGlobalEvent('QW_UpdateWheelState', { state = isWheelModeOn, scale = C.getTimeScale(config.main.s_TimeMode) })
 end
 
-local function onUpdate(dt)
+local function onUpdate()
     local wasModifiers = lastModifiers
     local wasMode = lastUIMode
     lastUIMode = I.UI.getMode()

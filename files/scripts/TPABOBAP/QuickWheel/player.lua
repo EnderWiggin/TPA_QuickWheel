@@ -151,7 +151,7 @@ local function isSpellOfType(effects, type)
         if type == C.SpellCategories.Combat then
             if etype == 'Combat' then return true end
         elseif type == C.SpellCategories.Restore then
-            if etype == 'Restore' then return true end
+            if etype == 'Restore' or etype == 'Cure' then return true end
         elseif type == C.SpellCategories.Damage then
             if etype == 'Damage' then return true end
         elseif type == C.SpellCategories.Debuff then
@@ -160,8 +160,6 @@ local function isSpellOfType(effects, type)
             if etype == 'Util' then return true end
         elseif type == C.SpellCategories.Buff then
             if etype == 'Buff' then return true end
-        elseif type == C.SpellCategories.Cure then
-            if etype == 'Cure' then return true end
         elseif type == C.SpellCategories.Transport then
             if etype == 'Transport' then return true end
         elseif type == C.SpellCategories.Control then
@@ -311,13 +309,12 @@ local function getSpellCategories()
         SpellCategoryIcon:new({ name = C.SpellCategories.Damage, activate = openSpellCategory, provider = spellCategoryProvider }),
         SpellCategoryIcon:new({ name = C.SpellCategories.Combat, activate = openSpellCategory, provider = spellCategoryProvider }),
         SpellCategoryIcon:new({ name = C.SpellCategories.Debuff, activate = openSpellCategory, provider = spellCategoryProvider }),
-        SpellCategoryIcon:new({ name = C.SpellCategories.Util, activate = openSpellCategory, provider = spellCategoryProvider }),
-        SpellCategoryIcon:new({ name = C.SpellCategories.Other, activate = openSpellCategory, provider = spellCategoryProvider }),
-        SpellCategoryIcon:new({ name = C.SpellCategories.Buff, activate = openSpellCategory, provider = spellCategoryProvider }),
-        SpellCategoryIcon:new({ name = C.SpellCategories.Cure, activate = openSpellCategory, provider = spellCategoryProvider }),
-        SpellCategoryIcon:new({ name = C.SpellCategories.Summon, activate = openSpellCategory, provider = spellCategoryProvider }),
-        SpellCategoryIcon:new({ name = C.SpellCategories.Transport, activate = openSpellCategory, provider = spellCategoryProvider }),
         SpellCategoryIcon:new({ name = C.SpellCategories.Control, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Summon, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Other, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Util, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Transport, activate = openSpellCategory, provider = spellCategoryProvider }),
+        SpellCategoryIcon:new({ name = C.SpellCategories.Buff, activate = openSpellCategory, provider = spellCategoryProvider }),
         SpellCategoryIcon:new({ name = C.SpellCategories.Restore, activate = openSpellCategory, provider = spellCategoryProvider }),
     }
 end

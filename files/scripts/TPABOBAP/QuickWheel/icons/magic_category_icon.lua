@@ -13,17 +13,16 @@ local PotionIcon = require('scripts.TPABOBAP.QuickWheel.icons.potion_icon')
 
 local UNKNOWN = 'icons/TPABOBAP/QuickWheel/magic-spell.png'
 local iconMap = {
-    Restore = nil,
-    Util = nil,
-    Debuff = nil,
-    Damage = nil,
-    Cure = nil,
-    Combat = nil,
-    Buff = nil,
+    Restore = 'icons/TPABOBAP/QuickWheel/magic-category-restore.png',
+    Util = 'icons/TPABOBAP/QuickWheel/magic-category-util.png',
+    Debuff = 'icons/TPABOBAP/QuickWheel/magic-category-debuff.png',
+    Damage = 'icons/TPABOBAP/QuickWheel/magic-category-damage.png',
+    Combat ='icons/TPABOBAP/QuickWheel/magic-category-combat.png',
+    Buff = 'icons/TPABOBAP/QuickWheel/magic-category-buff.png',
     Other = nil,
-    Transport = nil,
-    Control = nil,
-    Summon = nil,
+    Transport = 'icons/TPABOBAP/QuickWheel/magic-category-travel.png',
+    Control = 'icons/TPABOBAP/QuickWheel/magic-category-control.png',
+    Summon = 'icons/TPABOBAP/QuickWheel/magic-category-summon.png',
 }
 
 ---@class SpellCategoryIcon: CategoryIcon

@@ -107,8 +107,8 @@ function MagicIcon:makeElement(p)
 end
 
 function MagicIcon:update(selected)
-    local props = self.element.layout.props
-    local content = self.element.layout.content
+    local props = self.element.props
+    local content = self.element.content
     if selected then
         props.size = v2(96, 96)
         content.item_count.props.textSize = 24
@@ -118,7 +118,6 @@ function MagicIcon:update(selected)
         content.item_count.props.textSize = 16
         content.item_chance.props.textSize = 16
     end
-    self.element:update()
 end
 
 function MagicIcon:makeTip()
@@ -162,7 +161,7 @@ function MagicIcon.makeTipForItem(item)
             tip.props.relativePosition = v2(0.5, 0.5)
         else
             --TODO: improve this tooltip
-            local record = self.item.type.record(self.item.recordId)
+            local record = item.type.record(item.recordId)
             return helpers.makeTooltip(record.name)
         end
     end

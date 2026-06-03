@@ -15,28 +15,42 @@ local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
 local MagicIcon = Icon:new()
 
 local CENTER = v2(0.5, 0.5)
-local SIDE = 0.25
-local ICON_SZ = v2(SIDE, SIDE)
 
 function MagicIcon:makeElement(p)
     local effects
     local icon
     local count
+    local chance
+    local mwHelpersOk, mwHelpers = pcall(require, 'scripts.MagicWindowExtender.util.helpers')
 
     if self.spell then
         effects = self.spell.effects
-        --TODO: add spell cost and/or chance to count?
         icon = 'icons/TPABOBAP/QuickWheel/magic-spell.png'
+        if mwHelpersOk and mwHelpers then
+            local cost = util.round(mwHelpers.getModifiedSpellCost(self.spell.id, false))
+            count = '#7AAFFF' .. tostring(cost)
+            chance = mwHelpers.getSpellCastChance(self.spell.id)
+            if chance >= 100 then
+                chance = nil
+            else
+                chance = '#64fad0' .. tostring(chance) .. '%'
+            end
+        end
     elseif self.item then
         local record = self.item.type.record(self.item.recordId)
         local enchantId = record.enchant
         local enchant = enchantId and core.magic.enchantments.records[enchantId]
         effects = enchant.effects
         icon = record.icon
-
-        if enchant.type == core.magic.ENCHANTMENT_TYPE.CastOnce then
-            count = tostring(self.item.count)
-        else
+        if self.custom_count then
+            count = self.custom_count
+        elseif enchant.type == core.magic.ENCHANTMENT_TYPE.CastOnce then
+            count = self.item.count
+        elseif mwHelpersOk and mwHelpers then
+            local itemData = self.item.type.itemData(self.item)
+            local charge = itemData.enchantmentCharge or 0
+            local cost = util.round(mwHelpers.getModifiedSpellCost(enchantId, true))
+            count = math.floor(charge / cost)
         end
     end
 
@@ -62,6 +76,18 @@ function MagicIcon:makeElement(p)
     local n = #effects
     local ny = util.round(math.sqrt(n))
     local nx = math.ceil(n / ny) - 1
+
+    local SIDE = 0.25
+    if n < 2 then
+        SIDE = 0.5
+    elseif n <= 4 then
+        SIDE = 0.4
+    elseif n <= 9 then
+        SIDE = 0.3
+    end
+
+    local ICON_SZ = v2(SIDE, SIDE)
+
     local c = CENTER - v2(nx / 2, (ny - 1) / 2) * SIDE
 
     for i, effect in ipairs(effects) do
@@ -91,7 +117,19 @@ function MagicIcon:makeElement(p)
         },
     })
 
-    self.element = ui.create {
+    icons:add({
+        name = 'item_chance',
+        template = mwui.templates.textNormal,
+        props = {
+            relativePosition = v2(0, 1),
+            anchor = v2(0, 1),
+            text = tostring(chance),
+            textSize = 14,
+            visible = not not chance
+        },
+    })
+
+    self.element = {
         name = "wheel_icon",
         type = ui.TYPE.Widget,
         props = {

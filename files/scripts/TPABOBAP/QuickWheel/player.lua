@@ -142,7 +142,9 @@ local QuickCaster = {}
 local QuickCastQueue = {}
 local isQuickCasting = false
 
----@param cast {item:openmw.Object, spell:openmw.core.Spell, id: string, ignoreUIMode: boolean}
+---@alias CastInfo {item:openmw.Object, spell:openmw.core.Spell, id: string, ignoreUIMode: boolean}
+
+---@param cast CastInfo
 QuickCaster.quickCast = function(cast)
     local OSSC = I.OSSC
     local useOSSC = false --TODO: add option to use OSSC if available
@@ -153,36 +155,47 @@ QuickCaster.quickCast = function(cast)
         --omwself:sendEvent('OSSC_QuickCast', cast)
         isQuickCasting = true
     elseif I.MagExp_Player then
-        if QuickCaster.isCastSuccessful(cast) then
-            isQuickCasting = true
-            core.sendGlobalEvent('MagExp_CastRequest', {
-                attacker  = omwself,
-                spellId   = cast.spell and cast.spell.id or cast.item.type.record(cast.item).enchant,
-                startPos  = omwself.position + util.vector3(0, 0, 120),
-                direction = omwself.rotation * util.vector3(0, 1, 0),
-                item      = cast.item
-            })
-            -- omwself:sendEvent('MagExp_StartQuickCast', {
-            --     spellId = cast.spell and cast.spell.id or cast.item.type.record(cast.item).enchant,
-            --     item    = cast.item,
-            --     isFree  = false,
-            -- })
-
-            --TODO: add setting for quick cast delay
-            async:newUnsavableSimulationTimer(0.85, function()
-                QuickCaster.CastingState({ isCasting = false })
-            end)
-        else
-            if cast.spell and I.MagExp_Player and I.MagExp_Player.consumeSpellCost then
-                I.MagExp_Player.consumeSpellCost(cast.spell.id, nil)
-            end
-            ui.showMessage(core.getGMST('sMagicSkillFail'))
-            --TODO: add sound variety based on spell school
-            pcall(function() core.sound.playSound3d("spell failure illusion", omwself) end)
-        end
+        --TODO: add setting for quick cast delay
+        isQuickCasting = true
+        async:newUnsavableSimulationTimer(0.35, function()
+            QuickCaster.castUsingSF(cast)
+        end)
     end
 end
 
+---@param cast CastInfo
+QuickCaster.castUsingSF = function(cast)
+    if QuickCaster.isCastSuccessful(cast) then
+        isQuickCasting = true
+        core.sendGlobalEvent('MagExp_CastRequest', {
+            attacker  = omwself,
+            spellId   = cast.spell and cast.spell.id or cast.item.type.record(cast.item).enchant,
+            startPos  = omwself.position + util.vector3(0, 0, 120),
+            direction = omwself.rotation * util.vector3(0, 1, 0),
+            item      = cast.item
+        })
+        -- omwself:sendEvent('MagExp_StartQuickCast', {
+        --     spellId = cast.spell and cast.spell.id or cast.item.type.record(cast.item).enchant,
+        --     item    = cast.item,
+        --     isFree  = false,
+        -- })
+
+        --TODO: add setting for quick cast delay
+        async:newUnsavableSimulationTimer(0.95, function()
+            QuickCaster.CastingState({ isCasting = false })
+        end)
+    else
+        isQuickCasting = false
+        if cast.spell and I.MagExp_Player and I.MagExp_Player.consumeSpellCost then
+            I.MagExp_Player.consumeSpellCost(cast.spell.id, nil)
+        end
+        ui.showMessage(core.getGMST('sMagicSkillFail'))
+        --TODO: add sound variety based on spell school
+        pcall(function() core.sound.playSound3d("spell failure illusion", omwself) end)
+    end
+end
+
+---@return boolean
 QuickCaster.isCasting = function()
     return isQuickCasting or I.OSSC and I.OSSC.isCasting()
 end
@@ -207,7 +220,7 @@ QuickCaster.CastingState = function(evt)
     end
 end
 
----@param cast {item:openmw.Object, spell:openmw.core.Spell, id: string, ignoreUIMode: boolean}
+---@param cast CastInfo
 QuickCaster.isCastSuccessful = function(cast)
     local mwHelpersOk, mwHelpers = pcall(require, 'scripts.MagicWindowExtender.util.helpers')
 
@@ -238,6 +251,7 @@ local function activateMagic(icon)
     local useQuickCast = not justEquip and I.MagExp_Player and (enqueue or quickCast)
 
     if useQuickCast then
+        ---@type CastInfo
         local data = { ignoreUIMode = true, item = icon.item, spell = icon.spell, id = icon:tipId() }
         if quickCast then
             I.UI.setMode()

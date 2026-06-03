@@ -77,10 +77,10 @@ function PotionCategoryIcon:update(selected)
     local content = self.element.content
     if selected then
        props.size = ICON_SIZE_OVER
-       content.item_count.props.textSize = TEXT_SIZE_OVER
+       content['item_count'].props.textSize = TEXT_SIZE_OVER
     else
        props.size = ICON_SIZE_NORMAL
-       content.item_count.props.textSize = TEXT_SIZE_NORMAL
+       content['item_count'].props.textSize = TEXT_SIZE_NORMAL
     end
 end
 

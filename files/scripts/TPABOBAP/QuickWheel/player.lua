@@ -148,7 +148,7 @@ local isQuickCasting = false
 QuickCaster.quickCast = function(cast)
     local OSSC = I.OSSC
     local useOSSC = false --TODO: add option to use OSSC if available
-    if useOSSC then
+    if useOSSC and OSSC then
         OSSC.triggerQuickCast(cast)
         --if cast.item then cast.item = cast.item.id end
         --if cast.spell then cast.spell = cast.spell.id end
@@ -195,7 +195,7 @@ QuickCaster.castUsingSF = function(cast)
     end
 end
 
----@return boolean
+---@return boolean?
 QuickCaster.isCasting = function()
     return isQuickCasting or I.OSSC and I.OSSC.isCasting()
 end

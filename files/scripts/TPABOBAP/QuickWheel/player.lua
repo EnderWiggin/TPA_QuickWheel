@@ -584,6 +584,7 @@ local function setWheelMode(isOn, mode)
 end
 
 local function onUpdate()
+    if core.isWorldPaused() then return end
     local wasModifiers = lastModifiers
     local wasMode = lastUIMode
     lastUIMode = I.UI.getMode()

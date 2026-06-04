@@ -41,16 +41,30 @@ SettingNoUnknownCategoryDesc: If turned on, unknown effects will not be checked 
 SettingsMagicName: Magic Settings
 SettingsMagicNameDesc: |-
   Hold ALT to just equip spell without readying.
-  Hold CTRL to cast spell without equipping. Requires Spell Framework.
-  Hold SHIFT to queue spell to be cast without equipping or closing the wheel. Requires Spell Framework.
+
+  Hold CTRL to cast spell without equipping.
+  Requires Spell Framework.
+
+  Hold SHIFT to queue spell to be cast without equipping or closing the wheel.
+  Requires Spell Framework.
+
 
 SettingMagicClickMode: Magic Default Action
 SettingMagicClickModeDesc: |-
   What should happen when you click on a spell or magic item?
+
   Ready - spell is equipped and magic stance readied, wheel closes.
-  Equip - spell is equipped, but not readied. ALT-click readies spell.
-  Quick Cast - spell is cast, wheel is closed. CTRL readies spell. Requires Spell Framework.
-  Enqueue - spell is queued to be cast, wheel is not closed, can click on other spells to queue them to. SHIFT readies spell. Requires Spell Framework.
+
+  Equip - spell is equipped, but not readied.
+  ALT-click readies spell.
+
+  Cast - spell is cast, wheel is closed.
+  CTRL readies spell.
+  Requires Spell Framework.
+
+  Queue - spell is queued to be cast, wheel is not closed, can click on other spells to queue them.
+  SHIFT readies spell.
+  Requires Spell Framework.
 
 SettingMagicClickModeReady: Ready
 SettingMagicClickModeEquip: Equip

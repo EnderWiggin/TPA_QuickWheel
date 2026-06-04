@@ -216,4 +216,29 @@ Helpers.categorizeMagicEffectWithParams = function(effectParams)
     return result
 end
 
+
+---@param cast CastInfo
+Helpers.hasTouchEffects = function(cast)
+    ---@type openmw.core.MagicEffectWithParams[]
+    local effects
+
+    if cast.spell then
+        effects = cast.spell.effects
+    elseif cast.item then
+        local record = cast.item.type.record(cast.item.recordId)
+        local enchant = record.enchant and core.magic.enchantments.records[record.enchant]
+        effects = enchant and enchant.effects
+    end
+
+    if not effects then return false end
+
+    for _, e in ipairs(effects) do
+        if e.range == core.magic.RANGE.Touch then
+            return true
+        end
+    end
+
+    return false
+end
+
 return Helpers

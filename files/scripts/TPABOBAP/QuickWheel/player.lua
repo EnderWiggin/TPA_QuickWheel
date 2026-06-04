@@ -7,6 +7,8 @@ local omwself = require('openmw.self')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
 local async = require('openmw.async')
+local camera  = require('openmw.camera')
+local nearby  = require('openmw.nearby')
 local auxUtil = require('openmw_aux.util')
 
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
@@ -166,14 +168,29 @@ end
 ---@param cast CastInfo
 QuickCaster.castUsingSF = function(cast)
     if QuickCaster.isCastSuccessful(cast) then
-        isQuickCasting = true
+        isQuickCasting  = true
+
+        local hitObject
+        if helpers.hasTouchEffects(cast) then
+            local pitch     = -(camera.getPitch() + camera.getExtraPitch())
+            local yaw       = camera.getYaw() + camera.getExtraYaw()
+            local cosPitch  = math.cos(pitch)
+            local cameraDir = util.vector3(cosPitch * math.sin(yaw), cosPitch * math.cos(yaw), math.sin(pitch))
+            local cameraPos = camera.getPosition()
+            local endPos    = cameraPos + cameraDir * (2 * C.TouchRange)
+            local ray       = nearby.castRay(cameraPos, endPos, { ignore = omwself })
+            if ray.hit and ray.hitObject and (ray.hitPos - omwself.position):length() <= C.TouchRange then
+                hitObject = ray.hitObject
+            end
+        end
         core.sendGlobalEvent('MagExp_CastRequest', {
-            attacker  = omwself,
-            spellId   = cast.spell and cast.spell.id or cast.item.type.record(cast.item).enchant,
-            startPos  = omwself.position + util.vector3(0, 0, 120),
-            direction = omwself.rotation * util.vector3(0, 1, 0),
+            attacker       = omwself,
+            spellId        = cast.spell and cast.spell.id or cast.item.type.record(cast.item).enchant,
+            startPos       = omwself.position + util.vector3(0, 0, 120),
+            direction      = omwself.rotation * util.vector3(0, 1, 0),
             showAllCastVfx = true,
-            item      = cast.item
+            item           = cast.item,
+            hitObject      = hitObject,
         })
         -- omwself:sendEvent('MagExp_StartQuickCast', {
         --     spellId = cast.spell and cast.spell.id or cast.item.type.record(cast.item).enchant,

@@ -377,4 +377,5 @@ return {
     actionOpenMagicWheel = "TPA_QuickWheel_Open_Magic",
     SpellCategories = SpellCategories,
     MagicClickModes = MagicClickModes,
+    TouchRange = 192, --same as iMaxActivateDist
 }

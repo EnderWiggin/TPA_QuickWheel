@@ -155,9 +155,9 @@ QuickCaster.quickCast = function(cast)
         --omwself:sendEvent('OSSC_QuickCast', cast)
         isQuickCasting = true
     elseif I.MagExp_Player then
-        --TODO: add setting for quick cast delay
         isQuickCasting = true
-        async:newUnsavableSimulationTimer(0.35, function()
+        local delay = config.magic.n_MagicCastDelay or 0.35
+        async:newUnsavableSimulationTimer(delay, function()
             QuickCaster.castUsingSF(cast)
         end)
     end
@@ -172,6 +172,7 @@ QuickCaster.castUsingSF = function(cast)
             spellId   = cast.spell and cast.spell.id or cast.item.type.record(cast.item).enchant,
             startPos  = omwself.position + util.vector3(0, 0, 120),
             direction = omwself.rotation * util.vector3(0, 1, 0),
+            showAllCastVfx = true,
             item      = cast.item
         })
         -- omwself:sendEvent('MagExp_StartQuickCast', {
@@ -180,8 +181,8 @@ QuickCaster.castUsingSF = function(cast)
         --     isFree  = false,
         -- })
 
-        --TODO: add setting for quick cast delay
-        async:newUnsavableSimulationTimer(0.95, function()
+        local cooldown = config.magic.n_MagicCastCooldown or 0.95
+        async:newUnsavableSimulationTimer(cooldown, function()
             QuickCaster.CastingState({ isCasting = false })
         end)
     else

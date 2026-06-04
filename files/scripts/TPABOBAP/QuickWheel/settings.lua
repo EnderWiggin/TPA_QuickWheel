@@ -179,5 +179,27 @@ I.Settings.registerGroup {
                 },
             }
         },
+        {
+            key = 'n_MagicCastDelay',
+            renderer = 'number',
+            name = 'SettingMagicCastDelay',
+            description = 'SettingMagicCastDelayDesc',
+            default = 0.35,
+            argument = {
+                min = 0.1,
+                max = 2,
+            }
+        },
+        {
+            key = 'n_MagicCastCooldown',
+            renderer = 'number',
+            name = 'SettingMagicCastCooldown',
+            description = 'SettingMagicCastCooldownDesc',
+            default = 0.95,
+            argument = {
+                min = 0.2,
+                max = 2,
+            }
+        },
     }
 }

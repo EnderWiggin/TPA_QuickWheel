@@ -57,6 +57,13 @@ SettingMagicClickModeEquip: Equip
 SettingMagicClickModeQCast: Cast
 SettingMagicClickModeQueue: Queue
 
+SettingMagicCastDelay: Magic Cast Delay
+SettingMagicCastDelayDesc: Seconds before magic is cast after clicking on it. Range [0.1 - 2].
+
+SettingMagicCastCooldown: Magic Cast Cooldown
+SettingMagicCastCooldownDesc: Seconds after magic is cast. Added on top of delay for queued spells. Range [0.2 - 2].
+
+
 # ---- Potion Categories ----
 Potion_Category_Title_Health: Healing
 Potion_Category_Desc_Health: |-

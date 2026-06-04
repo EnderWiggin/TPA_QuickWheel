@@ -34,7 +34,6 @@ return function(_, _, args)
                 props = {
                     horizontal = true,
                     arrange = ui.ALIGNMENT.Center,
-                    textAlignV = ui.ALIGNMENT.Center,
                 },
                 content = ui.content {
                     { props = { size = v2(8, 0), }, },
@@ -43,6 +42,7 @@ return function(_, _, args)
                         props = {
                             text = interfaceL10n('Reset'),
                             textColor = TextDefault,
+                            textAlignV = ui.ALIGNMENT.Center,
                         },
                         userData = { colorable = true },
                     },

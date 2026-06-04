@@ -162,7 +162,7 @@ function Wheel:update()
     local wheel = self.ctx.widget
     wheel.layout.props.visible = self.ctx.shown
     if self.ctx.shown then
-        local container = wheel.layout.content.icons.content
+        local container = wheel.layout.content['icons'].content
         helpers.destroyContentChildren(container)
 
         self.ctx.items = type(self.ctx.itemProvider) == 'function' and self.ctx.itemProvider() or {}
@@ -209,7 +209,7 @@ function Wheel:onMouseMove(evt)
     local p = evt.offset - CENTER
     self.ctx.lastOffset = p
     local wheel = self.ctx.widget
-    local container = wheel.layout.content.icons.content
+    local container = wheel.layout.content['icons'].content
     if not container then return end
     local selectedIdx = getSectorIdx(p, #container, DEAD_ZONE)
     self.ctx.selected = selectedIdx
@@ -236,7 +236,7 @@ function Wheel:updateIcons()
     if newTipId ~= tipId then
         self.ctx.tipId = newTipId
         local wheel = self.ctx.widget
-        local place = wheel.layout.content.tooltip
+        local place = wheel.layout.content['tooltip']
 
         helpers.destroyContentChildren(place.content)
 

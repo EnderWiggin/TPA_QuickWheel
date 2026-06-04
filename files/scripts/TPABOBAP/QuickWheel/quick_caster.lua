@@ -64,7 +64,6 @@ local widget = ui.create {
         relativePosition = Positioning.relativePosition,
         anchor = Positioning.anchor,
         visible = false,
-        autoSize = true,
     },
     content = ui.content {
         {

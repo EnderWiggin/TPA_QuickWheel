@@ -1,6 +1,5 @@
 ---@omw-context global
 local world = require("openmw.world")
-local core = require('openmw.core')
 
 local enabled
 
@@ -18,7 +17,6 @@ return {
     },
     engineHandlers = {
         onUpdate = function()
-            if core.isWorldPaused() then return end
             if not enabled then return end
 
             local tags = world.getPausedTags()

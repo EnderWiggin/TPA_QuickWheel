@@ -24,7 +24,7 @@ return function(_, _, args)
     local settings = args.settings
     local section = args.section and storage.playerSection(args.section)
 
-    local element = {
+    local element = ui.create {
         name = 'reset_button',
         template = MWUI.boxSolid,
         props = {},

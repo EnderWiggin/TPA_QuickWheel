@@ -352,6 +352,15 @@ local MagicClickModes= {
     QUEUE = 'SettingMagicClickModeQueue',
 }
 
+---@enum QueueWidgetPosition
+local QueueWidgetPosition = {
+    BOTTOM_LEFT = 'QueueWidgetPositionBottomLeft',
+    BOTTOM_RIGHT = 'QueueWidgetPositionBottomRight',
+    CENTER = 'QueueWidgetPositionCenter',
+    TOP_LEFT = 'QueueWidgetPositionTopLeft',
+    TOP_RIGHT = 'QueueWidgetPositionTopRight',
+}
+
 local getTimeScale = function(mode)
     if mode == TimeModes.Normal then
         return 1
@@ -377,5 +386,6 @@ return {
     actionOpenMagicWheel = "TPA_QuickWheel_Open_Magic",
     SpellCategories = SpellCategories,
     MagicClickModes = MagicClickModes,
+    QueueWidgetPosition = QueueWidgetPosition,
     TouchRange = 192, --same as iMaxActivateDist
 }

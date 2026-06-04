@@ -77,6 +77,15 @@ SettingMagicCastDelayDesc: Seconds before magic is cast after clicking on it. Ra
 SettingMagicCastCooldown: Magic Cast Cooldown
 SettingMagicCastCooldownDesc: Seconds after magic is cast. Added on top of delay for queued spells. Range [0.2 - 2].
 
+SettingMagicShowQueue: Show Queued Spells
+SettingMagicShowQueueDesc: Show a list of currently queued spells.
+SettingMagicQueueWidgetPosition:  Spell Queue Position
+
+QueueWidgetPositionBottomLeft: " Bottom Left "
+QueueWidgetPositionBottomRight: "Bottom Right"
+QueueWidgetPositionCenter: "   Center   "
+QueueWidgetPositionTopLeft: "  Top Left  "
+QueueWidgetPositionTopRight: " Top Right  "
 
 # ---- Potion Categories ----
 Potion_Category_Title_Health: Healing

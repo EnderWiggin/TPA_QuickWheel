@@ -19,35 +19,92 @@ local QuickCaster = {}
 ---@type CastInfo[]
 local QuickCastQueue = {}
 local isQuickCasting = false
+
+---@alias QueuePositioning {relativePosition:openmw.util.Vector2, anchor:openmw.util.Vector2, arrange:openmw.ui.ALIGNMENT, reverse?: boolean}
+
+---@type table<QueueWidgetPosition, QueuePositioning>
+local QueuePositioningTypes = {
+    [C.QueueWidgetPosition.BOTTOM_LEFT] = {
+        relativePosition = v2(0, 0.9),
+        anchor = v2(0, 1),
+        arrange = ui.ALIGNMENT.Start,
+        reverse = true,
+    },
+    [C.QueueWidgetPosition.BOTTOM_RIGHT] = {
+        relativePosition = v2(1, 0.9),
+        anchor = v2(1, 1),
+        arrange = ui.ALIGNMENT.End,
+        reverse = true,
+    },
+    [C.QueueWidgetPosition.CENTER] = {
+        relativePosition = v2(0.5, 0.55),
+        anchor = v2(0.5, 0),
+        arrange = ui.ALIGNMENT.Center,
+    },
+    [C.QueueWidgetPosition.TOP_LEFT] = {
+        relativePosition = v2(0, 0.1),
+        anchor = v2(0, 0),
+        arrange = ui.ALIGNMENT.Start,
+    },
+    [C.QueueWidgetPosition.TOP_RIGHT] = {
+        relativePosition = v2(1, 0.1),
+        anchor = v2(1, 0),
+        arrange = ui.ALIGNMENT.End,
+    },
+}
+
+local lastPositioning = config.magic.s_QueueWidgetPosition or C.QueueWidgetPosition.BOTTOM_LEFT
+local Positioning = QueuePositioningTypes[lastPositioning]
+
 local widget = ui.create {
     name = 'QuickCastQueue',
     layer = 'Windows',
     type = ui.TYPE.Container,
     props = {
-        relativePosition = v2(0, 0.9),
-        anchor = v2(0, 1),
+        relativePosition = Positioning.relativePosition,
+        anchor = Positioning.anchor,
         visible = false,
         autoSize = true,
     },
     content = ui.content {
         {
-            name = 'container',
-            type = ui.TYPE.Flex,
-            props = {
-                position = v2(10, 0),
-                arrange = ui.ALIGNMENT.Start,
-            },
-            content = ui.content {}
+            name = 'padding',
+            template = helpers.padding(10),
+            content = ui.content {
+                {
+                    name = 'container',
+                    type = ui.TYPE.Flex,
+                    props = {
+                        arrange = Positioning.arrange,
+                    },
+                    content = ui.content {}
+                },
+            }
         },
     },
 }
 
 local function updateWidget()
-    ---@type openmw.ui.Content
-    local content = widget.layout.content['container'].content
-    helpers.destroyContentChildren(content)
+    ---@type openmw.ui.Layout
+    local container = widget.layout.content['padding'].content['container']
+    helpers.destroyContentChildren(container.content)
+    local props = widget.layout.props
+    props.visible = config.magic.b_ShowQueueWidget and #QuickCastQueue > 0
+    if not props.visible then
+        widget:update()
+        return
+    end
 
-    widget.layout.props.visible = #QuickCastQueue > 0
+    local current = config.magic.s_QueueWidgetPosition or C.QueueWidgetPosition.BOTTOM_LEFT
+    if current ~= lastPositioning then
+        lastPositioning = current
+        Positioning = QueuePositioningTypes[current]
+
+        props.relativePosition = Positioning.relativePosition
+        props.anchor = Positioning.anchor
+        container.props.arrange = Positioning.arrange
+    end
+
     for i, c in ipairs(QuickCastQueue) do
         local name = c.id
         if c.spell then
@@ -55,7 +112,7 @@ local function updateWidget()
         elseif c.item then
             name = c.item.type.record(c.item.recordId).name
         end
-        content:insert(1, {
+        local item = {
             name = 'element_' .. i,
             type = ui.TYPE.Text,
             template = i == 1 and mwui.templates.textHeader or mwui.templates.textNormal,
@@ -64,7 +121,12 @@ local function updateWidget()
                 text = name,
                 textSize = i == 1 and 24 or 18,
             }
-        })
+        }
+        if Positioning.reverse then
+            container.content:insert(1, item)
+        else
+            container.content:add(item)
+        end
     end
     widget:update()
 end

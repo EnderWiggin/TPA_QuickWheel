@@ -201,5 +201,28 @@ I.Settings.registerGroup {
                 max = 2,
             }
         },
+        {
+            key = 'b_ShowQueueWidget',
+            renderer = 'checkbox',
+            name = 'SettingMagicShowQueue',
+            description = 'SettingMagicShowQueueDesc',
+            default = true,
+        },
+        {
+            key = 's_QueueWidgetPosition',
+            renderer = 'select',
+            name = 'SettingMagicQueueWidgetPosition',
+            default = C.QueueWidgetPosition.BOTTOM_LEFT,
+            argument = {
+                l10n = MODNAME,
+                items = {
+                    C.QueueWidgetPosition.BOTTOM_LEFT,
+                    C.QueueWidgetPosition.BOTTOM_RIGHT,
+                    C.QueueWidgetPosition.CENTER,
+                    C.QueueWidgetPosition.TOP_LEFT,
+                    C.QueueWidgetPosition.TOP_RIGHT,
+                },
+            }
+        },
     }
 }

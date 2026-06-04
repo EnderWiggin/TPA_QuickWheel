@@ -31,7 +31,7 @@ local PotionTypes = C.PotionTypes
 local function isPotionOfType(potion, type)
     local record = potion.type.record(potion.recordId)
     local test = PotionTypes[type]
-    local limit = config.main.b_NoUnknownCategory and helpers.getKnownAlchemyEffectCount(true) or math.huge
+    local limit = config.potions.b_NoUnknownCategory and helpers.getKnownAlchemyEffectCount(true) or math.huge
 
     local valid = false
     for i, effect in ipairs(record.effects) do
@@ -248,9 +248,38 @@ local function activateMagic(icon)
     local justEquip = input.isAltPressed()
     local enqueue = input.isShiftPressed()
     local quickCast = input.isCtrlPressed()
-    local useQuickCast = not justEquip and I.MagExp_Player and (enqueue or quickCast)
 
-    if useQuickCast then
+    local requested = quickCast and 'cast' or enqueue and 'queue' or justEquip and 'regular' or 'none'
+    local clickMode = config.magic.s_MagicClickMode
+
+    if clickMode == C.MagicClickModes.EQUIP then
+        requested = justEquip and 'regular' or requested
+        justEquip = not justEquip
+    elseif clickMode == C.MagicClickModes.QCAST then
+        requested = quickCast and 'regular' or requested
+        quickCast = not quickCast
+        requested = requested == 'none' and quickCast and 'cast' or requested
+    elseif clickMode == C.MagicClickModes.QUEUE then
+        requested = enqueue and 'regular' or requested
+        enqueue = not enqueue
+        requested = requested == 'none' and enqueue and 'queue' or requested
+    end
+
+    local canUseQuickCast = I.MagExp_Player --TODO: add checks for OSSC when relevant?
+    if canUseQuickCast and requested == 'cast' then
+        justEquip = false
+        enqueue = false
+        quickCast = true
+    elseif canUseQuickCast and requested == 'queue' then
+        justEquip = false
+        enqueue = true
+        quickCast = false
+    else
+        enqueue = false
+        quickCast = false
+    end
+
+    if enqueue or quickCast then
         ---@type CastInfo
         local data = { ignoreUIMode = true, item = icon.item, spell = icon.spell, id = icon:tipId() }
         if quickCast then
@@ -393,7 +422,7 @@ local function findMagics(filter)
         local enchantId = item.type.record(item).enchant
         local enchant = enchantId and core.magic.enchantments.records[enchantId]
         return enchant ~= nil and enchant.type ~= core.magic.ENCHANTMENT_TYPE.ConstantEffect and
-            enchant.type ~= core.magic.ENCHANTMENT_TYPE.CastOnStrike
+                enchant.type ~= core.magic.ENCHANTMENT_TYPE.CastOnStrike
     end)
 
     for _, item in ipairs(magicItems) do
@@ -541,7 +570,7 @@ local function onUpdate()
     local wasMode = lastUIMode
     lastUIMode = I.UI.getMode()
     lastModifiers = tostring(input.isShiftPressed()) ..
-        ':' .. tostring(input.isCtrlPressed()) .. ':' .. tostring(input.isAltPressed())
+            ':' .. tostring(input.isCtrlPressed()) .. ':' .. tostring(input.isAltPressed())
     if isWheelModeOn then
         if wasMode ~= lastUIMode then
             if wasMode == I.UI.MODE.Interface and lastUIMode ~= I.UI.MODE.Interface then

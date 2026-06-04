@@ -1,6 +1,7 @@
+# ---- Main Settings ----
 PageName: Quick Wheel
 PageDesc: Quick Wheel for fast and smart use of potions, spells and magic items.
-  
+
 SettingResetKeyBinds: Reset keybinds
 SettingResetKeyBindsDesc: |-
   Removes all keybinds for all types of wheels.
@@ -16,7 +17,7 @@ SettingKeyMode: Key mode
 SettingKeyModeDesc: |-
   Smart - tap to toggle wheel or hold to close on key release. 
   Hold - hold to open, close on key release. 
-  Toggle - tap to toggle wheel. 
+  Toggle - tap to toggle wheel.
 
 SettingKeyModeSmart: Smart
 SettingKeyModeHold: Hold
@@ -30,9 +31,33 @@ SettingTimeModeSlow: Slow
 SettingTimeModeVerySlow: Very Slow
 SettingTimeModePaused: Paused
 
+# ---- Potion Settings ----
+SettingsPotionsName: Potion Settings
+
 SettingNoUnknownCategory: Ignore unknown effects
 SettingNoUnknownCategoryDesc: If turned on, unknown effects will not be checked when filtering potions into categories.
 
+# ---- Magic Settings ----
+SettingsMagicName: Magic Settings
+SettingsMagicNameDesc: |-
+  Hold ALT to just equip spell without readying.
+  Hold CTRL to cast spell without equipping. Requires Spell Framework.
+  Hold SHIFT to queue spell to be cast without equipping or closing the wheel. Requires Spell Framework.
+
+SettingMagicClickMode: Magic Default Action
+SettingMagicClickModeDesc: |-
+  What should happen when you click on a spell or magic item?
+  Ready - spell is equipped and magic stance readied, wheel closes.
+  Equip - spell is equipped, but not readied. ALT-click readies spell.
+  Quick Cast - spell is cast, wheel is closed. CTRL readies spell. Requires Spell Framework.
+  Enqueue - spell is queued to be cast, wheel is not closed, can click on other spells to queue them to. SHIFT readies spell. Requires Spell Framework.
+
+SettingMagicClickModeReady: Ready
+SettingMagicClickModeEquip: Equip
+SettingMagicClickModeQCast: Cast
+SettingMagicClickModeQueue: Queue
+
+# ---- Potion Categories ----
 Potion_Category_Title_Health: Healing
 Potion_Category_Desc_Health: |-
   All health restoring potions.
@@ -61,9 +86,10 @@ Potion_Category_Desc_Buffs: |-
   or grant other positive effects like feather, levitate etc.
 Potion_Category_Title_Other: Other
 Potion_Category_Desc_Other: Potions that didn't fit into any other category.
-  
+
+# ---- Magic Categories ----
 Magic_Category_Title_Damage: Damage
-Magic_Category_Desc_Damage: |- 
+Magic_Category_Desc_Damage: |-
   Magic that deals damage.
 
 Magic_Category_Title_Combat: Combat
@@ -72,7 +98,7 @@ Magic_Category_Desc_Combat: |-
 
 Magic_Category_Title_Debuff: Debuff
 Magic_Category_Desc_Debuff: |-
- Various debuffs, like weaknesses or silence.
+  Various debuffs, like weaknesses or silence.
 
 Magic_Category_Title_Util: Utility
 Magic_Category_Desc_Util: |-

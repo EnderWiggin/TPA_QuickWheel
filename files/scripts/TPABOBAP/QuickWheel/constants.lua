@@ -145,7 +145,7 @@ local MagicEffectTypes = {
         shockdamage = true,
         t_mysticism_banishdae = true, --TR Spells (unofficial) - banish daedra
 
-        spellsword_effect = false, --spellsword mod - imbue weapon with magic
+        spellsword_effect = false,    --spellsword mod - imbue weapon with magic
     },
     Debuff = {
         absorbattribute = true,
@@ -194,7 +194,7 @@ local MagicEffectTypes = {
         shield = true,
         spellabsorption = true,
 
-        nsp_alacrity = true, --nifty spell pack Alacrity (cast speed)
+        nsp_alacrity = true,      --nifty spell pack Alacrity (cast speed)
         spellsword_effect = true, --spellsword mod - imbue weapon with magic
     },
     Buff = {
@@ -233,7 +233,7 @@ local MagicEffectTypes = {
 
 
         t_mysticism_insight = true, --TR Spells (unofficial) - insight - better loot
-        nsp_pocket = true, --nifty spell pack - pocket - extra storage
+        nsp_pocket = true,          --nifty spell pack - pocket - extra storage
     },
     Transport = {
         almsiviintervention = true,
@@ -247,9 +247,9 @@ local MagicEffectTypes = {
         waterbreathing = true,
         waterwalking = true,
 
-        multimark_mark = true, --Daisy Lua Multimark
-        multimark_recall = true, --Daisy Lua Multimark
-        t_mysticism_blink = true, --TR Spells (unofficial) - blink - teleport
+        multimark_mark = true,       --Daisy Lua Multimark
+        multimark_recall = true,     --Daisy Lua Multimark
+        t_mysticism_blink = true,    --TR Spells (unofficial) - blink - teleport
         nsp_wildintervention = true, --nifty spell pack - random teleport
     },
     Cure = {
@@ -318,6 +318,20 @@ local MagicEffectTypes = {
     },
 }
 
+local SpellCategories = {
+    Damage = 'Damage',
+    Combat = 'Combat',
+    Debuff = 'Debuff',
+    Util = 'Util',
+    Other = 'Other',
+    Transport = 'Transport',
+    Control = 'Control',
+    Buff = 'Buff',
+    Cure = 'Cure',
+    Restore = 'Restore',
+    Summon = 'Summon',
+}
+
 local KeyModes = {
     Smart = 'SettingKeyModeSmart',
     Hold = 'SettingKeyModeHold',
@@ -329,6 +343,15 @@ local TimeModes = {
     VerySlow = 'SettingTimeModeVerySlow',
     Paused = 'SettingTimeModePaused',
 }
+
+---@enum MagicClickModes
+local MagicClickModes= {
+    READY = 'SettingMagicClickModeReady',
+    EQUIP = 'SettingMagicClickModeEquip',
+    QCAST = 'SettingMagicClickModeQCast',
+    QUEUE = 'SettingMagicClickModeQueue',
+}
+
 local getTimeScale = function(mode)
     if mode == TimeModes.Normal then
         return 1
@@ -352,17 +375,6 @@ return {
     actionOpenOmniWheel = "TPA_QuickWheel_Open_Omni",
     actionOpenPotionWheel = "TPA_QuickWheel_Open_Potion",
     actionOpenMagicWheel = "TPA_QuickWheel_Open_Magic",
-    SpellCategories = {
-        Damage = 'Damage',
-        Combat = 'Combat',
-        Debuff = 'Debuff',
-        Util = 'Util',
-        Other = 'Other',
-        Transport = 'Transport',
-        Control = 'Control',
-        Buff = 'Buff',
-        Cure = 'Cure',
-        Restore = 'Restore',
-        Summon = 'Summon',
-    },
+    SpellCategories = SpellCategories,
+    MagicClickModes = MagicClickModes,
 }

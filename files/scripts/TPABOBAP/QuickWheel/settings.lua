@@ -1,7 +1,6 @@
 ---@omw-context menu
 local I = require('openmw.interfaces')
 local input = require('openmw.input')
-local core = require('openmw.core')
 
 local MODNAME = 'TPA_QuickWheel'
 local C = require('scripts.TPABOBAP.QuickWheel.constants')
@@ -47,6 +46,7 @@ I.Settings.registerGroup {
     page = MODNAME,
     l10n = MODNAME,
     name = 'SettingsName',
+    order = 1,
     permanentStorage = true,
     settings = {
         {
@@ -133,6 +133,17 @@ I.Settings.registerGroup {
                 },
             }
         },
+    },
+}
+
+I.Settings.registerGroup {
+    key = MODNAME .. '/PotionSettings',
+    page = MODNAME,
+    l10n = MODNAME,
+    name = 'SettingsPotionsName',
+    order = 2,
+    permanentStorage = true,
+    settings = {
         {
             key = 'b_NoUnknownCategory',
             renderer = 'checkbox',
@@ -140,5 +151,33 @@ I.Settings.registerGroup {
             description = 'SettingNoUnknownCategoryDesc',
             default = false,
         },
-    },
+    }
+}
+
+I.Settings.registerGroup {
+    key = MODNAME .. '/MagicSettings',
+    page = MODNAME,
+    l10n = MODNAME,
+    name = 'SettingsMagicName',
+    description = 'SettingsMagicNameDesc',
+    order = 3,
+    permanentStorage = true,
+    settings = {
+        {
+            key = 's_MagicClickMode',
+            renderer = 'select',
+            name = 'SettingMagicClickMode',
+            description = 'SettingMagicClickModeDesc',
+            default = C.MagicClickModes.READY,
+            argument = {
+                l10n = MODNAME,
+                items = {
+                    C.MagicClickModes.READY,
+                    C.MagicClickModes.EQUIP,
+                    C.MagicClickModes.QCAST,
+                    C.MagicClickModes.QUEUE,
+                },
+            }
+        },
+    }
 }

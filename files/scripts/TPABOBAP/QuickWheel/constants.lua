@@ -343,6 +343,12 @@ local TimeModes = {
     VerySlow = 'SettingTimeModeVerySlow',
     Paused = 'SettingTimeModePaused',
 }
+---@enum AlcoholModes
+local AlcoholModes = {
+    Normal = 'SettingAlcoholModeNormal',
+    Show = 'SettingAlcoholModeShow',
+    Move = 'SettingAlcoholModeMove',
+}
 
 ---@enum MagicClickModes
 local MagicClickModes= {
@@ -379,6 +385,7 @@ return {
     MagicEffectTypes = MagicEffectTypes,
     KeyModes = KeyModes,
     TimeModes = TimeModes,
+    AlcoholModes = AlcoholModes,
     getTimeScale = getTimeScale,
     KeyHoldThreshold = 0.35, --- if key is held longer than this in smart mode, assume we want hold variant
     actionOpenOmniWheel = "TPA_QuickWheel_Open_Omni",

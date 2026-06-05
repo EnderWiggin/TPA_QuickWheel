@@ -151,6 +151,35 @@ I.Settings.registerGroup {
             description = 'SettingNoUnknownCategoryDesc',
             default = false,
         },
+        {
+            key = 'b_FilterPoisons',
+            renderer = 'checkbox',
+            name = 'SettingFilterPoisons',
+            description = 'SettingFilterPoisonsDesc',
+            default = true,
+        },
+        {
+            key = 'b_QuickApplyPoison',
+            renderer = 'checkbox',
+            name = 'SettingQuickApplyPoison',
+            description = 'SettingQuickApplyPoisonDesc',
+            default = true,
+        },
+        {
+            key = 's_SeparateAlcohol',
+            renderer = 'select',
+            name = 'SettingSeparateAlcohol',
+            description = 'SettingSeparateAlcoholDesc',
+            default = C.AlcoholModes.Show,
+            argument = {
+                l10n = MODNAME,
+                items = {
+                    C.AlcoholModes.Normal,
+                    C.AlcoholModes.Show,
+                    C.AlcoholModes.Move,
+                },
+            }
+        },
     }
 }
 

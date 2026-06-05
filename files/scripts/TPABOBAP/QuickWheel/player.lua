@@ -30,6 +30,11 @@ local PotionTypes = C.PotionTypes
 local function isPotionOfType(potion, type)
     local record = potion.type.record(potion.recordId)
     local test = PotionTypes[type]
+    if not test then return false end
+    local toxicology = config.potions.s_SeparateAlcohol == C.AlcoholModes.Move and I.Toxicology
+    if toxicology and toxicology.isAlcohol then
+        if toxicology.isAlcohol(potion) then return false end
+    end
     local limit = config.potions.b_NoUnknownCategory and helpers.getKnownAlchemyEffectCount(true) or math.huge
 
     local valid = false
@@ -55,6 +60,23 @@ local function usePotion(icon)
     })
 end
 
+---@function
+---@param icon PotionIcon
+local function usePoison(icon)
+    local potion = icon.item or icon
+    if config.potions.b_QuickApplyPoison and input.isShiftPressed() then
+        core.sendGlobalEvent('Toxicology_ConfirmApply', {
+            actor = omwself.object,
+            potion = potion,
+        })
+    else
+        core.sendGlobalEvent('UseItem', {
+            object = potion,
+            actor = omwself,
+        })
+    end
+end
+
 local function findPotions(filter)
     local inventory = types.Actor.inventory(omwself)
     local pots = inventory:getAll(types.Potion)
@@ -70,11 +92,11 @@ end
 
 ---@function
 ---@return table<number, Icon>
-local function makePotionIcons(potions)
+local function makePotionIcons(potions, useAction)
     ---@type table<number, PotionIcon>
     local result = {}
     for _, v in ipairs(potions) do
-        table.insert(result, PotionIcon:new({ item = v, activate = usePotion }))
+        table.insert(result, PotionIcon:new({ item = v, activate = useAction or usePotion }))
     end
     table.sort(result, function(a, b)
         local ra = a.item.type.record(a.item.recordId)
@@ -94,15 +116,30 @@ local function makePotionIcons(potions)
 end
 
 local function otherPotionFiler(p)
+    local toxicology = config.potions.s_SeparateAlcohol ~= C.AlcoholModes.Normal and I.Toxicology
+    if toxicology and toxicology.isAlcohol then
+        if toxicology.isAlcohol(p) then return true end 
+    end
     for k, _ in pairs(PotionTypes) do
         if isPotionOfType(p, k) then return false end
     end
     return true
 end
 
+local function isPoisonFilter(p)
+    local toxicology = config.potions.b_FilterPoisons and I.Toxicology
+    if toxicology and toxicology.isPoison then  
+        return toxicology.isPoison(p)
+    else
+        return isPotionOfType(p, 'Poison')
+    end
+end
+
 local function potionCategoryProvider(icon)
     if icon.name == 'Other' then
         return findPotions(otherPotionFiler)
+    elseif icon.name == 'Poison' then
+        return findPotions(isPoisonFilter)
     else
         return findPotions(function(p) return isPotionOfType(p, icon.name) end)
     end
@@ -119,7 +156,7 @@ local function openPotionCategory(icon)
         usePotion(quickUse)
     else
         wheel:show(true, function()
-            return makePotionIcons(icon:provider())
+            return makePotionIcons(icon:provider(), icon.name == 'Poison' and usePoison or nil)
         end)
     end
 end

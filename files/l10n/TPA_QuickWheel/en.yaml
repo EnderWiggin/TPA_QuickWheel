@@ -37,6 +37,23 @@ SettingsPotionsName: Potion Settings
 SettingNoUnknownCategory: Ignore unknown effects
 SettingNoUnknownCategoryDesc: If turned on, unknown effects will not be checked when filtering potions into categories.
 
+SettingFilterPoisons: Toxicology! Poison Filter
+SettingFilterPoisonsDesc: Only poisons that Toxicology! mod recognizes will be in poisons category. If Toxicology! is not present does nothing.
+
+SettingQuickApplyPoison: Toxicology! Quick Apply Poison
+SettingQuickApplyPoisonDesc: If Toxicology! is installed holding Shift will apply poison without a prompt.
+
+SettingSeparateAlcohol: Separate Alcoholic Drinks
+SettingSeparateAlcoholDesc: |-
+  If Toxicology! is installed, change how alcohol is categorized:
+  None - alcohol is categorized as any other potion.
+  Show - alcohol is also shown in Other category.
+  Move - alcohol is shown ONLY in Other category.
+
+SettingAlcoholModeNormal: None
+SettingAlcoholModeShow: Show
+SettingAlcoholModeMove: Move
+
 # ---- Magic Settings ----
 SettingsMagicName: Magic Settings
 SettingsMagicNameDesc: |-

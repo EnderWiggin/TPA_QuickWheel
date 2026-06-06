@@ -241,4 +241,27 @@ Helpers.hasTouchEffects = function(cast)
     return false
 end
 
+---
+---@param spellId string
+---@param actor table
+---@param opts? {isGodMode?: boolean, cost?: number}
+---@return number
+Helpers.getSpellCastChance = function(spellId, actor, opts) 
+    local isGodMode = opts and opts.isGodMode
+    if isGodMode then return 100 end
+    
+    local MagExp = (I.MagExp_Player or I.MagExp)
+    local sfHelpers = MagExp and MagExp.Helpers
+    if sfHelpers then
+        sfHelpers.getSpellCastChance(spellId, actor, opts)
+    else
+        ---@type boolean, table
+        local mwHelpersOk, mwHelpers = pcall(require, 'scripts.MagicWindowExtender.util.helpers')
+        if not mwHelpersOk or not mwHelpers then return 100 end
+        return mwHelpers.getSpellCastChance(spellId)
+    end
+
+    return 100
+end
+
 return Helpers

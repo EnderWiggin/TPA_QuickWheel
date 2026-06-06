@@ -227,11 +227,8 @@ end
 
 ---@param cast CastInfo
 QuickCaster.isCastSuccessful = function(cast)
-    local mwHelpersOk, mwHelpers = pcall(require, 'scripts.MagicWindowExtender.util.helpers')
-
-    if not mwHelpersOk or not mwHelpers then return true end
     if cast.spell then
-        local chance = mwHelpers.getSpellCastChance(cast.spell.id)
+        local chance = helpers.getSpellCastChance(cast.spell.id, omwself)
         if chance <= 0 then
             return false
         elseif chance >= 100 then

@@ -136,7 +136,7 @@ end
 QuickCaster.quickCast = function(cast)
     local OSSC = I.OSSC
     local useOSSC = false --TODO: add option to use OSSC if available
-    if useOSSC and OSSC then
+    if useOSSC and OSSC and OSSC.triggerQuickCast then
         OSSC.triggerQuickCast(cast)
         --if cast.item then cast.item = cast.item.id end
         --if cast.spell then cast.spell = cast.spell.id end
@@ -163,9 +163,10 @@ QuickCaster.castUsingSF = function(cast)
             local cosPitch = math.cos(pitch)
             local cameraDir = util.vector3(cosPitch * math.sin(yaw), cosPitch * math.cos(yaw), math.sin(pitch))
             local cameraPos = camera.getPosition()
-            local endPos = cameraPos + cameraDir * (2 * C.TouchRange)
+            local playerPos = omwself:getBoundingBox().center
+            local endPos = cameraPos + cameraDir * (2 * C.TouchRange + (cameraPos-playerPos):length())
             local ray = nearby.castRay(cameraPos, endPos, { ignore = omwself })
-            if ray.hit and ray.hitObject and (ray.hitPos - omwself.position):length() <= C.TouchRange then
+            if ray.hit and ray.hitObject and (ray.hitPos - playerPos):length() <= C.TouchRange then
                 hitObject = ray.hitObject
             end
         end

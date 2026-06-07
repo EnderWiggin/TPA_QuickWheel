@@ -96,12 +96,16 @@ function MagicIcon:makeElement(p)
 
     for i, effect in ipairs(effects) do
         local k = i - 1
+        local kx = math.floor(k / ny)
+        local ky =  k % ny
+        local dx = ny > 1 and ky == ny - 1 and 0.5 or 0
+
         local texture = helpers.effectIconTexture(effect.id)
         icons:add({
             name = "effect_" .. i,
             type = ui.TYPE.Image,
             props = {
-                relativePosition = c + v2(math.floor(k / ny), k % ny) * SIDE,
+                relativePosition = c + v2(kx + dx, ky) * SIDE,
                 anchor = CENTER,
                 resource = texture,
                 relativeSize = ICON_SZ,

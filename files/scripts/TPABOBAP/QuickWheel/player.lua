@@ -523,6 +523,7 @@ local function handleWheelAction(isPressed, wheelMode)
     if isPressed then
         if uiMode ~= nil and uiMode ~= I.UI.MODE.Interface then return end
         if not isWheelModeOn then
+            if I.UI.getMode() ~= nil or core.isWorldPaused() then return end
             pressedAt = core.getRealTime()
             setWheelMode(true, wheelMode)
         elseif wheelMode ~= currentWheelMode then

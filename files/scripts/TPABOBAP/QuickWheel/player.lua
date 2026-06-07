@@ -69,6 +69,7 @@ local function usePoison(icon)
             actor = omwself.object,
             potion = potion,
         })
+        omwself:sendEvent('QW_UpdateWheelState', { wheelState = false })
     else
         core.sendGlobalEvent('UseItem', {
             object = potion,

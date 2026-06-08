@@ -154,7 +154,8 @@ end
 
 ---@param cast CastInfo
 QuickCaster.castUsingSF = function(cast)
-    if QuickCaster.isCastSuccessful(cast) then
+    local success, school = QuickCaster.isCastSuccessful(cast)
+    if success then
         isQuickCasting = true
 
         local hitObject
@@ -197,7 +198,7 @@ QuickCaster.castUsingSF = function(cast)
         end
         ui.showMessage(core.getGMST('sMagicSkillFail'))
         --TODO: add sound variety based on spell school
-        pcall(function() core.sound.playSound3d("spell failure illusion", omwself) end)
+        pcall(function() core.sound.playSound3d("spell failure " .. (school or 'illusion'), omwself) end)
     end
 end
 
@@ -230,11 +231,11 @@ end
 ---@param cast CastInfo
 QuickCaster.isCastSuccessful = function(cast)
     if cast.spell then
-        local chance = helpers.getSpellCastChance(cast.spell.id, omwself)
+        local chance, school = helpers.getSpellCastChance(cast.spell.id, omwself)
         if chance <= 0 then
-            return false
+            return false, school
         elseif chance >= 100 then
-            return true
+            return true, school
         else
             return math.random(0, 99) < chance
         end

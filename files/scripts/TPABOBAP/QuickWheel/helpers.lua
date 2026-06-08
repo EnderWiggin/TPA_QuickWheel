@@ -253,7 +253,7 @@ Helpers.getSpellCastChance = function(spellId, actor, opts)
     local MagExp = (I.MagExp_Player or I.MagExp)
     local sfHelpers = MagExp and MagExp.Helpers
     if sfHelpers then
-        sfHelpers.getSpellCastChance(spellId, actor, opts)
+        return sfHelpers.getSpellCastChance(spellId, actor, opts)
     else
         ---@type boolean, table
         local mwHelpersOk, mwHelpers = pcall(require, 'scripts.MagicWindowExtender.util.helpers')

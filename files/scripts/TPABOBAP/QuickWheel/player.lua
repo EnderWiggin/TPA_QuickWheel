@@ -216,13 +216,14 @@ local function activateMagic(icon)
         local data = { ignoreUIMode = true, item = icon.item, spell = icon.spell, id = icon:tipId() }
         if quickCast then
             I.UI.setMode()
-            QuickCaster.SetQueue({})
+            local queue = QuickCaster.GetQueue()
+            if #queue > 1 then QuickCaster.SetQueue({ queue[1] }) end
         end
 
         if not QuickCaster.isCasting() then
             QuickCaster.SetQueue({ data })
             QuickCaster.quickCast(data)
-        elseif enqueue then
+        else
             QuickCaster.Enqueue(data)
         end
     else

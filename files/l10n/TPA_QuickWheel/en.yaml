@@ -149,7 +149,7 @@ Magic_Category_Desc_Debuff: |-
 
 Magic_Category_Title_Util: Utility
 Magic_Category_Desc_Util: |-
-  Various utility spells like open locks and detections.
+  Various utility spells like light, telekinesis, soul traps, open locks and detections.
 
 Magic_Category_Title_Other: Other
 Magic_Category_Desc_Other: |-
@@ -157,11 +157,11 @@ Magic_Category_Desc_Other: |-
 
 Magic_Category_Title_Transport: Travel
 Magic_Category_Desc_Transport: |-
-  Magic that helps travel - teleports, jumps, levitate.
+  Magic that helps travel - teleports, jumps, levitate, water walking and breathing.
 
 Magic_Category_Title_Control: Control
 Magic_Category_Desc_Control: |-
-  Magic that charms, frenzies and calms.
+  Magic that paralyzes, charms, frenzies and calms.
 
 Magic_Category_Title_Buff: Buff
 Magic_Category_Desc_Buff: |-
@@ -173,8 +173,8 @@ Magic_Category_Desc_Cure: |-
 
 Magic_Category_Title_Restore: Restore
 Magic_Category_Desc_Restore: |-
-  Restore health and fatigue.
+  Magic that restores health and fatigue, cures poisons and diseases, restores attributes.
 
 Magic_Category_Title_Summon: Summon
 Magic_Category_Desc_Summon: |-
-  Summons creatures, weapons and armors.
+  Magic that summons creatures, weapons and armors.

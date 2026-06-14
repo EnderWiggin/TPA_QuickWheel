@@ -135,9 +135,7 @@ end
 ---@param cast CastInfo
 QuickCaster.quickCast = function(cast)
     local OSSC = I.OSSC
-    local useOSSC = false --TODO: add option to use OSSC if available
-    if useOSSC and OSSC and OSSC.triggerQuickCast then
-        omwself:sendEvent('MagExp_SetPendingCastSpellId', { spellId = cast.spell and cast.spell.id })
+    if config.magic.b_UseOSSC and OSSC and OSSC.triggerQuickCast then
         OSSC.triggerQuickCast(cast)
         --if cast.item then cast.item = cast.item.id end
         --if cast.spell then cast.spell = cast.spell.id end

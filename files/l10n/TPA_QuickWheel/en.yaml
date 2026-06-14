@@ -83,6 +83,9 @@ SettingMagicClickModeDesc: |-
   SHIFT readies spell.
   Requires Spell Framework.
 
+SettingMagicUseOSSC: Use OSSC to quick cast
+SettingMagicUseOSSCDesc: If Oblivion Style Spell Casting is installed, it will be used to quick cast magic.
+
 SettingMagicClickModeReady: Ready
 SettingMagicClickModeEquip: Equip
 SettingMagicClickModeQCast: Cast

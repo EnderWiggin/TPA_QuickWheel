@@ -209,6 +209,13 @@ I.Settings.registerGroup {
             }
         },
         {
+            key = 'b_UseOSSC',
+            renderer = 'checkbox',
+            name = 'SettingMagicUseOSSC',
+            description = 'SettingMagicUseOSSCDesc',
+            default = true,
+        },
+        {
             key = 'n_MagicCastDelay',
             renderer = 'number',
             name = 'SettingMagicCastDelay',

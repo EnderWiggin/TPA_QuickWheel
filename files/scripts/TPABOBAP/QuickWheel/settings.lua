@@ -151,6 +151,7 @@ I.Settings.registerGroup {
             description = 'SettingNoUnknownCategoryDesc',
             default = false,
         },
+        --[[
         {
             key = 'b_FilterPoisons',
             renderer = 'checkbox',
@@ -158,6 +159,7 @@ I.Settings.registerGroup {
             description = 'SettingFilterPoisonsDesc',
             default = true,
         },
+        ]]
         {
             key = 'b_QuickApplyPoison',
             renderer = 'checkbox',
@@ -165,6 +167,7 @@ I.Settings.registerGroup {
             description = 'SettingQuickApplyPoisonDesc',
             default = true,
         },
+        --[[
         {
             key = 's_SeparateAlcohol',
             renderer = 'select',
@@ -180,6 +183,7 @@ I.Settings.registerGroup {
                 },
             }
         },
+        ]]
     }
 }
 

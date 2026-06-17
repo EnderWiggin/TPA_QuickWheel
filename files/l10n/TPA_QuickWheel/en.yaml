@@ -8,11 +8,14 @@ SettingResetKeyBindsDesc: |-
 
 SettingsName: Main Settings
 SettingKeyOmniWheel: Button to open Omni Wheel
-SettingKeyOmniWheelDesc: Hold this button to open the wheel that contains all potions, spells and magic items.
+SettingKeyOmniWheelDesc: Opens the wheel that contains all potions, spells and magic items.
 SettingKeyPotionWheel: Button to open Potion Wheel
-SettingKeyPotionWheelDesc: Hold this button to open the wheel that contains all potions.
+SettingKeyPotionWheelDesc: Opens the wheel that contains all potions.
 SettingKeyMagicWheel: Button to open Magic Wheel
-SettingKeyMagicWheelDesc: Hold this button to open the wheel that contains all spells and magic items.
+SettingKeyMagicWheelDesc: Opens the wheel that contains all spells and magic items.
+SettingKeyOmniWheelAlt: Alternate button to open Omni Wheel
+SettingKeyPotionWheelAlt: Alternate button to open Potion Wheel
+SettingKeyMagicWheelAlt: Alternate button to open Magic Wheel
 SettingKeyMode: Key mode
 SettingKeyModeDesc: |-
   Smart - tap to toggle wheel or hold to close on key release. 

@@ -83,6 +83,39 @@ I.Settings.registerGroup {
             },
         },
         {
+            key = 'k_OmniWheelAlt',
+            renderer = 'inputBinding',
+            name = 'SettingKeyOmniWheelAlt',
+            description = 'SettingKeyOmniWheelDesc',
+            default = C.actionOpenOmniWheel .. '_ALT',
+            argument = {
+                type = "action",
+                key = C.actionOpenOmniWheel
+            },
+        },
+        {
+            key = 'k_PotionWheelAlt',
+            renderer = 'inputBinding',
+            name = 'SettingKeyPotionWheelAlt',
+            description = 'SettingKeyPotionWheelDesc',
+            default = C.actionOpenPotionWheel .. '_ALT',
+            argument = {
+                type = "action",
+                key = C.actionOpenPotionWheel
+            },
+        },
+        {
+            key = 'k_MagicWheelAlt',
+            renderer = 'inputBinding',
+            name = 'SettingKeyMagicWheelAlt',
+            description = 'SettingKeyMagicWheelDesc',
+            default = C.actionOpenMagicWheel .. '_ALT',
+            argument = {
+                type = "action",
+                key = C.actionOpenMagicWheel
+            },
+        },
+        {
             key = 'r_ResetBindings',
             renderer = 'TPABOBAP/ClearInputBindings',
             name = 'SettingResetKeyBinds',
@@ -93,13 +126,18 @@ I.Settings.registerGroup {
                     C.actionOpenOmniWheel,
                     C.actionOpenPotionWheel,
                     C.actionOpenMagicWheel,
-                    "TPA_QuickWheel_Open", --old setting
+                    C.actionOpenOmniWheel .. '_ALT',
+                    C.actionOpenPotionWheel .. '_ALT',
+                    C.actionOpenMagicWheel .. '_ALT',
                 },
                 settings = {
                     'k_OmniWheel',
                     'k_PotionWheel',
-                    'k_MagicWheel'
-                }
+                    'k_MagicWheel',
+                    'k_OmniWheelAlt',
+                    'k_PotionWheelAlt',
+                    'k_MagicWheelAlt',
+                },
             },
         },
         {

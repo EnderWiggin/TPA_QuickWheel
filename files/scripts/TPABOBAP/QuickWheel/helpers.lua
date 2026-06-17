@@ -1,6 +1,7 @@
 ---@omw-context player
 local I = require('openmw.interfaces')
 local core = require('openmw.core')
+local input = require('openmw.input')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
 local auxUi = require('openmw_aux.ui')
@@ -44,8 +45,8 @@ Helpers.createTexture = function(path, size, offset)
     size = size or v2(0, 0)
     offset = offset or v2(0, 0)
     if TEXTURES[path]
-            and TEXTURES[path][size.x] and TEXTURES[path][size.x][size.y]
-            and TEXTURES[path][size.x][size.y][offset.x] and TEXTURES[path][size.x][size.y][offset.x][offset.y] then
+        and TEXTURES[path][size.x] and TEXTURES[path][size.x][size.y]
+        and TEXTURES[path][size.x][size.y][offset.x] and TEXTURES[path][size.x][size.y][offset.x][offset.y] then
         return TEXTURES[path][size.x][size.y][offset.x][offset.y]
     else
         local tex = ui.texture { path = path, size = size, offset = offset }
@@ -59,7 +60,8 @@ Helpers.createTexture = function(path, size, offset)
 end
 
 Helpers.effectIconTexture = function(effectId)
-    local effectRecord = core.magic.effects.records[effectId] or (I.MagicWindow and I.MagicWindow.Spells.getCustomEffect(effectId))
+    local effectRecord = core.magic.effects.records[effectId] or
+    (I.MagicWindow and I.MagicWindow.Spells.getCustomEffect(effectId))
     return effectRecord and Helpers.createTexture(effectRecord.icon)
 end
 
@@ -167,10 +169,12 @@ end
 
 local function hasWord(str, word)
     if string.find(str, "[^%a]+" .. word .. "[^%a]+")
-            or string.find(str, "^" .. word .. "[^%a]+")
-            or string.find(str, "[^%a]+" .. word .. "$")
-            or string.find(str, "^" .. word .. "$")
-    then return true end
+        or string.find(str, "^" .. word .. "[^%a]+")
+        or string.find(str, "[^%a]+" .. word .. "$")
+        or string.find(str, "^" .. word .. "$")
+    then
+        return true
+    end
     return false
 end
 
@@ -185,7 +189,7 @@ local function getEffectType(id)
 
     if startsWith(id, 'summon') or hasWord(id, 'summon') then
         return 'Summon'
-    elseif startsWith(id, 'bound')  or hasWord(id, 'bound') then
+    elseif startsWith(id, 'bound') or hasWord(id, 'bound') then
         return 'Bound'
     end
 
@@ -246,10 +250,10 @@ end
 ---@param actor table
 ---@param opts? {isGodMode?: boolean, cost?: number}
 ---@return number
-Helpers.getSpellCastChance = function(spellId, actor, opts) 
+Helpers.getSpellCastChance = function(spellId, actor, opts)
     local isGodMode = opts and opts.isGodMode
     if isGodMode then return 100 end
-    
+
     local MagExp = (I.MagExp_Player or I.MagExp)
     local sfHelpers = MagExp and MagExp.Helpers
     if sfHelpers then
@@ -262,6 +266,33 @@ Helpers.getSpellCastChance = function(spellId, actor, opts)
     end
 
     return 100
+end
+
+local isShiftPressed = false
+local isCtrlPressed = false
+local isAltPressed = false
+
+---@return string
+Helpers.updateModifiers = function ()
+    local leftTrigger = input.getAxisValue(input.CONTROLLER_AXIS.TriggerLeft) > 0.5
+    local rightTrigger = input.getAxisValue(input.CONTROLLER_AXIS.TriggerRight) > 0.5
+
+    isShiftPressed = input.isShiftPressed() or (leftTrigger and not rightTrigger)
+    isCtrlPressed = input.isCtrlPressed() or (rightTrigger and not leftTrigger)
+    isAltPressed = input.isAltPressed() or (leftTrigger and rightTrigger)
+
+    return tostring(isShiftPressed) .. ':' .. tostring(isCtrlPressed) .. ':' .. tostring(isAltPressed)
+end
+Helpers.isShiftPressed = function()
+    return isShiftPressed
+end
+
+Helpers.isCtrlPressed = function()
+    return isCtrlPressed
+end
+
+Helpers.isAltPressed = function()
+    return isAltPressed
 end
 
 return Helpers

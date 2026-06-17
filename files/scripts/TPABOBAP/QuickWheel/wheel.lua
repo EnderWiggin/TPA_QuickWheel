@@ -6,12 +6,14 @@ local async = require('openmw.async')
 local v2 = util.vector2
 local pi2 = 2 * math.pi
 
+local config = require('scripts.TPABOBAP.QuickWheel.config')
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 
 local R
 local DEAD_ZONE
 local CENTER
 local MIN_SECTORS = 8
+local CONTROLLER = false
 
 local MWUIConstants = require('scripts.omw.mwui.constants')
 
@@ -91,7 +93,9 @@ local function makeWheel(self)
         },
         events = {
             mouseMove = async:callback(function(evt, _)
-                self:onMouseMove(evt)
+                if config.main.b_ExclusiveController then return end
+                CONTROLLER = false
+                self:onOffsetChanged(evt.offset - CENTER)
             end),
             mouseClick = async:callback(function(_, _)
                 self:onMouseClick()
@@ -205,15 +209,30 @@ function Wheel:checkDirty()
     end
 end
 
-function Wheel:onMouseMove(evt)
-    local p = evt.offset - CENTER
-    self.ctx.lastOffset = p
+---@param dx number
+---@param dy number
+function Wheel:onControllerOffsetChanged(dx, dy)
+    local r = (DEAD_ZONE.x + 2 * DEAD_ZONE.y) / 3
+    local o = v2(dx, dy)
+    if o:length() < 0.1 then
+        if not CONTROLLER then return end
+        self:onOffsetChanged(v2(0, 0))
+        return
+    end
+    CONTROLLER = true
+    self:onOffsetChanged(o:normalize() * r)
+end
+
+
+---@param offset openmw.util.Vector2
+function Wheel:onOffsetChanged(offset)
+    self.ctx.lastOffset = offset
     local wheel = self.ctx.widget
     local container = wheel.layout.content['icons'].content
     if not container then return end
-    local selectedIdx = getSectorIdx(p, #container, DEAD_ZONE)
+    local selectedIdx = getSectorIdx(offset, #container, DEAD_ZONE)
     self.ctx.selected = selectedIdx
-    --print("Move: ", helpers.deepPrint(p) .. ' Sector: ', selectedIdx, #container)
+    --print("Move: ", helpers.deepPrint(offset) .. ' Sector: ', selectedIdx, #container)
     self:updateIcons()
 end
 

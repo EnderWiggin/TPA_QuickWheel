@@ -22,10 +22,15 @@ local currentWheelMode
 local pressedAt = 0
 local wasToggled = false
 local lastUIMode
+local lastActivateState = false
 ---@type string
 local lastModifiers
 
 local PotionTypes = C.PotionTypes
+local UIMode = I.UI.MODE
+local InterfaceMode = UIMode.Interface
+
+local API = {}
 
 local function isPotionOfType(potion, type)
     local record = potion.type.record(potion.recordId)
@@ -64,7 +69,7 @@ end
 ---@param icon PotionIcon
 local function usePoison(icon)
     local potion = icon.item or icon
-    if config.potions.b_QuickApplyPoison and input.isShiftPressed() then
+    if config.potions.b_QuickApplyPoison and helpers.isShiftPressed() then
         core.sendGlobalEvent('Toxicology_ConfirmApply', {
             actor = omwself.object,
             potion = potion,
@@ -177,9 +182,9 @@ end
 
 ---@param icon MagicIcon
 local function activateMagic(icon)
-    local justEquip = input.isAltPressed()
-    local enqueue = input.isShiftPressed()
-    local quickCast = input.isCtrlPressed()
+    local justEquip = helpers.isAltPressed()
+    local enqueue = helpers.isShiftPressed()
+    local quickCast = helpers.isCtrlPressed()
 
     local requested = quickCast and 'cast' or enqueue and 'queue' or justEquip and 'regular' or 'none'
     local clickMode = config.magic.s_MagicClickMode
@@ -213,9 +218,9 @@ local function activateMagic(icon)
 
     if enqueue or quickCast then
         ---@type CastInfo
-        local data = { ignoreUIMode = true, item = icon.item, spell = icon.spell, id = icon:tipId() }
+        local data = { item = icon.item, spell = icon.spell, id = icon:tipId() }
         if quickCast then
-            I.UI.setMode()
+            API.setWheelMode(false)
             local queue = QuickCaster.GetQueue()
             if #queue > 1 then QuickCaster.SetQueue({ queue[1] }) end
         end
@@ -228,7 +233,7 @@ local function activateMagic(icon)
         end
     else
         QuickCaster.SetQueue({})
-        I.UI.setMode()
+        API.setWheelMode(false)
         if icon.spell then
             omwself.type.setSelectedSpell(omwself, icon.spell)
         elseif icon.item then
@@ -478,11 +483,13 @@ local function setWheelMode(isOn, mode)
     if lastUIMode ~= nil and not isWheelModeOn then return end
 
     isWheelModeOn = isOn
-
-    if isWheelModeOn then
-        I.UI.setMode(I.UI.MODE.Interface, { windows = {} })
-    else
-        I.UI.setMode()
+    local controllerMode = config.main.b_ExclusiveController
+    if not controllerMode then
+        if isWheelModeOn then
+            I.UI.setMode(InterfaceMode, { windows = {} })
+        else
+            I.UI.setMode()
+        end
     end
 
     currentWheelMode = mode
@@ -494,18 +501,24 @@ local function setWheelMode(isOn, mode)
         wheel:show(isWheelModeOn, getALLCategories)
     end
 
-    core.sendGlobalEvent('QW_UpdateWheelState', { state = isWheelModeOn, scale = C.getTimeScale(config.main.s_TimeMode) })
+    core.sendGlobalEvent('QW_UpdateWheelState', {
+        state = isWheelModeOn,
+        scale = C.getTimeScale(config.main.s_TimeMode),
+        pause = controllerMode,
+    })
 end
+API.setWheelMode = setWheelMode
 
 local function onUpdate()
     local wasModifiers = lastModifiers
     local wasMode = lastUIMode
+    local controller = config.main.b_ExclusiveController
     lastUIMode = I.UI.getMode()
-    lastModifiers = tostring(input.isShiftPressed()) ..
-            ':' .. tostring(input.isCtrlPressed()) .. ':' .. tostring(input.isAltPressed())
+    lastModifiers = helpers.updateModifiers()
     if isWheelModeOn then
         if wasMode ~= lastUIMode then
-            if wasMode == I.UI.MODE.Interface and lastUIMode ~= I.UI.MODE.Interface then
+            if wasMode == InterfaceMode and lastUIMode ~= InterfaceMode
+                or controller and lastUIMode == InterfaceMode then
                 setWheelMode(false)
                 return
             end
@@ -515,6 +528,10 @@ local function onUpdate()
             wheel:updateIcons()
         end
 
+        if controller or config.main.s_TimeMode == C.TimeModes.Paused then
+            wheel:onControllerOffsetChanged(input.getAxisValue(input.CONTROLLER_AXIS.LeftX), input.getAxisValue(input.CONTROLLER_AXIS.LeftY))
+            -- wheel:onControllerOffsetChanged(input.getAxisValue(input.CONTROLLER_AXIS.RightX), input.getAxisValue(input.CONTROLLER_AXIS.RightY))
+        end
         wheel:checkDirty()
     end
 end
@@ -522,7 +539,7 @@ end
 local function handleWheelAction(isPressed, wheelMode)
     local uiMode = I.UI.getMode()
     if isPressed then
-        if uiMode ~= nil and uiMode ~= I.UI.MODE.Interface then return end
+        if uiMode ~= nil and uiMode ~= InterfaceMode then return end
         if not isWheelModeOn then
             if I.UI.getMode() ~= nil or core.isWorldPaused() then return end
             pressedAt = core.getRealTime()
@@ -563,11 +580,20 @@ local function handleMagicWheelAction(isPressed)
     handleWheelAction(isPressed, 'magic')
 end
 
+local function handleActivate()
+    if config.main.b_ExclusiveController then
+        wheel:onMouseClick()
+    end
+end
+
 local function Init()
     wheel:init(omwself)
     input.registerActionHandler(C.actionOpenOmniWheel, async:callback(handleOmniWheelAction))
     input.registerActionHandler(C.actionOpenPotionWheel, async:callback(handlePotionWheelAction))
     input.registerActionHandler(C.actionOpenMagicWheel, async:callback(handleMagicWheelAction))
+    input.registerTriggerHandler('Activate', async:callback(handleActivate), {})
+    
+    core.sendGlobalEvent('QW_UpdateWheelState', { state = false })
 end
 
 local function onKeyRelease(key)

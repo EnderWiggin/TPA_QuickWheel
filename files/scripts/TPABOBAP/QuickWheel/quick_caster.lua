@@ -130,13 +130,20 @@ local function updateWidget()
     widget:update()
 end
 
----@alias CastInfo {item:openmw.Object, spell:openmw.core.Spell, id: string, ignoreUIMode: boolean}
+---@alias CastInfo {item:openmw.Object, spell:openmw.core.Spell, id: string}
 
 ---@param cast CastInfo
 QuickCaster.quickCast = function(cast)
     local OSSC = I.OSSC
     if config.magic.b_UseOSSC and OSSC and OSSC.triggerQuickCast then
-        OSSC.triggerQuickCast(cast)
+        ---@type OSSCCallInfo
+        local data = {
+            ignoreUIMode = true,
+            ignoreWorldPause = true,
+            item = cast.item,
+            spell = cast.spell,
+        }
+        OSSC.triggerQuickCast(data)
         --if cast.item then cast.item = cast.item.id end
         --if cast.spell then cast.spell = cast.spell.id end
         --omwself:sendEvent('OSSC_QuickCast', cast)

@@ -133,6 +133,13 @@ I.Settings.registerGroup {
                 },
             }
         },
+        {
+            key = 'b_ExclusiveController',
+            renderer = 'checkbox',
+            name = 'SettingExclusiveController',
+            description = 'SettingExclusiveControllerDesc',
+            default = false,
+        },
     },
 }
 

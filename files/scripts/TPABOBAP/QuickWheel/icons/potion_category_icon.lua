@@ -102,7 +102,7 @@ end
 --- potions can be nil - uses provider in this case
 function PotionCategoryIcon:getQuickUsePotion(potions)
     if not self.quickUse then return nil end
-    if input.isShiftPressed() then
+    if helpers.isShiftPressed() then
         potions = potions or self:provider()
         if #potions == 0 then return nil end
         return potions[1]

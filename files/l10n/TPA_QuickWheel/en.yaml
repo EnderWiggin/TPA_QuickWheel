@@ -31,6 +31,16 @@ SettingTimeModeSlow: Slow
 SettingTimeModeVerySlow: Very Slow
 SettingTimeModePaused: Paused
 
+SettingExclusiveController: Controller exclusive mode
+SettingExclusiveControllerDesc: |-
+  If turned on there will be no cursor when opening the wheels. Use left joystick to select items.
+  Use triggers instead of SHIFT, CTRL and ALT to access extra functions:
+  - Left Trigger replaces SHIFT
+  - Right Trigger replaces CTRL
+  - Left+Right Triggers repaces ALT
+  
+  Note: controller works even without turning this on, but it may be clunky if Wheel time slowdown is not at Paused or Normal.
+
 # ---- Potion Settings ----
 SettingsPotionsName: Potion Settings
 

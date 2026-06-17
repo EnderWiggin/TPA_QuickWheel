@@ -1,6 +1,8 @@
 # ---- Main Settings ----
 PageName: Quick Wheel
-PageDesc: Quick Wheel for fast and smart use of potions, spells and magic items.
+PageDesc: |-
+  Quick Wheel for fast and smart use of potions, spells and magic items.
+  Version: 1.1.0
 
 SettingResetKeyBinds: Reset keybinds
 SettingResetKeyBindsDesc: |-

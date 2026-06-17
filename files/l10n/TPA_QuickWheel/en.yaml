@@ -38,7 +38,8 @@ SettingTimeModePaused: Paused
 
 SettingExclusiveController: Controller exclusive mode
 SettingExclusiveControllerDesc: |-
-  If turned on there will be no cursor when opening the wheels. Use left joystick to select items.
+  If turned on there will be no cursor when opening the wheels. Time will be paused regardless of the slowdown settings.
+  Use left stick to select items.
   Use triggers instead of SHIFT, CTRL and ALT to access extra functions:
   - Left Trigger replaces SHIFT
   - Right Trigger replaces CTRL
@@ -107,10 +108,16 @@ SettingMagicClickModeQCast: Cast
 SettingMagicClickModeQueue: Queue
 
 SettingMagicCastDelay: Magic Cast Delay
-SettingMagicCastDelayDesc: Seconds before magic is cast after clicking on it. Range [0.1 - 2].
+SettingMagicCastDelayDesc: |-
+  Seconds before magic is cast after clicking on it. 
+  Applies when not using OSSC to cast. 
+  Range [0.1 - 2].
 
 SettingMagicCastCooldown: Magic Cast Cooldown
-SettingMagicCastCooldownDesc: Seconds after magic is cast. Added on top of delay for queued spells. Range [0.2 - 2].
+SettingMagicCastCooldownDesc: |-
+  Seconds after magic is cast. Added on top of delay for queued spells.
+  Applies when not using OSSC to cast.
+  Range [0.2 - 2].
 
 SettingMagicShowQueue: Show Queued Spells
 SettingMagicShowQueueDesc: Show a list of currently queued spells.

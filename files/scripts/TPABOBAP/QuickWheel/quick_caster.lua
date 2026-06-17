@@ -171,7 +171,7 @@ QuickCaster.castUsingSF = function(cast)
             local cameraDir = util.vector3(cosPitch * math.sin(yaw), cosPitch * math.cos(yaw), math.sin(pitch))
             local cameraPos = camera.getPosition()
             local playerPos = omwself:getBoundingBox().center
-            local endPos = cameraPos + cameraDir * (2 * C.TouchRange + (cameraPos-playerPos):length())
+            local endPos = cameraPos + cameraDir * (2 * C.TouchRange + (cameraPos - playerPos):length())
             local ray = nearby.castRay(cameraPos, endPos, { ignore = omwself })
             if ray.hit and ray.hitObject and (ray.hitPos - playerPos):length() <= C.TouchRange then
                 hitObject = ray.hitObject

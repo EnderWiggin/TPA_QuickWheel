@@ -76,11 +76,11 @@ function PotionCategoryIcon:update(selected)
     local props = self.element.props
     local content = self.element.content
     if selected then
-       props.size = ICON_SIZE_OVER
-       content['item_count'].props.textSize = TEXT_SIZE_OVER
+        props.size = ICON_SIZE_OVER
+        content['item_count'].props.textSize = TEXT_SIZE_OVER
     else
-       props.size = ICON_SIZE_NORMAL
-       content['item_count'].props.textSize = TEXT_SIZE_NORMAL
+        props.size = ICON_SIZE_NORMAL
+        content['item_count'].props.textSize = TEXT_SIZE_NORMAL
     end
 end
 
@@ -92,8 +92,8 @@ function PotionCategoryIcon:makeTip(potions)
     end
 
     local tip = helpers.makeTooltip(
-            l10n('Potion_Category_Title_' .. self.name),
-            l10n('Potion_Category_Desc_' .. self.name)
+        l10n('Potion_Category_Title_' .. self.name),
+        l10n('Potion_Category_Desc_' .. self.name)
     )
     tip.name = self:tipId()
     return tip

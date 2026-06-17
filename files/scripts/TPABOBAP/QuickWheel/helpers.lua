@@ -61,7 +61,7 @@ end
 
 Helpers.effectIconTexture = function(effectId)
     local effectRecord = core.magic.effects.records[effectId] or
-    (I.MagicWindow and I.MagicWindow.Spells.getCustomEffect(effectId))
+        (I.MagicWindow and I.MagicWindow.Spells.getCustomEffect(effectId))
     return effectRecord and Helpers.createTexture(effectRecord.icon)
 end
 
@@ -273,7 +273,7 @@ local isCtrlPressed = false
 local isAltPressed = false
 
 ---@return string
-Helpers.updateModifiers = function ()
+Helpers.updateModifiers = function()
     local leftTrigger = input.getAxisValue(input.CONTROLLER_AXIS.TriggerLeft) > 0.5
     local rightTrigger = input.getAxisValue(input.CONTROLLER_AXIS.TriggerRight) > 0.5
 

@@ -223,7 +223,6 @@ function Wheel:onControllerOffsetChanged(dx, dy)
     self:onOffsetChanged(o:normalize() * r)
 end
 
-
 ---@param offset openmw.util.Vector2
 function Wheel:onOffsetChanged(offset)
     self.ctx.lastOffset = offset

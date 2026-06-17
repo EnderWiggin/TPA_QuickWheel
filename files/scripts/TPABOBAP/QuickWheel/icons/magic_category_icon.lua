@@ -17,7 +17,7 @@ local iconMap = {
     Util = 'icons/TPABOBAP/QuickWheel/magic-category-util.png',
     Debuff = 'icons/TPABOBAP/QuickWheel/magic-category-debuff.png',
     Damage = 'icons/TPABOBAP/QuickWheel/magic-category-damage.png',
-    Combat ='icons/TPABOBAP/QuickWheel/magic-category-combat.png',
+    Combat = 'icons/TPABOBAP/QuickWheel/magic-category-combat.png',
     Buff = 'icons/TPABOBAP/QuickWheel/magic-category-buff.png',
     Other = nil,
     Transport = 'icons/TPABOBAP/QuickWheel/magic-category-travel.png',
@@ -92,8 +92,8 @@ function SpellCategoryIcon:makeTip(potions)
     end
 
     local tip = helpers.makeTooltip(
-            l10n('Magic_Category_Title_' .. self.name),
-            l10n('Magic_Category_Desc_' .. self.name)
+        l10n('Magic_Category_Title_' .. self.name),
+        l10n('Magic_Category_Desc_' .. self.name)
     )
     tip.name = self:tipId()
     return tip

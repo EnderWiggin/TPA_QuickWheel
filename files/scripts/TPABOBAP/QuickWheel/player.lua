@@ -124,7 +124,7 @@ end
 local function otherPotionFiler(p)
     local toxicology = config.potions.s_SeparateAlcohol ~= C.AlcoholModes.Normal and I.Toxicology
     if toxicology and toxicology.isAlcohol then
-        if toxicology.isAlcohol(p) then return true end 
+        if toxicology.isAlcohol(p) then return true end
     end
     for k, _ in pairs(PotionTypes) do
         if isPotionOfType(p, k) then return false end
@@ -134,7 +134,7 @@ end
 
 local function isPoisonFilter(p)
     local toxicology = config.potions.b_FilterPoisons and I.Toxicology
-    if toxicology and toxicology.isPoison then  
+    if toxicology and toxicology.isPoison then
         return toxicology.isPoison(p)
     else
         return isPotionOfType(p, 'Poison')
@@ -360,7 +360,7 @@ local function findMagics(filter)
         local enchantId = item.type.record(item).enchant
         local enchant = enchantId and core.magic.enchantments.records[enchantId]
         return enchant ~= nil and enchant.type ~= core.magic.ENCHANTMENT_TYPE.ConstantEffect and
-                enchant.type ~= core.magic.ENCHANTMENT_TYPE.CastOnStrike
+            enchant.type ~= core.magic.ENCHANTMENT_TYPE.CastOnStrike
     end)
 
     for _, item in ipairs(magicItems) do
@@ -529,7 +529,10 @@ local function onUpdate()
         end
 
         if controller or config.main.s_TimeMode == C.TimeModes.Paused then
-            wheel:onControllerOffsetChanged(input.getAxisValue(input.CONTROLLER_AXIS.LeftX), input.getAxisValue(input.CONTROLLER_AXIS.LeftY))
+            wheel:onControllerOffsetChanged(
+                input.getAxisValue(input.CONTROLLER_AXIS.LeftX),
+                input.getAxisValue(input.CONTROLLER_AXIS.LeftY)
+            )
             -- wheel:onControllerOffsetChanged(input.getAxisValue(input.CONTROLLER_AXIS.RightX), input.getAxisValue(input.CONTROLLER_AXIS.RightY))
         end
         wheel:checkDirty()
@@ -592,7 +595,7 @@ local function Init()
     input.registerActionHandler(C.actionOpenPotionWheel, async:callback(handlePotionWheelAction))
     input.registerActionHandler(C.actionOpenMagicWheel, async:callback(handleMagicWheelAction))
     input.registerTriggerHandler('Activate', async:callback(handleActivate), {})
-    
+
     core.sendGlobalEvent('QW_UpdateWheelState', { state = false })
 end
 

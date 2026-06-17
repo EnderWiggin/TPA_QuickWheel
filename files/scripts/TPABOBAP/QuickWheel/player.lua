@@ -594,7 +594,7 @@ local function Init()
     input.registerActionHandler(C.actionOpenOmniWheel, async:callback(handleOmniWheelAction))
     input.registerActionHandler(C.actionOpenPotionWheel, async:callback(handlePotionWheelAction))
     input.registerActionHandler(C.actionOpenMagicWheel, async:callback(handleMagicWheelAction))
-    input.registerTriggerHandler('Activate', async:callback(handleActivate), {})
+    input.registerTriggerHandler('Activate', async:callback(handleActivate))
 
     core.sendGlobalEvent('QW_UpdateWheelState', { state = false })
 end

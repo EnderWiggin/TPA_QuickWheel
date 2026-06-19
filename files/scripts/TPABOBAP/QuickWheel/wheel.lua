@@ -93,7 +93,7 @@ local function makeWheel(self)
         },
         events = {
             mouseMove = async:callback(function(evt, _)
-                if config.main.b_ExclusiveController then return end
+                if config.shouldUseController() then return end
                 CONTROLLER = false
                 self:onOffsetChanged(evt.offset - CENTER)
             end),
@@ -209,12 +209,10 @@ function Wheel:checkDirty()
     end
 end
 
----@param dx number
----@param dy number
-function Wheel:onControllerOffsetChanged(dx, dy)
+---@param o openmw.util.Vector2
+function Wheel:onControllerOffsetChanged(o)
     local r = (DEAD_ZONE.x + 2 * DEAD_ZONE.y) / 3
-    local o = v2(dx, dy)
-    if o:length() < 0.1 then
+    if o:length() < config.main.n_ControllerDeadZone then
         if not CONTROLLER then return end
         self:onOffsetChanged(v2(0, 0))
         return

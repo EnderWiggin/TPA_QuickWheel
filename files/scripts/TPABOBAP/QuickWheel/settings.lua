@@ -172,11 +172,19 @@ I.Settings.registerGroup {
             }
         },
         {
-            key = 'b_ExclusiveController',
-            renderer = 'checkbox',
-            name = 'SettingExclusiveController',
-            description = 'SettingExclusiveControllerDesc',
-            default = false,
+            key = 's_ControllerMode',
+            renderer = 'select',
+            name = 'SettingControllerMode',
+            description = 'SettingControllerModeDesc',
+            default = C.ControllerMode.Auto,
+            argument = {
+                l10n = MODNAME,
+                items = {
+                    C.ControllerMode.Off,
+                    C.ControllerMode.Auto,
+                    C.ControllerMode.Exclusive,
+                },
+            }
         },
         {
             key = 's_ControllerStick',
@@ -190,6 +198,17 @@ I.Settings.registerGroup {
                     C.ControllerStick.Left,
                     C.ControllerStick.Right,
                 },
+            }
+        },
+        {
+            key = 'n_ControllerDeadZone',
+            renderer = 'number',
+            name = 'SettingControllerDeadZone',
+            description = 'SettingControllerDeadZoneDesc',
+            default = 0.15,
+            argument = {
+                min = 0.01,
+                max = 1,
             }
         },
     },

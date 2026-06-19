@@ -349,6 +349,12 @@ local ControllerStick = {
     Left = 'ControllerStickLeft',
     Right = 'ControllerStickRight',
 }
+---@enum ControllerMode
+local ControllerMode = {
+    Off = 'ControllerModeOff',
+    Auto = 'ControllerModeAuto',
+    Exclusive = 'ControllerModeExclusive',
+}
 ---@enum AlcoholModes
 local AlcoholModes = {
     Normal = 'SettingAlcoholModeNormal',
@@ -392,6 +398,7 @@ return {
     KeyModes = KeyModes,
     TimeModes = TimeModes,
     ControllerStick = ControllerStick,
+    ControllerMode = ControllerMode,
     AlcoholModes = AlcoholModes,
     getTimeScale = getTimeScale,
     KeyHoldThreshold = 0.35, --- if key is held longer than this in smart mode, assume we want hold variant

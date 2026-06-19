@@ -4,6 +4,7 @@ local core = require('openmw.core')
 local input = require('openmw.input')
 local omwself = require('openmw.self')
 local async = require('openmw.async')
+local v2 = require('openmw.util').vector2
 
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local config = require('scripts.TPABOBAP.QuickWheel.config')
@@ -111,7 +112,7 @@ local function setWheelMode(isOn, mode)
     if lastUIMode ~= nil and not isWheelModeOn then return end
 
     isWheelModeOn = isOn
-    local controllerMode = config.main.b_ExclusiveController
+    local controllerMode = config.shouldUseController()
     if not controllerMode then
         if isWheelModeOn then
             I.UI.setMode(InterfaceMode, { windows = {} })
@@ -135,23 +136,27 @@ local function setWheelMode(isOn, mode)
         pause = controllerMode,
     })
 end
-local function getCotrollerDirection()
+
+---@return openmw.util.Vector2
+local function getControllerDirection()
     local stick = config.main.s_ControllerStick
     if not stick or stick == C.ControllerStick.Left then
-        return input.getAxisValue(input.CONTROLLER_AXIS.LeftX), input.getAxisValue(input.CONTROLLER_AXIS.LeftY)
+        return v2(input.getAxisValue(input.CONTROLLER_AXIS.LeftX), input.getAxisValue(input.CONTROLLER_AXIS.LeftY))
     elseif stick == C.ControllerStick.Right then
-        return input.getAxisValue(input.CONTROLLER_AXIS.RightX), input.getAxisValue(input.CONTROLLER_AXIS.RightY)
+        return v2(input.getAxisValue(input.CONTROLLER_AXIS.RightX), input.getAxisValue(input.CONTROLLER_AXIS.RightY))
     end
-    return 0, 0
+    return v2(0, 0)
 end
 
 local function onUpdate()
     local wasModifiers = lastModifiers
     local wasMode = lastUIMode
-    local controller = config.main.b_ExclusiveController
     lastUIMode = I.UI.getMode()
     lastModifiers = helpers.updateModifiers()
     if isWheelModeOn then
+        local dir = getControllerDirection()
+        if dir:length() > config.main.n_ControllerDeadZone then config.controllerActive = true end
+        local controller = config.shouldUseController()
         if wasMode ~= lastUIMode then
             if wasMode == InterfaceMode and lastUIMode ~= InterfaceMode
                 or controller and lastUIMode == InterfaceMode then
@@ -165,8 +170,7 @@ local function onUpdate()
         end
 
         if controller or config.main.s_TimeMode == C.TimeModes.Paused then
-            wheel:onControllerOffsetChanged(getCotrollerDirection())
-            -- wheel:onControllerOffsetChanged(input.getAxisValue(input.CONTROLLER_AXIS.RightX), input.getAxisValue(input.CONTROLLER_AXIS.RightY))
+            wheel:onControllerOffsetChanged(dir)
         end
         wheel:checkDirty()
     end
@@ -211,13 +215,12 @@ end
 local function handlePotionWheelAction(isPressed)
     handleWheelAction(isPressed, 'potions')
 end
-
 local function handleMagicWheelAction(isPressed)
     handleWheelAction(isPressed, 'magic')
 end
 
 local function handleActivate()
-    if config.main.b_ExclusiveController then
+    if config.shouldUseController() then
         wheel:onMouseClick()
     end
 end
@@ -232,6 +235,7 @@ local function Init()
     core.sendGlobalEvent('QW_UpdateWheelState', { state = false })
 end
 
+---@param key openmw.input.KeyboardEvent
 local function onKeyRelease(key)
     if key.code == input.KEY.Escape then
         setWheelMode(false)
@@ -239,10 +243,20 @@ local function onKeyRelease(key)
     end
 end
 
+local function onKeyPress()
+    config.controllerActive = false
+end
+
+local function onControllerButtonPress()
+    config.controllerActive = true
+end
+
 return {
     engineHandlers = {
         onUpdate = onUpdate,
         onKeyRelease = onKeyRelease,
+        onKeyPress = onKeyPress,
+        onControllerButtonPress = onControllerButtonPress,
         onLoad = Init,
         onInit = Init,
     },

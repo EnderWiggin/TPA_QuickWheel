@@ -81,7 +81,7 @@ local function getSpellCategories()
 end
 
 local function getALLCategories()
-     local categories = C.SpellCategories
+    local categories = C.SpellCategories
     return {
         PotionCategoryIcon:new({ name = 'Health', activate = openPotionCategory, provider = potions.provider, quickUse = true }),
         PotionCategoryIcon:new({ name = 'Stamina', activate = openPotionCategory, provider = potions.provider, quickUse = true }),
@@ -135,6 +135,15 @@ local function setWheelMode(isOn, mode)
         pause = controllerMode,
     })
 end
+local function getCotrollerDirection()
+    local stick = config.main.s_ControllerStick
+    if not stick or stick == C.ControllerStick.Left then
+        return input.getAxisValue(input.CONTROLLER_AXIS.LeftX), input.getAxisValue(input.CONTROLLER_AXIS.LeftY)
+    elseif stick == C.ControllerStick.Right then
+        return input.getAxisValue(input.CONTROLLER_AXIS.RightX), input.getAxisValue(input.CONTROLLER_AXIS.RightY)
+    end
+    return 0, 0
+end
 
 local function onUpdate()
     local wasModifiers = lastModifiers
@@ -156,10 +165,7 @@ local function onUpdate()
         end
 
         if controller or config.main.s_TimeMode == C.TimeModes.Paused then
-            wheel:onControllerOffsetChanged(
-                input.getAxisValue(input.CONTROLLER_AXIS.LeftX),
-                input.getAxisValue(input.CONTROLLER_AXIS.LeftY)
-            )
+            wheel:onControllerOffsetChanged(getCotrollerDirection())
             -- wheel:onControllerOffsetChanged(input.getAxisValue(input.CONTROLLER_AXIS.RightX), input.getAxisValue(input.CONTROLLER_AXIS.RightY))
         end
         wheel:checkDirty()

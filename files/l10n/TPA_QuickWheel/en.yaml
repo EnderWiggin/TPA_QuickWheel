@@ -47,6 +47,11 @@ SettingExclusiveControllerDesc: |-
   
   Note: controller works even without turning this on, but it may be clunky if Wheel time slowdown is not at Paused or Normal.
 
+SettingControllerStick: Selection method for controller
+SettingControllerStickDesc: Controller input that is used to select items.
+ControllerStickLeft: Left Stick
+ControllerStickRight: Right Stick
+
 # ---- Potion Settings ----
 SettingsPotionsName: Potion Settings
 

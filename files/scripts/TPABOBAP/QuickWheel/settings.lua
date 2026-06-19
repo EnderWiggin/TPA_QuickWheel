@@ -178,6 +178,20 @@ I.Settings.registerGroup {
             description = 'SettingExclusiveControllerDesc',
             default = false,
         },
+        {
+            key = 's_ControllerStick',
+            renderer = 'select',
+            name = 'SettingControllerStick',
+            description = 'SettingControllerStickDesc',
+            default = C.ControllerStick.Left,
+            argument = {
+                l10n = MODNAME,
+                items = {
+                    C.ControllerStick.Left,
+                    C.ControllerStick.Right,
+                },
+            }
+        },
     },
 }
 

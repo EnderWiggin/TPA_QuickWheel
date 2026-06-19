@@ -122,8 +122,8 @@ function PotionIcon.makeTipForItem(item)
     return tip
 end
 
-function PotionIcon:tipId()
-    return self.item.id
+function PotionIcon:Id()
+    return self.item.recordId
 end
 
 return PotionIcon

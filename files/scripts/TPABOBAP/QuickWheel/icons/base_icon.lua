@@ -55,6 +55,10 @@ function Icon:makeTip()
 end
 
 function Icon:tipId()
+    return self:Id()
+end
+
+function Icon:Id()
     return nil
 end
 

@@ -111,9 +111,13 @@ function PotionCategoryIcon:getQuickUsePotion(potions)
     return nil
 end
 
+function PotionCategoryIcon:Id()
+    return 'category:' .. self.name
+end
+
 --- quickUse can be nil - uses provider in this case
 function PotionCategoryIcon:tipId(quickUse)
-    local id = 'category:' .. self.name
+    local id = self:Id()
     quickUse = quickUse or self:getQuickUsePotion()
     if quickUse then
         id = id .. ':' .. quickUse.id

@@ -214,8 +214,8 @@ function MagicIcon.makeTipForItem(item)
     return tip
 end
 
-function MagicIcon:tipId()
-    return 'magic:' .. ((self.spell and self.spell.id) or (self.item and self.item.id))
+function MagicIcon:Id()
+    return 'magic:' .. ((self.spell and self.spell.id) or (self.item and self.item.recordId))
 end
 
 return MagicIcon

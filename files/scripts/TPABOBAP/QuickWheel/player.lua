@@ -260,7 +260,7 @@ return {
             end
         end,
         OSSC_CastingState = function(evt)
-            magics.CastingState({ isCasting = evt and evt.isCasting, delay = 0.3 })
+            magics.QuickCaster.CastingState({ isCasting = evt and evt.isCasting, delay = 0.3 })
         end,
     },
 }

@@ -318,6 +318,7 @@ local MagicEffectTypes = {
     },
 }
 
+---@enum SpellCategories
 local SpellCategories = {
     Damage = 'Damage',
     Combat = 'Combat',
@@ -356,7 +357,7 @@ local AlcoholModes = {
 }
 
 ---@enum MagicClickModes
-local MagicClickModes= {
+local MagicClickModes = {
     READY = 'SettingMagicClickModeReady',
     EQUIP = 'SettingMagicClickModeEquip',
     QCAST = 'SettingMagicClickModeQCast',

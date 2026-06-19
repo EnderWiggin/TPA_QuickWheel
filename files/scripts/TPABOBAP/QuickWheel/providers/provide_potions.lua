@@ -13,6 +13,7 @@ local PotionIcon = require('scripts.TPABOBAP.QuickWheel.icons.potion_icon')
 local PotionTypes = C.PotionTypes
 
 local function isPotionOfType(potion, type)
+    ---@type openmw.types.PotionRecord
     local record = potion.type.record(potion.recordId)
     local test = PotionTypes[type]
     if not test then return false end
@@ -23,9 +24,9 @@ local function isPotionOfType(potion, type)
     local limit = config.potions.b_NoUnknownCategory and helpers.getKnownAlchemyEffectCount(true) or math.huge
 
     local valid = false
-    for i, effect in ipairs(record.effects) do
+    for i = 1, #record.effects do
         if i > limit then return valid end
-        local t = test[effect.id]
+        local t = test[record.effects[i].id]
         if t == false then
             return false
         elseif t == true then
@@ -66,7 +67,8 @@ local function findPotions(filter)
     local pots = inventory:getAll(types.Potion)
     ---@type table<number, PotionIcon>
     local result = {}
-    for _, v in ipairs(pots) do
+    for i = 1, #pots do
+        local v = pots[i]
         if not filter or filter(v) then
             table.insert(result, v)
         end
@@ -79,8 +81,8 @@ end
 local function makePotionIcons(potions, useAction)
     ---@type table<number, PotionIcon>
     local result = {}
-    for _, v in ipairs(potions) do
-        table.insert(result, PotionIcon:new({ item = v, activate = useAction or usePotion }))
+    for i = 1, #potions do
+        table.insert(result, PotionIcon:new({ item = potions[i], activate = useAction or usePotion }))
     end
     table.sort(result, function(a, b)
         local ra = a.item.type.record(a.item.recordId)

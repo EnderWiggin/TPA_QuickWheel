@@ -18,6 +18,7 @@ local TEXT_SIZE_OVER = 24
 
 function PotionIcon:makeElement(p)
     local item = self.item
+    ---@type openmw.types.PotionRecord
     local record = item.type.record(item.recordId)
 
     local icons = ui.content {
@@ -34,10 +35,10 @@ function PotionIcon:makeElement(p)
     }
 
     local knownCount = helpers.getKnownAlchemyEffectCount(true)
-    for i, effect in ipairs(record.effects) do
+    for i = 1, #record.effects do
         local texture
         if i <= knownCount then
-            texture = helpers.effectIconTexture(effect.id)
+            texture = helpers.effectIconTexture(record.effects[i].id)
         else
             texture = helpers.createTexture('icons/TPABOBAP/QuickWheel/unknown-effect.png')
         end

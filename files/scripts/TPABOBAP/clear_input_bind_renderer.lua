@@ -65,16 +65,16 @@ return function(_, _, args)
         ambient.playSound('menu click')
     end)
     element.layout.events.mouseRelease = async:callback(function()
-        for _, v in ipairs(actions) do
-            bindingSection:set(v, nil)
+        for i = 1, #actions do
+            bindingSection:set(actions[i], nil)
         end
         if settings and section then
-            for _, v in ipairs(settings) do
+            for i = 1, #settings do
+                local v = settings[i]
                 section:set(v, section:get(v))
             end
         end
     end)
 
     return element
-
 end

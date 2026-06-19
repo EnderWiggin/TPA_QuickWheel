@@ -95,13 +95,13 @@ function MagicIcon:makeElement(p)
 
     local c = CENTER - v2(nx / 2, (ny - 1) / 2) * SIDE
 
-    for i, effect in ipairs(effects) do
+    for i = 1, n do
         local k = i - 1
         local kx = math.floor(k / ny)
         local ky =  k % ny
         local dx = odd and ny > 1 and ky == ny - 1 and 0.5 or 0
 
-        local texture = helpers.effectIconTexture(effect.id)
+        local texture = helpers.effectIconTexture(effects[i].id)
         icons:add({
             name = "effect_" .. i,
             type = ui.TYPE.Image,

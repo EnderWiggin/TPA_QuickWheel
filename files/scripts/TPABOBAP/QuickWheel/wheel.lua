@@ -179,8 +179,8 @@ function Wheel:update()
             self.ctx.selected = 0
         end
 
-        for i, p in ipairs(self.ctx.items) do
-            container:add(p:makeElement(circle_pos(n, i - 1, R)))
+        for i = 1, #self.ctx.items do
+            container:add(self.ctx.items[i]:makeElement(circle_pos(n, i - 1, R)))
         end
 
         self:updateIcons()
@@ -239,7 +239,8 @@ function Wheel:updateIcons()
     local tipId = self.ctx.tipId
     local newTipId
     local tip
-    for i, v in ipairs(self.ctx.items) do
+    for i = 1, #self.ctx.items do
+        local v = self.ctx.items[i]
         if i == self.ctx.selected then
             v:update(true)
             newTipId = v:tipId()

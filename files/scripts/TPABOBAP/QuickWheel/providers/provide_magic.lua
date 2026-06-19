@@ -97,7 +97,9 @@ local function getMagicItemCountAdjustedByQueue(item)
         return count
     end
 
-    for _, d in ipairs(QuickCaster.GetQueue()) do
+    local queue = QuickCaster.GetQueue()
+    for i = 1, #queue do
+        local d = queue[i]
         if d.item and d.item.id == item.id then
             count = count - 1
         end
@@ -105,9 +107,11 @@ local function getMagicItemCountAdjustedByQueue(item)
     return count
 end
 
+---@param effects openmw.core.MagicEffectWithParams[]
+---@param type SpellCategories
 local function isSpellOfType(effects, type)
-    for _, effect in ipairs(effects) do
-        local data = helpers.categorizeMagicEffectWithParams(effect)
+    for i = 1, #effects do
+        local data = helpers.categorizeMagicEffectWithParams(effects[i])
         local etype = data.type
         if type == C.SpellCategories.Combat then
             if etype == 'Combat' then return true end
@@ -158,7 +162,8 @@ local function findMagics(filter)
 
     local result_spells = {}
     local spells = omwself.type.spells(omwself)
-    for _, spell in ipairs(spells) do
+    for i = 1, #spells do
+        local spell = spells[i]
         if spell.type == core.magic.SPELL_TYPE.Spell and filter(spell.effects) and not hidden[spell.id] then
             table.insert(result_spells, spell)
         end
@@ -195,7 +200,8 @@ local function findMagics(filter)
             enchant.type ~= core.magic.ENCHANTMENT_TYPE.CastOnStrike
     end)
 
-    for _, item in ipairs(magicItems) do
+    for i = 1, #magicItems do
+        local item = magicItems[i]
         if not hidden[item.id] and getMagicItemCountAdjustedByQueue(item) > 0 then
             local enchantId = item.type.record(item).enchant
             local enchant = enchantId and core.magic.enchantments.records[enchantId]
@@ -222,11 +228,11 @@ local function findMagics(filter)
 
     -- ----------- Combine Results ----------------------
     local result = {}
-    for _, s in ipairs(result_spells) do
-        table.insert(result, { spell = s })
+    for i = 1, #result_spells do
+        table.insert(result, { spell = result_spells[i] })
     end
-    for _, i in ipairs(result_items) do
-        table.insert(result, { item = i })
+    for i = 1, #result_items do
+        table.insert(result, { item = result_items[i] })
     end
 
     return result
@@ -246,7 +252,8 @@ local function makeMagicIcons(magics)
     ---@type table<number, MagicIcon>
     local result = {}
 
-    for _, v in ipairs(magics) do
+    for i = 1, #magics do
+        local v = magics[i]
         local data = { spell = v.spell, item = v.item, activate = activateMagic }
         if v.item then
             data.custom_count = getMagicItemCountAdjustedByQueue(v.item)

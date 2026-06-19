@@ -196,6 +196,7 @@ local function getEffectType(id)
     return 'Unknown'
 end
 
+---@param effectParams openmw.core.MagicEffectWithParams
 Helpers.categorizeMagicEffectWithParams = function(effectParams)
     local effect = core.magic.effects.records[effectParams.id]
     local isCustom = false
@@ -236,8 +237,8 @@ Helpers.hasTouchEffects = function(cast)
 
     if not effects then return false end
 
-    for _, e in ipairs(effects) do
-        if e.range == core.magic.RANGE.Touch then
+    for i = 1, #effects do
+        if effects[i].range == core.magic.RANGE.Touch then
             return true
         end
     end

@@ -104,7 +104,8 @@ local function updateWidget()
         container.props.arrange = Positioning.arrange
     end
 
-    for i, c in ipairs(QuickCastQueue) do
+    for i = 1, #QuickCastQueue do
+        local c = QuickCastQueue[i]
         local name = c.id
         if c.spell then
             name = c.spell.name

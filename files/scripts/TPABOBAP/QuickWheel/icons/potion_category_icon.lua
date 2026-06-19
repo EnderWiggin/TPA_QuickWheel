@@ -32,8 +32,9 @@ local PotionCategoryIcon = CategoryIcon:new()
 
 function PotionCategoryIcon:makeElement(p)
     local count = 0
-    for _, v in ipairs(self:provider()) do
-        count = count + v.count
+    local items = self:provider()
+    for i = 1, #items do
+        count = count + items[i].count
     end
 
     self.element = {

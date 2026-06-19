@@ -80,6 +80,7 @@ function MagicIcon:makeElement(p)
     local n = #effects
     local ny = util.round(math.sqrt(n))
     local nx = math.ceil(n / ny) - 1
+    local odd = n % ny ~= 0
 
     local SIDE = 0.25
     if n < 2 then
@@ -98,7 +99,7 @@ function MagicIcon:makeElement(p)
         local k = i - 1
         local kx = math.floor(k / ny)
         local ky =  k % ny
-        local dx = ny > 1 and ky == ny - 1 and 0.5 or 0
+        local dx = odd and ny > 1 and ky == ny - 1 and 0.5 or 0
 
         local texture = helpers.effectIconTexture(effect.id)
         icons:add({

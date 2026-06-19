@@ -243,8 +243,12 @@ local function onKeyRelease(key)
     end
 end
 
-local function onKeyPress()
+---@param evt openmw.input.KeyboardEvent
+local function onKeyPress(evt)
     config.controllerActive = false
+    if isWheelModeOn then
+        wheel:onKeyPress(evt)
+    end
 end
 
 local function onControllerButtonPress()

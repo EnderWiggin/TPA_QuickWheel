@@ -1,8 +1,11 @@
 ---@omw-context player
+local input = require('openmw.input')
+local I = require('openmw.interfaces')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
 local async = require('openmw.async')
 
+local mwui = I.MWUI
 local v2 = util.vector2
 local pi2 = 2 * math.pi
 
@@ -22,8 +25,13 @@ local DIRTY_DELAY = 2
 
 local Wheel = {}
 
+---@alias WheelKeybinds table<openmw.input.KeyCode, string>
+---@alias WheelKeybindsReverse table<string, openmw.input.KeyCode>
+
 ---@class WheelContext
 ---@field widget openmw.ui.Element
+---@field keybinds WheelKeybinds?
+---@field keybindsReverse WheelKeybindsReverse?
 Wheel.ctx = {
     shown = false,
 
@@ -123,6 +131,15 @@ local function makeWheel(self)
                 content = ui.content {}
             },
             {
+                name = 'binds',
+                props = {
+                    relativeSize = v2(1, 1),
+                    relativePosition = v2(0.5, 0.5),
+                    anchor = v2(0.5, 0.5),
+                },
+                content = ui.content {}
+            },
+            {
                 name = 'tooltip',
                 props = {
                     relativeSize = v2(1, 1),
@@ -132,6 +149,42 @@ local function makeWheel(self)
                 content = ui.content {}
             }
         }),
+    }
+end
+
+---@param key openmw.input.KeyCode
+---@param pos openmw.util.Vector2
+local function makeKeybind(key, pos, n)
+    return {
+        template = mwui.templates.boxSolid,
+        name = 'wheel-keybind-' .. tostring(n),
+        props = {
+            relativePosition = v2(0.5, 0.5),
+            anchor = v2(0.5, 0.5),
+            alpha = 0.2,
+            position = pos,
+        },
+        content = ui.content {
+            {
+                name = 'text',
+                template = helpers.padding(4),
+                content = ui.content {
+                    {
+                        name = 'title',
+                        template = mwui.templates.textNormal,
+                        props = {
+                            text = input.getKeyName(key),
+                            autoSize = false,
+                            size = v2(15, 15),
+                            textSize = 16,
+                            textAlignH = ui.ALIGNMENT.Center,
+                            textAlignV = ui.ALIGNMENT.Center,
+                            inheritAlpha = false,
+                        }
+                    },
+                }
+            }
+        }
     }
 end
 
@@ -149,7 +202,8 @@ end
 ---@function
 ---@param show boolean
 ---@param provider fun():table<number, Icon>
-function Wheel:show(show, provider)
+---@param keybinds WheelKeybinds?
+function Wheel:show(show, provider, keybinds)
     --if self.ctx.shown == show then return end
 
     if show then
@@ -159,6 +213,15 @@ function Wheel:show(show, provider)
     self.ctx.dirty = 0
     self.ctx.shown = show
     self.ctx.itemProvider = provider
+    self.ctx.keybinds = keybinds
+    if keybinds then
+        self.ctx.keybindsReverse = {}
+        for k, v in pairs(keybinds) do
+            self.ctx.keybindsReverse[v] = k
+        end
+    else
+        self.ctx.keybindsReverse = nil
+    end
     self:update()
 end
 
@@ -166,13 +229,15 @@ function Wheel:update()
     local wheel = self.ctx.widget
     wheel.layout.props.visible = self.ctx.shown
     if self.ctx.shown then
-        local container = wheel.layout.content['icons'].content
-        helpers.destroyContentChildren(container)
+        local iconContainer = wheel.layout.content['icons'].content
+        local bindsContainer = wheel.layout.content['binds'].content
+        helpers.destroyContentChildren(iconContainer)
+        helpers.destroyContentChildren(bindsContainer)
 
         self.ctx.items = type(self.ctx.itemProvider) == 'function' and self.ctx.itemProvider() or {}
 
         local n = #self.ctx.items
-
+        local binds = self.ctx.keybindsReverse
         if self.ctx.lastOffset then
             self.ctx.selected = getSectorIdx(self.ctx.lastOffset, n, DEAD_ZONE)
         else
@@ -180,7 +245,12 @@ function Wheel:update()
         end
 
         for i = 1, #self.ctx.items do
-            container:add(self.ctx.items[i]:makeElement(circle_pos(n, i - 1, R)))
+            local item = self.ctx.items[i]
+            iconContainer:add(item:makeElement(circle_pos(n, i - 1, R)))
+            local key = binds and binds[item:Id()]
+            if key then
+                bindsContainer:add(makeKeybind(key, circle_pos(n, i - 1, R * 0.75), i))
+            end
         end
 
         self:updateIcons()
@@ -224,12 +294,7 @@ end
 ---@param offset openmw.util.Vector2
 function Wheel:onOffsetChanged(offset)
     self.ctx.lastOffset = offset
-    local wheel = self.ctx.widget
-    local container = wheel.layout.content['icons'].content
-    if not container then return end
-    local selectedIdx = getSectorIdx(offset, #container, DEAD_ZONE)
-    self.ctx.selected = selectedIdx
-    --print("Move: ", helpers.deepPrint(offset) .. ' Sector: ', selectedIdx, #container)
+    self.ctx.selected = getSectorIdx(offset, #self.ctx.items, DEAD_ZONE)
     self:updateIcons()
 end
 
@@ -268,6 +333,21 @@ function Wheel:onMouseClick()
     if self.ctx.shown and self.ctx.dirty <= 0 and self.ctx.selected > 0 and self.ctx.items then
         self.ctx.items[self.ctx.selected]:activate()
         self:markDirty()
+    end
+end
+
+---@param evt openmw.input.KeyboardEvent
+function Wheel:onKeyPress(evt)
+    local bind = self.ctx.keybinds and self.ctx.keybinds[evt.code]
+    if not bind then return end
+
+    local items = self.ctx.items
+    for i = 1, #items do
+        if items[i]:Id() == bind then
+            items[i]:activate()
+            self:markDirty()
+            return
+        end
     end
 end
 

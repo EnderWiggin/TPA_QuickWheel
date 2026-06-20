@@ -379,6 +379,21 @@ local QueueWidgetPosition = {
     TOP_RIGHT = 'QueueWidgetPositionTopRight',
 }
 
+local Actions = {
+    Omni = "TPA_QuickWheel_Open_Omni",
+    Potion = "TPA_QuickWheel_Open_Potion",
+    Magic = "TPA_QuickWheel_Open_Magic",
+}
+
+local WheelOpenKeyBind = {
+    Omni = Actions.Omni,
+    Potion = Actions.Potion,
+    Magic = Actions.Magic,
+    OmniAlt = Actions.Omni .. '_ALT',
+    PotionAlt = Actions.Potion .. '_ALT',
+    MagicAlt = Actions.Magic .. '_ALT',
+}
+
 local getTimeScale = function(mode)
     if mode == TimeModes.Normal then
         return 1
@@ -402,9 +417,8 @@ return {
     AlcoholModes = AlcoholModes,
     getTimeScale = getTimeScale,
     KeyHoldThreshold = 0.35, --- if key is held longer than this in smart mode, assume we want hold variant
-    actionOpenOmniWheel = "TPA_QuickWheel_Open_Omni",
-    actionOpenPotionWheel = "TPA_QuickWheel_Open_Potion",
-    actionOpenMagicWheel = "TPA_QuickWheel_Open_Magic",
+    Actions = Actions,
+    WheelOpenKeyBind = WheelOpenKeyBind,
     SpellCategories = SpellCategories,
     MagicClickModes = MagicClickModes,
     QueueWidgetPosition = QueueWidgetPosition,

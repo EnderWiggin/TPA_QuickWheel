@@ -8,7 +8,7 @@ local C = require('scripts.TPABOBAP.QuickWheel.constants')
 I.Settings.registerRenderer('TPABOBAP/ClearInputBindings', require('scripts.TPABOBAP.clear_input_bind_renderer'))
 
 input.registerAction {
-    key = C.actionOpenOmniWheel,
+    key = C.Actions.Omni,
     type = input.ACTION_TYPE.Boolean,
     l10n = MODNAME,
     name = '',
@@ -17,7 +17,7 @@ input.registerAction {
 }
 
 input.registerAction {
-    key = C.actionOpenPotionWheel,
+    key = C.Actions.Potion,
     type = input.ACTION_TYPE.Boolean,
     l10n = MODNAME,
     name = '',
@@ -26,7 +26,7 @@ input.registerAction {
 }
 
 input.registerAction {
-    key = C.actionOpenMagicWheel,
+    key = C.Actions.Magic,
     type = input.ACTION_TYPE.Boolean,
     l10n = MODNAME,
     name = '',
@@ -54,10 +54,10 @@ I.Settings.registerGroup {
             renderer = 'inputBinding',
             name = 'SettingKeyOmniWheel',
             description = 'SettingKeyOmniWheelDesc',
-            default = C.actionOpenOmniWheel,
+            default = C.WheelOpenKeyBind.Omni,
             argument = {
                 type = "action",
-                key = C.actionOpenOmniWheel
+                key = C.Actions.Omni
             },
         },
         {
@@ -65,10 +65,10 @@ I.Settings.registerGroup {
             renderer = 'inputBinding',
             name = 'SettingKeyPotionWheel',
             description = 'SettingKeyPotionWheelDesc',
-            default = C.actionOpenPotionWheel,
+            default = C.WheelOpenKeyBind.Potion,
             argument = {
                 type = "action",
-                key = C.actionOpenPotionWheel
+                key = C.Actions.Potion
             },
         },
         {
@@ -76,10 +76,10 @@ I.Settings.registerGroup {
             renderer = 'inputBinding',
             name = 'SettingKeyMagicWheel',
             description = 'SettingKeyMagicWheelDesc',
-            default = C.actionOpenMagicWheel,
+            default = C.WheelOpenKeyBind.Magic,
             argument = {
                 type = "action",
-                key = C.actionOpenMagicWheel
+                key = C.Actions.Magic
             },
         },
         {
@@ -87,10 +87,10 @@ I.Settings.registerGroup {
             renderer = 'inputBinding',
             name = 'SettingKeyOmniWheelAlt',
             description = 'SettingKeyOmniWheelDesc',
-            default = C.actionOpenOmniWheel .. '_ALT',
+            default = C.WheelOpenKeyBind.OmniAlt,
             argument = {
                 type = "action",
-                key = C.actionOpenOmniWheel
+                key = C.Actions.Omni
             },
         },
         {
@@ -98,10 +98,10 @@ I.Settings.registerGroup {
             renderer = 'inputBinding',
             name = 'SettingKeyPotionWheelAlt',
             description = 'SettingKeyPotionWheelDesc',
-            default = C.actionOpenPotionWheel .. '_ALT',
+            default = C.WheelOpenKeyBind.PotionAlt,
             argument = {
                 type = "action",
-                key = C.actionOpenPotionWheel
+                key = C.Actions.Potion
             },
         },
         {
@@ -109,10 +109,10 @@ I.Settings.registerGroup {
             renderer = 'inputBinding',
             name = 'SettingKeyMagicWheelAlt',
             description = 'SettingKeyMagicWheelDesc',
-            default = C.actionOpenMagicWheel .. '_ALT',
+            default = C.WheelOpenKeyBind.MagicAlt,
             argument = {
                 type = "action",
-                key = C.actionOpenMagicWheel
+                key = C.Actions.Magic
             },
         },
         {
@@ -123,12 +123,12 @@ I.Settings.registerGroup {
             argument = {
                 section = 'TPA_QuickWheel/MainSettings',
                 actions = {
-                    C.actionOpenOmniWheel,
-                    C.actionOpenPotionWheel,
-                    C.actionOpenMagicWheel,
-                    C.actionOpenOmniWheel .. '_ALT',
-                    C.actionOpenPotionWheel .. '_ALT',
-                    C.actionOpenMagicWheel .. '_ALT',
+                    C.WheelOpenKeyBind.Omni,
+                    C.WheelOpenKeyBind.Potion,
+                    C.WheelOpenKeyBind.Magic,
+                    C.WheelOpenKeyBind.OmniAlt,
+                    C.WheelOpenKeyBind.PotionAlt,
+                    C.WheelOpenKeyBind.MagicAlt,
                 },
                 settings = {
                     'k_OmniWheel',

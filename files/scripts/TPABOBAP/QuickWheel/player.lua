@@ -231,9 +231,9 @@ end
 
 local function Init()
     wheel:init(omwself)
-    input.registerActionHandler(C.actionOpenOmniWheel, async:callback(handleOmniWheelAction))
-    input.registerActionHandler(C.actionOpenPotionWheel, async:callback(handlePotionWheelAction))
-    input.registerActionHandler(C.actionOpenMagicWheel, async:callback(handleMagicWheelAction))
+    input.registerActionHandler(C.Actions.Omni, async:callback(handleOmniWheelAction))
+    input.registerActionHandler(C.Actions.Potion, async:callback(handlePotionWheelAction))
+    input.registerActionHandler(C.Actions.Magic, async:callback(handleMagicWheelAction))
     input.registerTriggerHandler('Activate', async:callback(handleActivate))
 
     core.sendGlobalEvent('QW_UpdateWheelState', { state = false })

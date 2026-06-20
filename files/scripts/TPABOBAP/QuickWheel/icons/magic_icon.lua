@@ -98,7 +98,7 @@ function MagicIcon:makeElement(p)
     for i = 1, n do
         local k = i - 1
         local kx = math.floor(k / ny)
-        local ky =  k % ny
+        local ky = k % ny
         local dx = odd and ny > 1 and ky == ny - 1 and 0.5 or 0
 
         local texture = helpers.effectIconTexture(effects[i].id)
@@ -218,7 +218,12 @@ function MagicIcon:Id()
     if self.spell then
         return 'spell:' .. self.spell.id
     elseif self.item then
-        return 'enchant:' .. self.item.recordId
+        local enchantId = self.item.type.record(self.item).enchant
+        local enchant = enchantId and core.magic.enchantments.records[enchantId]
+        if enchant and enchant.type == core.magic.ENCHANTMENT_TYPE.CastOnce then
+            return 'scroll:' .. self.item.recordId
+        end
+        return 'enchant:' .. self.item.id
     end
     return nil --shouldn't get here
 end

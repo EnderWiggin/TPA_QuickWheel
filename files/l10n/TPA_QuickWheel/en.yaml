@@ -217,3 +217,15 @@ Magic_Category_Desc_Restore: |-
 Magic_Category_Title_Summon: Summon
 Magic_Category_Desc_Summon: |-
   Magic that summons creatures, weapons and armors.
+
+
+#Wheel Keybinding
+BTN_BIND_KEYS: "Keybinding\nMode Toggle"
+TIP_BIND_KEYS_TITLE: Keybinding Mode
+TIP_BIND_KEYS_DESC: |-
+  Hover over any wheel item and press (almost) any key to set it as keybind.
+  Click on `Toggle Keybinding` button to stop.
+  Press `{backspace}` to remove a keybind.
+  
+  Keys that open inventory or any other menu are not supported. As well as these keys:
+  {forbidden}

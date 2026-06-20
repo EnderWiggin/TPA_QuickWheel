@@ -28,8 +28,7 @@ local potions = require('scripts.TPABOBAP.QuickWheel.providers.provide_potions')
 local magics = require('scripts.TPABOBAP.QuickWheel.providers.provide_magic')
 
 ---@type table<string, WheelKeybinds>
-local keybinds = {
-}
+local keybinds = {}
 
 ---@param icon PotionCategoryIcon
 local function openPotionCategory(icon)
@@ -40,9 +39,14 @@ local function openPotionCategory(icon)
     if quickUse then
         potions.usePotion(quickUse)
     else
-        wheel:show(true, function()
-            return potions.makeIcons(icon:provider(), icon.name == 'Poison' and potions.usePoison or nil)
-        end, keybinds[icon:Id()])
+        local id = icon:Id()
+        wheel:show(true, {
+            name = id,
+            keybinds = keybinds[icon:Id()],
+            provider = function()
+                return potions.makeIcons(icon:provider(), icon.name == 'Poison' and potions.usePoison or nil)
+            end
+        })
     end
 end
 
@@ -64,9 +68,14 @@ local function openSpellCategory(icon)
     if not wheel.shown then return end
     local spells = icon:provider()
     if #spells == 0 then return end
-    wheel:show(true, function()
-        return magics.makeIcons(icon:provider())
-    end, keybinds[icon:Id()])
+    local id = icon:Id()
+    wheel:show(true, {
+        name = id,
+        keybinds = keybinds[id],
+        provider = function()
+            return magics.makeIcons(icon:provider())
+        end
+    })
 end
 
 local function getSpellCategories()
@@ -126,12 +135,16 @@ local function setWheelMode(isOn, mode)
     end
 
     currentWheelMode = mode
+    local id
     if currentWheelMode == 'potions' then
-        wheel:show(isWheelModeOn, getPotionCategories, keybinds['wheel:' .. currentWheelMode])
+        id = 'wheel:' .. currentWheelMode
+        wheel:show(isWheelModeOn, { name = id, keybinds = keybinds[id], provider = getPotionCategories })
     elseif currentWheelMode == 'magic' then
-        wheel:show(isWheelModeOn, getSpellCategories, keybinds['wheel:' .. currentWheelMode])
+        id = 'wheel:' .. currentWheelMode
+        wheel:show(isWheelModeOn, { name = id, keybinds = keybinds[id], provider = getSpellCategories })
     else
-        wheel:show(isWheelModeOn, getALLCategories, keybinds['wheel:omni'])
+        id = 'wheel:omni'
+        wheel:show(isWheelModeOn, { name = id, keybinds = keybinds[id], provider = getALLCategories })
     end
 
     core.sendGlobalEvent('QW_UpdateWheelState', {
@@ -181,6 +194,7 @@ local function onUpdate()
 end
 
 local function handleWheelAction(isPressed, wheelMode)
+    if wheel.isKeybindingActive then return end
     local uiMode = I.UI.getMode()
     if isPressed then
         if uiMode ~= nil and uiMode ~= InterfaceMode then return end
@@ -239,9 +253,27 @@ local function Init()
     core.sendGlobalEvent('QW_UpdateWheelState', { state = false })
 end
 
----@param key openmw.input.KeyboardEvent
-local function onKeyRelease(key)
-    if key.code == input.KEY.Escape then
+local function onLoad(loadData)
+    Init()
+    keybinds = loadData and loadData.keybinds or {}
+end
+
+local function onSave()
+    return {
+        version = 1,
+        keybinds = keybinds,
+    }
+end
+
+---@param data {name: string, binds: WheelKeybinds}
+local function onSetKeybinds(data)
+    if not data or not data.name or not data.binds then return end
+    keybinds[data.name] = data.binds
+end
+
+---@param evt openmw.input.KeyboardEvent
+local function onKeyRelease(evt)
+    if evt.code == input.KEY.Escape then
         setWheelMode(false)
         return
     end
@@ -265,8 +297,8 @@ return {
         onKeyRelease = onKeyRelease,
         onKeyPress = onKeyPress,
         onControllerButtonPress = onControllerButtonPress,
-        onLoad = Init,
-        onInit = Init,
+        onLoad = onLoad,
+        onSave = onSave,
     },
     eventHandlers = {
         IE_Update = function()
@@ -281,6 +313,7 @@ return {
                 setWheelMode(data.wheelState, data.wheelMode)
             end
         end,
+        QW_SetWheelKeybinds = onSetKeybinds,
         OSSC_CastingState = function(evt)
             magics.QuickCaster.CastingState({ isCasting = evt and evt.isCasting, delay = 0.3 })
         end,

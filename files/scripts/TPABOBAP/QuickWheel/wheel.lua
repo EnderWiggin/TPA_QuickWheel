@@ -1,16 +1,24 @@
 ---@omw-context player
+local core = require('openmw.core')
 local input = require('openmw.input')
 local I = require('openmw.interfaces')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
+local ambient = require('openmw.ambient')
 local async = require('openmw.async')
+local auxUi = require('openmw_aux.ui')
+local omwself = require('openmw.self')
+local storage = require('openmw.storage')
 
-local mwui = I.MWUI
+local bindingSection = storage.playerSection('OMWInputBindings')
+local l10n = core.l10n('TPA_QuickWheel')
+local MWUI = I.MWUI.templates
 local v2 = util.vector2
 local pi2 = 2 * math.pi
 
 local config = require('scripts.TPABOBAP.QuickWheel.config')
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
+local C = require('scripts.TPABOBAP.QuickWheel.constants')
 
 local R
 local DEAD_ZONE
@@ -19,17 +27,18 @@ local MIN_SECTORS = 8
 local CONTROLLER = false
 
 local MWUIConstants = require('scripts.omw.mwui.constants')
+local TextDefault = MWUI.textNormal.props.textColor
+local TextHighlight = MWUI.textHeader.props.textColor
 
 ---delay update when dirty by 2 frames
 local DIRTY_DELAY = 2
 
 ---@alias WheelKeybinds table<openmw.input.KeyCode, string>
----@alias WheelKeybindsReverse table<string, openmw.input.KeyCode>
 
 ---@class WheelContext
 ---@field widget openmw.ui.Element
 ---@field keybinds WheelKeybinds?
----@field keybindsReverse WheelKeybindsReverse?
+---@field name string?
 local Wheel = {
     shown = false,
 
@@ -42,10 +51,80 @@ local Wheel = {
     ---@type nil | string | boolean
     tipId = nil,
 
-    ---@function
-    ---@return table<number, Icon>
+    ---@type IconProvider?
     itemProvider = nil,
+    isKeybindingActive = false,
+    ---@type openmw.ui.Element?
+    keybindTutorial = nil,
 }
+
+local forbiddenKeys = {}
+
+local function updateForbiddenKeys()
+    forbiddenKeys = {
+        [input.KEY.Escape] = true,    -- closes wheel/menus
+        [input.KEY.Backspace] = true, -- clears current keybind, maybe make it configurable?
+
+        -- modifier keys are used by the wheel - ignore them
+        [input.KEY.LeftShift] = true,
+        [input.KEY.RightShift] = true,
+        [input.KEY.LeftCtrl] = true,
+        [input.KEY.RightCtrl] = true,
+        [input.KEY.LeftAlt] = true,
+        [input.KEY.RightAlt] = true,
+
+        -- most Fn keys do some stuff, ignore them
+        [input.KEY.F1] = true,
+        [input.KEY.F3] = true,
+        [input.KEY.F4] = true,
+        [input.KEY.F5] = true,
+        [input.KEY.F6] = true,
+        [input.KEY.F7] = true,
+        [input.KEY.F8] = true,
+        [input.KEY.F9] = true,
+        [input.KEY.F10] = true,
+        [input.KEY.F11] = true,
+        [input.KEY.F12] = true,
+    }
+    for _, key in pairs(C.WheelOpenKeyBind) do
+        local bind = bindingSection:get(key)
+        if bind and bind.device == 'keyboard' then
+            forbiddenKeys[bind.button] = true
+        end
+    end
+end
+
+local function getForbiddenKeyLine()
+    local codes = {}
+    for k, _ in pairs(forbiddenKeys) do
+        table.insert(codes, k)
+    end
+    table.sort(codes)
+
+    local keys = {}
+    for i = 1, #codes do
+        table.insert(keys, input.getKeyName(codes[i]))
+    end
+
+    return table.concat(keys, ', ')
+end
+
+---@type {key:openmw.input.KeyCode, id:string}?
+local pendingBind = nil
+
+---@param self WheelContext
+local function checkPendingBind(self)
+    if not pendingBind then return end
+    self.keybinds = self.keybinds or {}
+    local reversed = helpers.transposeTable(self.keybinds)
+
+    local was = reversed and reversed[pendingBind.id]
+    if was then self.keybinds[was] = nil end
+    self.keybinds[pendingBind.key] = pendingBind.id
+    pendingBind = nil
+
+    omwself:sendEvent('QW_SetWheelKeybinds', { name = self.name, binds = self.keybinds })
+end
 
 local function updateSizeConfigs()
     local windowsIndex = ui.layers.indexOf('Windows')
@@ -86,8 +165,59 @@ local function getSectorIdx(c, n, z)
     return 1 + math.floor(a / step)
 end
 
+---@param self WheelContext
+---@return openmw.ui.Element
+local function makeKeybindButton(self)
+    local element = ui.create {
+        name = 'reset_button',
+        template = MWUI.boxSolid,
+        props = {},
+        content = ui.content {
+            {
+                type = ui.TYPE.Flex,
+                props = {
+                    horizontal = true,
+                    arrange = ui.ALIGNMENT.Center,
+                },
+                content = ui.content {
+                    { props = { size = v2(8, 0), }, },
+                    {
+                        template = MWUI.textNormal,
+                        props = {
+                            text = l10n('BTN_BIND_KEYS'),
+                            textColor = TextDefault,
+                            multiline = true,
+                            textAlignH = ui.ALIGNMENT.Center,
+                            textAlignV = ui.ALIGNMENT.Center,
+                        },
+                    },
+                    { props = { size = v2(8, 0), }, },
+                }
+            }
+        },
+        events = {},
+    }
+    element.layout.events.focusGain = async:callback(function()
+        element.layout.content[1].content[2].props.textColor = TextHighlight
+        if self.shown then element:update() end
+    end)
+    element.layout.events.focusLoss = async:callback(function()
+        element.layout.content[1].content[2].props.textColor = TextDefault
+        if self.shown then element:update() end
+    end)
+    element.layout.events.mousePress = async:callback(function()
+        ambient.playSound('menu click', { scale = false })
+    end)
+    element.layout.events.mouseRelease = async:callback(function()
+        self:toggleKeybindMode()
+    end)
+
+    return element
+end
+
+---@param self WheelContext
 local function makeWheel(self)
-    return ui.create {
+    local wheel = ui.create {
         name = 'QuickWheel',
         layer = 'Windows',
         type = ui.TYPE.Widget,
@@ -148,13 +278,17 @@ local function makeWheel(self)
             }
         }),
     }
+
+    wheel.layout.content:add(makeKeybindButton(self))
+
+    return wheel
 end
 
 ---@param key openmw.input.KeyCode
 ---@param pos openmw.util.Vector2
-local function makeKeybind(key, pos, n)
+local function makeKeybindIcon(key, pos, n)
     return {
-        template = mwui.templates.boxSolid,
+        template = MWUI.boxSolid,
         name = 'wheel-keybind-' .. tostring(n),
         props = {
             relativePosition = v2(0.5, 0.5),
@@ -169,7 +303,7 @@ local function makeKeybind(key, pos, n)
                 content = ui.content {
                     {
                         name = 'title',
-                        template = mwui.templates.textNormal,
+                        template = MWUI.textNormal,
                         props = {
                             text = input.getKeyName(key),
                             autoSize = false,
@@ -197,29 +331,27 @@ function Wheel:init(target)
     self.target = target
 end
 
+---@alias IconProvider fun():Icon[]
+
 ---@function
 ---@param show boolean
----@param provider fun():table<number, Icon>
----@param keybinds WheelKeybinds?
-function Wheel:show(show, provider, keybinds)
+---@param opts {name: string, keybinds: WheelKeybinds?, provider: IconProvider? }?
+function Wheel:show(show, opts)
     --if self.shown == show then return end
 
     if show then
         updateSizeConfigs()
+    else
+        self.isKeybindingActive = false
+        self:destroyKeybindTutorial()
+        pendingBind = nil
     end
 
     self.dirty = 0
     self.shown = show
-    self.itemProvider = provider
-    self.keybinds = keybinds
-    if keybinds then
-        self.keybindsReverse = {}
-        for k, v in pairs(keybinds) do
-            self.keybindsReverse[v] = k
-        end
-    else
-        self.keybindsReverse = nil
-    end
+    self.itemProvider = opts and opts.provider
+    self.name = opts and opts.name
+    self.keybinds = opts and opts.keybinds
     self:update()
 end
 
@@ -235,7 +367,7 @@ function Wheel:update()
         self.items = type(self.itemProvider) == 'function' and self.itemProvider() or {}
 
         local n = #self.items
-        local binds = self.keybindsReverse
+        local binds = helpers.transposeTable(self.keybinds)
         if self.lastOffset then
             self.selected = getSectorIdx(self.lastOffset, n, DEAD_ZONE)
         else
@@ -247,7 +379,8 @@ function Wheel:update()
             iconContainer:add(item:makeElement(circle_pos(n, i - 1, R)))
             local key = binds and binds[item:Id()]
             if key then
-                bindsContainer:add(makeKeybind(key, circle_pos(n, i - 1, R * 0.75), i))
+                bindsContainer:add(makeKeybindIcon(key, circle_pos(n, i - 1, R * 0.75), i))
+                binds[key] = nil
             end
         end
 
@@ -272,6 +405,7 @@ function Wheel:checkDirty()
     end
 
     if self.dirty == 0 then
+        checkPendingBind(self)
         self.tipId = false --false is used to make sure tip will get re-evaluated
         self:update()
     end
@@ -327,15 +461,9 @@ function Wheel:updateIcons()
     end
 end
 
-function Wheel:onMouseClick()
-    if self.shown and self.dirty <= 0 and self.selected > 0 and self.items then
-        self.items[self.selected]:activate()
-        self:markDirty()
-    end
-end
-
+---@private
 ---@param evt openmw.input.KeyboardEvent
-function Wheel:onKeyPress(evt)
+function Wheel:activateKeyBind(evt)
     local bind = self.keybinds and self.keybinds[evt.code]
     if not bind then return end
 
@@ -347,6 +475,131 @@ function Wheel:onKeyPress(evt)
             return
         end
     end
+end
+
+---@private
+---@param evt openmw.input.KeyboardEvent
+function Wheel:makeKeyBind(evt)
+    if self.selected <= 0 then return end
+
+    local item = self.items[self.selected]
+    local id = item and item:Id()
+    if not id then return end
+
+    if evt.code == input.KEY.Backspace then
+        pendingBind = nil
+        local reversed = helpers.transposeTable(self.keybinds)
+        local was = reversed and reversed[id]
+        if was then
+            self.keybinds[was] = nil
+            self:markDirty()
+            omwself:sendEvent('QW_SetWheelKeybinds', { name = self.name, binds = self.keybinds })
+        end
+        return
+    elseif forbiddenKeys[evt.code] then
+        pendingBind = nil
+        return
+    end
+
+    pendingBind = { key = evt.code, id = id }
+    self:markDirty()
+end
+
+function Wheel:onMouseClick()
+    if self.shown and self.dirty <= 0 and self.selected > 0 and self.items then
+        self.items[self.selected]:activate()
+        self:markDirty()
+    end
+end
+
+---@param evt openmw.input.KeyboardEvent
+function Wheel:onKeyPress(evt)
+    if self.isKeybindingActive then
+        if evt.code == input.KEY.Escape then
+            self:toggleKeybindMode()
+            return
+        end
+        self:makeKeyBind(evt)
+    else
+        self:activateKeyBind(evt)
+    end
+end
+
+---@private
+function Wheel:makeKeybindTutorial()
+    local content = self.widget and self.widget.layout.content
+    if content and not self.keybindTutorial then
+        local opts = { backspace = input.getKeyName(input.KEY.Backspace), forbidden = getForbiddenKeyLine() }
+
+        self.keybindTutorial = ui.create({
+            template = MWUI.boxSolid,
+            props = {
+                relativePosition = v2(0, 1),
+                anchor = v2(0, 1),
+                position = v2(5, -5)
+            },
+            content = ui.content {
+                {
+                    name = 'padding',
+                    template = helpers.padding(4),
+                    content = ui.content {
+                        {
+                            type = ui.TYPE.Flex,
+                            props = {
+                                arrange = ui.ALIGNMENT.Center,
+                            },
+                            content = ui.content {
+                                {
+                                    name = 'title',
+                                    template = MWUI.textHeader,
+                                    props = {
+                                        text = l10n('TIP_BIND_KEYS_TITLE'),
+                                        autoSize = true,
+                                        textAlignH = ui.ALIGNMENT.Center,
+                                    }
+                                },
+                                {
+                                    name = 'body',
+                                    template = MWUI.textNormal,
+                                    props = {
+                                        text = l10n('TIP_BIND_KEYS_DESC', opts),
+                                        autoSize = false,
+                                        multiline = true,
+                                        wordWrap = true,
+                                        size = v2(300, 200),
+                                        textAlignV = ui.ALIGNMENT.Center,
+                                        textAlignH = ui.ALIGNMENT.Center,
+                                    }
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        })
+        content:add(self.keybindTutorial)
+    end
+end
+
+---@private
+function Wheel:destroyKeybindTutorial()
+    local content = self.widget and self.widget.layout.content
+    if content and self.keybindTutorial then
+        table.remove(content, content:indexOf(self.keybindTutorial))
+        auxUi.deepDestroy(self.keybindTutorial)
+        self.keybindTutorial = nil
+    end
+end
+
+function Wheel:toggleKeybindMode()
+    self.isKeybindingActive = not self.isKeybindingActive
+    if self.isKeybindingActive then
+        updateForbiddenKeys()
+        self:makeKeybindTutorial()
+    else
+        self:destroyKeybindTutorial()
+    end
+    self:markDirty()
 end
 
 return Wheel

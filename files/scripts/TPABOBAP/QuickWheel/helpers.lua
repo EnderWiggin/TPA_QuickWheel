@@ -40,6 +40,21 @@ Helpers.deepPrint = function(tbl, indent)
     return toprint
 end
 
+---@generic K
+---@generic V
+---@param tbl table<K, V>?
+---@return table<V, K>?
+Helpers.transposeTable = function(tbl)
+    if not tbl then
+        return nil
+    end
+    local result = {}
+    for k, v in pairs(tbl) do
+        result[v] = k
+    end
+    return result
+end
+
 local TEXTURES = {}
 Helpers.createTexture = function(path, size, offset)
     size = size or v2(0, 0)

@@ -34,6 +34,15 @@ input.registerAction {
     defaultValue = false,
 }
 
+input.registerAction {
+    key = C.Actions.MagicFav,
+    type = input.ACTION_TYPE.Boolean,
+    l10n = MODNAME,
+    name = '',
+    description = '',
+    defaultValue = false,
+}
+
 I.Settings.registerPage {
     key = MODNAME,
     l10n = MODNAME,
@@ -83,6 +92,17 @@ I.Settings.registerGroup {
             },
         },
         {
+            key = 'k_FavMagicWheel',
+            renderer = 'inputBinding',
+            name = 'SettingKeyFavMagicWheel',
+            description = 'SettingKeyFavMagicWheelDesc',
+            default = C.WheelOpenKeyBind.MagicFav,
+            argument = {
+                type = "action",
+                key = C.Actions.MagicFav
+            },
+        },
+        {
             key = 'k_OmniWheelAlt',
             renderer = 'inputBinding',
             name = 'SettingKeyOmniWheelAlt',
@@ -116,6 +136,17 @@ I.Settings.registerGroup {
             },
         },
         {
+            key = 'k_FavMagicWheelAlt',
+            renderer = 'inputBinding',
+            name = 'SettingKeyFavMagicWheelAlt',
+            description = 'SettingKeyFavMagicWheelDesc',
+            default = C.WheelOpenKeyBind.MagicFavAlt,
+            argument = {
+                type = "action",
+                key = C.Actions.MagicFav
+            },
+        },
+        {
             key = 'r_ResetBindings',
             renderer = 'TPABOBAP/ClearInputBindings',
             name = 'SettingResetKeyBinds',
@@ -126,17 +157,21 @@ I.Settings.registerGroup {
                     C.WheelOpenKeyBind.Omni,
                     C.WheelOpenKeyBind.Potion,
                     C.WheelOpenKeyBind.Magic,
+                    C.WheelOpenKeyBind.MagicFav,
                     C.WheelOpenKeyBind.OmniAlt,
                     C.WheelOpenKeyBind.PotionAlt,
                     C.WheelOpenKeyBind.MagicAlt,
+                    C.WheelOpenKeyBind.MagicFavAlt,
                 },
                 settings = {
                     'k_OmniWheel',
                     'k_PotionWheel',
                     'k_MagicWheel',
+                    'k_FavMagicWheel',
                     'k_OmniWheelAlt',
                     'k_PotionWheelAlt',
                     'k_MagicWheelAlt',
+                    'k_FavMagicWheelAlt',
                 },
             },
         },

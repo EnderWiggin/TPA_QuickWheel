@@ -3,9 +3,11 @@ local I = require('openmw.interfaces')
 local core = require('openmw.core')
 local input = require('openmw.input')
 local omwself = require('openmw.self')
+local ui = require('openmw.ui')
 local async = require('openmw.async')
 local v2 = require('openmw.util').vector2
 
+local l10n = core.l10n('TPA_QuickWheel')
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local config = require('scripts.TPABOBAP.QuickWheel.config')
 local wheel = require('scripts.TPABOBAP.QuickWheel.wheel')
@@ -94,6 +96,10 @@ local function getSpellCategories()
     }
 end
 
+local function getFavoriteMagics()
+    return magics.makeIcons(magics.favoriteProvider())
+end
+
 local function getALLCategories()
     local categories = C.SpellCategories
     return {
@@ -142,6 +148,9 @@ local function setWheelMode(isOn, mode)
     elseif currentWheelMode == 'magic' then
         id = 'wheel:' .. currentWheelMode
         wheel:show(isWheelModeOn, { name = id, keybinds = keybinds[id], provider = getSpellCategories })
+    elseif currentWheelMode == 'magic-favorite' then
+        id = 'wheel:' .. currentWheelMode
+        wheel:show(isWheelModeOn, { name = id, keybinds = keybinds[id], provider = getFavoriteMagics })
     else
         id = 'wheel:omni'
         wheel:show(isWheelModeOn, { name = id, keybinds = keybinds[id], provider = getALLCategories })
@@ -237,6 +246,18 @@ local function handleMagicWheelAction(isPressed)
     handleWheelAction(isPressed, 'magic')
 end
 
+local function handleFavMagicWheelAction(isPressed)
+    if isPressed then
+        local favorites = magics.favoriteProvider()
+        if #favorites == 0 then
+            ui.showMessage(l10n('MSG_NO_FAVORITE_MAGIC'))
+            pcall(core.sound.playSound3d, "enchant fail", omwself)
+            return
+        end
+    end
+    handleWheelAction(isPressed, 'magic-favorite')
+end
+
 local function handleActivate()
     if config.shouldUseController() then
         wheel:onMouseClick()
@@ -248,6 +269,7 @@ local function Init()
     input.registerActionHandler(C.Actions.Omni, async:callback(handleOmniWheelAction))
     input.registerActionHandler(C.Actions.Potion, async:callback(handlePotionWheelAction))
     input.registerActionHandler(C.Actions.Magic, async:callback(handleMagicWheelAction))
+    input.registerActionHandler(C.Actions.MagicFav, async:callback(handleFavMagicWheelAction))
     input.registerTriggerHandler('Activate', async:callback(handleActivate))
 
     core.sendGlobalEvent('QW_UpdateWheelState', { state = false })

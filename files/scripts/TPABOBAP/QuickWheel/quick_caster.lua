@@ -203,7 +203,6 @@ QuickCaster.castUsingSF = function(cast)
             I.MagExp_Player.consumeSpellCost(cast.spell.id, nil)
         end
         ui.showMessage(core.getGMST('sMagicSkillFail'))
-        --TODO: add sound variety based on spell school
         pcall(function() core.sound.playSound3d("spell failure " .. (school or 'illusion'), omwself) end)
     end
 end

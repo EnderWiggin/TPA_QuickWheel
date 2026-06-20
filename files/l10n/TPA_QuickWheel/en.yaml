@@ -15,9 +15,14 @@ SettingKeyPotionWheel: Button to open Potion Wheel
 SettingKeyPotionWheelDesc: Opens the wheel that contains all potions.
 SettingKeyMagicWheel: Button to open Magic Wheel
 SettingKeyMagicWheelDesc: Opens the wheel that contains all spells and magic items.
+SettingKeyFavMagicWheel: Button to open Favorite Magic Wheel
+SettingKeyFavMagicWheelDesc: |-
+  Opens the wheel that contains all spells and magic items that are marked as favorite.
+  Requires Magic Window Extender.
 SettingKeyOmniWheelAlt: Alternate button to open Omni Wheel
 SettingKeyPotionWheelAlt: Alternate button to open Potion Wheel
 SettingKeyMagicWheelAlt: Alternate button to open Magic Wheel
+SettingKeyFavMagicWheelAlt: Alternate button to open Favorite Magic Wheel
 SettingKeyMode: Key mode
 SettingKeyModeDesc: |-
   Smart - tap to toggle wheel or hold to close on key release. 
@@ -229,3 +234,5 @@ TIP_BIND_KEYS_DESC: |-
   
   Keys that open inventory or any other menu are not supported. As well as these keys:
   {forbidden}
+
+MSG_NO_FAVORITE_MAGIC: You have no favorite spells or magic items.

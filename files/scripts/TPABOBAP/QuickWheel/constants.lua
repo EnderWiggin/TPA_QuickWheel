@@ -331,6 +331,7 @@ local SpellCategories = {
     Cure = 'Cure',
     Restore = 'Restore',
     Summon = 'Summon',
+    Favorite = 'Favorite',
 }
 
 local KeyModes = {
@@ -383,15 +384,18 @@ local Actions = {
     Omni = "TPA_QuickWheel_Open_Omni",
     Potion = "TPA_QuickWheel_Open_Potion",
     Magic = "TPA_QuickWheel_Open_Magic",
+    MagicFav = "TPA_QuickWheel_Open_Magic_Fav",
 }
 
 local WheelOpenKeyBind = {
     Omni = Actions.Omni,
     Potion = Actions.Potion,
     Magic = Actions.Magic,
+    MagicFav = Actions.MagicFav,
     OmniAlt = Actions.Omni .. '_ALT',
     PotionAlt = Actions.Potion .. '_ALT',
     MagicAlt = Actions.Magic .. '_ALT',
+    MagicFavAlt = Actions.MagicFav .. '_ALT',
 }
 
 local getTimeScale = function(mode)

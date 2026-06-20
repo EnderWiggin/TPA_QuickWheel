@@ -145,7 +145,11 @@ local function otherSpellsFilter(effects)
     return true
 end
 
-local function findMagics(filter)
+local function anyMagic()
+    return true
+end
+
+local function findMagics(filter, onlyPinned)
     local pinned
     local hidden
 
@@ -164,7 +168,7 @@ local function findMagics(filter)
     local spells = omwself.type.spells(omwself)
     for i = 1, #spells do
         local spell = spells[i]
-        if spell.type == core.magic.SPELL_TYPE.Spell and filter(spell.effects) and not hidden[spell.id] then
+        if spell.type == core.magic.SPELL_TYPE.Spell and filter(spell.effects) and not hidden[spell.id] and (not onlyPinned or pinned[spell.id]) then
             table.insert(result_spells, spell)
         end
     end
@@ -205,7 +209,7 @@ local function findMagics(filter)
         if not hidden[item.id] and getMagicItemCountAdjustedByQueue(item) > 0 then
             local enchantId = item.type.record(item).enchant
             local enchant = enchantId and core.magic.enchantments.records[enchantId]
-            if filter(enchant.effects) then
+            if filter(enchant.effects) and (not onlyPinned or pinned[item.id]) then
                 table.insert(result_items, item)
             end
         end
@@ -238,9 +242,31 @@ local function findMagics(filter)
     return result
 end
 
+local function isEmpty(tbl)
+    for _, _ in pairs(tbl) do
+        return false
+    end
+    return true
+end
+
+local function favoriteCategoryProvider()
+    if not I.MagicWindow or not I.MagicWindow.getStat then
+        return {}
+    end
+
+    local pinned = I.MagicWindow.getStat('pinned')
+    if not pinned or isEmpty(pinned) then
+        return {}
+    end
+
+    return findMagics(anyMagic, true)
+end
+
 local function spellCategoryProvider(icon)
     if icon.name == C.SpellCategories.Other then
         return findMagics(otherSpellsFilter)
+    elseif icon.name == C.SpellCategories.Favorite then
+        return favoriteCategoryProvider()
     else
         return findMagics(function(p) return isSpellOfType(p, icon.name) end)
     end
@@ -267,5 +293,6 @@ end
 return {
     makeIcons = makeMagicIcons,
     provider = spellCategoryProvider,
+    favoriteProvider = favoriteCategoryProvider,
     QuickCaster = QuickCaster,
 }

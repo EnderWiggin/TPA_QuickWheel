@@ -29,7 +29,7 @@ local magics = require('scripts.TPABOBAP.QuickWheel.providers.provide_magic')
 
 ---@param icon PotionCategoryIcon
 local function openPotionCategory(icon)
-    if not wheel.ctx.shown then return end
+    if not wheel.shown then return end
     local items = icon:provider()
     if #items == 0 then return end
     local quickUse = icon:getQuickUsePotion(items)
@@ -57,7 +57,7 @@ end
 
 ---@param icon SpellCategoryIcon
 local function openSpellCategory(icon)
-    if not wheel.ctx.shown then return end
+    if not wheel.shown then return end
     local spells = icon:provider()
     if #spells == 0 then return end
     wheel:show(true, function()
@@ -270,7 +270,7 @@ return {
         end,
         QW_UpdateWheelState = function(data)
             if not data then
-                if wheel.ctx.shown then
+                if wheel.shown then
                     wheel:markDirty()
                 end
             else

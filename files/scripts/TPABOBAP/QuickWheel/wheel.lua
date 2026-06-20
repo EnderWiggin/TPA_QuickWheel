@@ -23,8 +23,6 @@ local MWUIConstants = require('scripts.omw.mwui.constants')
 ---delay update when dirty by 2 frames
 local DIRTY_DELAY = 2
 
-local Wheel = {}
-
 ---@alias WheelKeybinds table<openmw.input.KeyCode, string>
 ---@alias WheelKeybindsReverse table<string, openmw.input.KeyCode>
 
@@ -32,7 +30,7 @@ local Wheel = {}
 ---@field widget openmw.ui.Element
 ---@field keybinds WheelKeybinds?
 ---@field keybindsReverse WheelKeybindsReverse?
-Wheel.ctx = {
+local Wheel = {
     shown = false,
 
     ---@type table<number, Icon>
@@ -195,8 +193,8 @@ local function circle_pos(n, i, r)
 end
 
 function Wheel:init(target)
-    self.ctx.widget = makeWheel(self)
-    self.ctx.target = target
+    self.widget = makeWheel(self)
+    self.target = target
 end
 
 ---@function
@@ -204,48 +202,48 @@ end
 ---@param provider fun():table<number, Icon>
 ---@param keybinds WheelKeybinds?
 function Wheel:show(show, provider, keybinds)
-    --if self.ctx.shown == show then return end
+    --if self.shown == show then return end
 
     if show then
         updateSizeConfigs()
     end
 
-    self.ctx.dirty = 0
-    self.ctx.shown = show
-    self.ctx.itemProvider = provider
-    self.ctx.keybinds = keybinds
+    self.dirty = 0
+    self.shown = show
+    self.itemProvider = provider
+    self.keybinds = keybinds
     if keybinds then
-        self.ctx.keybindsReverse = {}
+        self.keybindsReverse = {}
         for k, v in pairs(keybinds) do
-            self.ctx.keybindsReverse[v] = k
+            self.keybindsReverse[v] = k
         end
     else
-        self.ctx.keybindsReverse = nil
+        self.keybindsReverse = nil
     end
     self:update()
 end
 
 function Wheel:update()
-    local wheel = self.ctx.widget
-    wheel.layout.props.visible = self.ctx.shown
-    if self.ctx.shown then
+    local wheel = self.widget
+    wheel.layout.props.visible = self.shown
+    if self.shown then
         local iconContainer = wheel.layout.content['icons'].content
         local bindsContainer = wheel.layout.content['binds'].content
         helpers.destroyContentChildren(iconContainer)
         helpers.destroyContentChildren(bindsContainer)
 
-        self.ctx.items = type(self.ctx.itemProvider) == 'function' and self.ctx.itemProvider() or {}
+        self.items = type(self.itemProvider) == 'function' and self.itemProvider() or {}
 
-        local n = #self.ctx.items
-        local binds = self.ctx.keybindsReverse
-        if self.ctx.lastOffset then
-            self.ctx.selected = getSectorIdx(self.ctx.lastOffset, n, DEAD_ZONE)
+        local n = #self.items
+        local binds = self.keybindsReverse
+        if self.lastOffset then
+            self.selected = getSectorIdx(self.lastOffset, n, DEAD_ZONE)
         else
-            self.ctx.selected = 0
+            self.selected = 0
         end
 
-        for i = 1, #self.ctx.items do
-            local item = self.ctx.items[i]
+        for i = 1, #self.items do
+            local item = self.items[i]
             iconContainer:add(item:makeElement(circle_pos(n, i - 1, R)))
             local key = binds and binds[item:Id()]
             if key then
@@ -255,26 +253,26 @@ function Wheel:update()
 
         self:updateIcons()
     else
-        self.ctx.selected = 0
+        self.selected = 0
     end
 
     wheel:update()
 end
 
 function Wheel:markDirty()
-    self.ctx.dirty = DIRTY_DELAY
+    self.dirty = DIRTY_DELAY
 end
 
 ---called each frame from player.lua
 function Wheel:checkDirty()
-    if self.ctx.dirty <= 0 then return end
+    if self.dirty <= 0 then return end
 
-    if self.ctx.dirty > 0 then
-        self.ctx.dirty = self.ctx.dirty - 1
+    if self.dirty > 0 then
+        self.dirty = self.dirty - 1
     end
 
-    if self.ctx.dirty == 0 then
-        self.ctx.tipId = false --false is used to make sure tip will get re-evaluated
+    if self.dirty == 0 then
+        self.tipId = false --false is used to make sure tip will get re-evaluated
         self:update()
     end
 end
@@ -293,18 +291,18 @@ end
 
 ---@param offset openmw.util.Vector2
 function Wheel:onOffsetChanged(offset)
-    self.ctx.lastOffset = offset
-    self.ctx.selected = getSectorIdx(offset, #self.ctx.items, DEAD_ZONE)
+    self.lastOffset = offset
+    self.selected = getSectorIdx(offset, #self.items, DEAD_ZONE)
     self:updateIcons()
 end
 
 function Wheel:updateIcons()
-    local tipId = self.ctx.tipId
+    local tipId = self.tipId
     local newTipId
     local tip
-    for i = 1, #self.ctx.items do
-        local v = self.ctx.items[i]
-        if i == self.ctx.selected then
+    for i = 1, #self.items do
+        local v = self.items[i]
+        if i == self.selected then
             v:update(true)
             newTipId = v:tipId()
             if newTipId ~= tipId then
@@ -316,8 +314,8 @@ function Wheel:updateIcons()
     end
 
     if newTipId ~= tipId then
-        self.ctx.tipId = newTipId
-        local wheel = self.ctx.widget
+        self.tipId = newTipId
+        local wheel = self.widget
         local place = wheel.layout.content['tooltip']
 
         helpers.destroyContentChildren(place.content)
@@ -330,18 +328,18 @@ function Wheel:updateIcons()
 end
 
 function Wheel:onMouseClick()
-    if self.ctx.shown and self.ctx.dirty <= 0 and self.ctx.selected > 0 and self.ctx.items then
-        self.ctx.items[self.ctx.selected]:activate()
+    if self.shown and self.dirty <= 0 and self.selected > 0 and self.items then
+        self.items[self.selected]:activate()
         self:markDirty()
     end
 end
 
 ---@param evt openmw.input.KeyboardEvent
 function Wheel:onKeyPress(evt)
-    local bind = self.ctx.keybinds and self.ctx.keybinds[evt.code]
+    local bind = self.keybinds and self.keybinds[evt.code]
     if not bind then return end
 
-    local items = self.ctx.items
+    local items = self.items
     for i = 1, #items do
         if items[i]:Id() == bind then
             items[i]:activate()

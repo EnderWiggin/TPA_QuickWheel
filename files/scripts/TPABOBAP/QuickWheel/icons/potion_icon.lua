@@ -123,7 +123,7 @@ function PotionIcon.makeTipForItem(item)
 end
 
 function PotionIcon:Id()
-    return self.item.recordId
+    return 'potion:' .. self.item.recordId
 end
 
 return PotionIcon

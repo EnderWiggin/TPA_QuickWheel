@@ -215,7 +215,12 @@ function MagicIcon.makeTipForItem(item)
 end
 
 function MagicIcon:Id()
-    return 'magic:' .. ((self.spell and self.spell.id) or (self.item and self.item.recordId))
+    if self.spell then
+        return 'spell:' .. self.spell.id
+    elseif self.item then
+        return 'enchant:' .. self.item.recordId
+    end
+    return nil --shouldn't get here
 end
 
 return MagicIcon

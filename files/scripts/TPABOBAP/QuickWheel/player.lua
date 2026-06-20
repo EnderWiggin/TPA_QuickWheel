@@ -27,6 +27,10 @@ local InterfaceMode = UIMode.Interface
 local potions = require('scripts.TPABOBAP.QuickWheel.providers.provide_potions')
 local magics = require('scripts.TPABOBAP.QuickWheel.providers.provide_magic')
 
+---@type table<string, WheelKeybinds>
+local keybinds = {
+}
+
 ---@param icon PotionCategoryIcon
 local function openPotionCategory(icon)
     if not wheel.shown then return end
@@ -38,7 +42,7 @@ local function openPotionCategory(icon)
     else
         wheel:show(true, function()
             return potions.makeIcons(icon:provider(), icon.name == 'Poison' and potions.usePoison or nil)
-        end)
+        end, keybinds[icon:Id()])
     end
 end
 
@@ -62,7 +66,7 @@ local function openSpellCategory(icon)
     if #spells == 0 then return end
     wheel:show(true, function()
         return magics.makeIcons(icon:provider())
-    end)
+    end, keybinds[icon:Id()])
 end
 
 local function getSpellCategories()
@@ -123,11 +127,11 @@ local function setWheelMode(isOn, mode)
 
     currentWheelMode = mode
     if currentWheelMode == 'potions' then
-        wheel:show(isWheelModeOn, getPotionCategories)
+        wheel:show(isWheelModeOn, getPotionCategories, keybinds['wheel:' .. currentWheelMode])
     elseif currentWheelMode == 'magic' then
-        wheel:show(isWheelModeOn, getSpellCategories)
+        wheel:show(isWheelModeOn, getSpellCategories, keybinds['wheel:' .. currentWheelMode])
     else
-        wheel:show(isWheelModeOn, getALLCategories)
+        wheel:show(isWheelModeOn, getALLCategories, keybinds['wheel:omni'])
     end
 
     core.sendGlobalEvent('QW_UpdateWheelState', {

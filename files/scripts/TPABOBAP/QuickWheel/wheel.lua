@@ -286,10 +286,12 @@ end
 
 ---@param key openmw.input.KeyCode
 ---@param pos openmw.util.Vector2
+---@param n integer
 local function makeKeybindIcon(key, pos, n)
+    local keyName = input.getKeyName(key)
     return {
         template = MWUI.boxSolid,
-        name = 'wheel-keybind-' .. tostring(n),
+        name = 'wheel-keybind-' .. n,
         props = {
             relativePosition = v2(0.5, 0.5),
             anchor = v2(0.5, 0.5),
@@ -305,8 +307,8 @@ local function makeKeybindIcon(key, pos, n)
                         name = 'title',
                         template = MWUI.textNormal,
                         props = {
-                            text = input.getKeyName(key),
-                            autoSize = false,
+                            text = keyName,
+                            autoSize = keyName:len() > 2,
                             size = v2(15, 15),
                             textSize = 16,
                             textAlignH = ui.ALIGNMENT.Center,

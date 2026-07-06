@@ -264,7 +264,10 @@ local function handleActivate()
     end
 end
 
+local initialized =false
 local function Init()
+    if initialized then return end
+    initialized = true
     wheel:init(omwself)
     input.registerActionHandler(C.Actions.Omni, async:callback(handleOmniWheelAction))
     input.registerActionHandler(C.Actions.Potion, async:callback(handlePotionWheelAction))
@@ -319,6 +322,7 @@ return {
         onKeyRelease = onKeyRelease,
         onKeyPress = onKeyPress,
         onControllerButtonPress = onControllerButtonPress,
+        onInit = Init,
         onLoad = onLoad,
         onSave = onSave,
     },

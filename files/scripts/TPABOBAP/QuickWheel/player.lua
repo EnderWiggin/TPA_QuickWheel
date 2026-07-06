@@ -209,12 +209,12 @@ local function handleWheelAction(isPressed, wheelMode)
         if uiMode ~= nil and uiMode ~= InterfaceMode then return end
         if not isWheelModeOn then
             if I.UI.getMode() ~= nil or core.isWorldPaused() then return end
-            pressedAt = core.getRealTime()
             setWheelMode(true, wheelMode)
+            pressedAt = core.getRealTime()
         elseif wheelMode ~= currentWheelMode then
             wasToggled = false
-            pressedAt = core.getRealTime()
             setWheelMode(true, wheelMode)
+            pressedAt = core.getRealTime()
         end
     else
         local mode = config.main.s_KeyMode

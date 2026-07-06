@@ -35,9 +35,16 @@ function PotionIcon:makeElement(p)
     }
 
     local knownCount = helpers.getKnownAlchemyEffectCount(true)
+    local known
+    if I.TPA_AlchemyRedone and I.TPA_AlchemyRedone.isEnabled() then
+        known = I.TPA_AlchemyRedone.getKnownEffectFlagsForItem(item)
+    end
     for i = 1, #record.effects do
         local texture
-        if i <= knownCount then
+        local isKnown = i <= knownCount
+        if known then isKnown = known[i] end
+
+        if isKnown then
             texture = helpers.effectIconTexture(record.effects[i].id)
         else
             texture = helpers.createTexture('icons/TPABOBAP/QuickWheel/unknown-effect.png')

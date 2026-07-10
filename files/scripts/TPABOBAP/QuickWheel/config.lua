@@ -10,7 +10,7 @@ local C = require('scripts.TPABOBAP.QuickWheel.constants')
 
 
 ---@class QuickWheelConfig
----@field main {s_KeyMode: string, s_TimeMode: string, s_ControllerMode: ControllerMode, s_ControllerStick: ControllerStick, n_ControllerDeadZone: number}
+---@field main {s_KeyMode: string, b_ShowWheelAnimation:boolean, s_TimeMode: string, s_ControllerMode: ControllerMode, s_ControllerStick: ControllerStick, n_ControllerDeadZone: number}
 ---@field potions {b_NoUnknownCategory: boolean, b_FilterPoisons: boolean, b_QuickApplyPoison: boolean, s_SeparateAlcohol: AlcoholModes}
 ---@field magic {s_MagicClickMode: MagicClickModes, b_UseOSSC: boolean, n_MagicCastDelay: number, n_MagicCastCooldown: number, s_QueueWidgetPosition: QueueWidgetPosition, b_ShowQueueWidget: boolean}
 ---@field controllerActive boolean

@@ -4,6 +4,17 @@ local core = require('openmw.core')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
 
+local async = require('openmw.async')
+local storage = require('openmw.storage')
+
+local main = storage.playerSection('TPA_QuickWheel/MainSettings')
+local isAnimated = main:get('b_ShowWheelAnimation')
+local isAnimatedChanged = false
+main:subscribe(async:callback(function()
+    isAnimated = main:get('b_ShowWheelAnimation')
+    isAnimatedChanged = true
+end))
+
 local v2 = util.vector2
 
 --------------------------------------------------------------------------
@@ -209,6 +220,7 @@ end
 ---@param self WheelContext
 ---@param show boolean
 local function onBeforeShow(self, show)
+    if not isAnimated then return end
     local wasShown = self.shown
     anim.closing = (not show) and wasShown and anim.t > 0
 
@@ -221,6 +233,20 @@ end
 ---@param self WheelContext
 ---@param show boolean
 local function onAfterShow(self, wasShown, show)
+    if not isAnimated then
+        if isAnimatedChanged then
+            clearOutgoing(self)
+            anim.dir = 0
+            anim.t = 1
+
+            applyAnim(self)
+            self.widget:update()
+        end
+        isAnimatedChanged = false
+        return
+    end
+    isAnimatedChanged = false
+
     if show then
         -- Both a fresh open and a ring swap replay the spiral from the centre.
         if not wasShown or anim.swap then
@@ -244,6 +270,7 @@ end
 
 ---@param self WheelContext
 local function onAfterUpdate(self)
+    if not isAnimated then return end
     -- Only a shown wheel rebuilds its icons, so only then are the positions
     -- resting values worth caching. Mid-close they're already tweened.
     if self.shown then captureBases(self) end
@@ -255,6 +282,7 @@ end
 
 ---@param self WheelContext
 local function tick(self)
+    if not isAnimated then return end
     if anim.dir == 0 then return end
     if not self.widget then
         anim.dir = 0

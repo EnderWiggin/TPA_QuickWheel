@@ -36,6 +36,9 @@ SettingKeyModeToggle: Toggle
 SettingTimeMode: Wheel time slowdown
 SettingTimeModeDesc: How slow should time get while the wheel is open.
 
+SettingShowWheelAnimation: Animate Wheel
+SettingShowWheelAnimationDesc: Wheel will open and close with fly-out animation.
+
 SettingTimeModeNormal: Normal
 SettingTimeModeSlow: Slow
 SettingTimeModeVerySlow: Very Slow

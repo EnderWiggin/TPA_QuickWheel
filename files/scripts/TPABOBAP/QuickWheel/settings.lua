@@ -207,6 +207,13 @@ I.Settings.registerGroup {
             }
         },
         {
+            key = 'b_ShowWheelAnimation',
+            renderer = 'checkbox',
+            name = 'SettingShowWheelAnimation',
+            description = 'SettingShowWheelAnimationDesc',
+            default = true,
+        },
+        {
             key = 's_ControllerMode',
             renderer = 'select',
             name = 'SettingControllerMode',

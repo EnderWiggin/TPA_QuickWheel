@@ -23,6 +23,13 @@ local lastUIMode
 ---@type string
 local lastModifiers
 
+-- Captures the controller-mode state at the moment the wheel opens, and freezes it for the
+-- wheel's lifetime.  wheel.lua's mouseMove handler, the stick feed below and handleActivate
+-- all read config.shouldUseController() live, while setWheelMode decides the cursor only once,
+-- at open.  If the live flag flips while the wheel is up they disagree with the cursor, and
+-- neither input can select or activate.
+local openControllerMode = false
+
 local UIMode = I.UI.MODE
 local InterfaceMode = UIMode.Interface
 
@@ -131,7 +138,8 @@ local function setWheelMode(isOn, mode)
     if lastUIMode ~= nil and not isWheelModeOn then return end
 
     isWheelModeOn = isOn
-    local controllerMode = config.shouldUseController()
+    if isOn then openControllerMode = config.shouldUseController() end
+    local controllerMode = openControllerMode
     if not controllerMode then
         if isWheelModeOn then
             I.UI.setMode(InterfaceMode, { windows = {} })
@@ -185,11 +193,10 @@ local function onUpdate()
     lastModifiers = helpers.updateModifiers()
     if isWheelModeOn then
         local dir = getControllerDirection()
-        if dir:length() > config.main.n_ControllerDeadZone then config.controllerActive = true end
-        local controller = config.shouldUseController()
+        local controller = openControllerMode
         if wasMode ~= lastUIMode then
             if wasMode == InterfaceMode and lastUIMode ~= InterfaceMode
-                or controller and lastUIMode == InterfaceMode then
+                or openControllerMode and lastUIMode == InterfaceMode then
                 setWheelMode(false)
                 return
             end
@@ -268,7 +275,7 @@ local function handleActivate()
     end
 end
 
-local initialized =false
+local initialized = false
 local function Init()
     if initialized then return end
     initialized = true
@@ -310,14 +317,15 @@ end
 
 ---@param evt openmw.input.KeyboardEvent
 local function onKeyPress(evt)
-    config.controllerActive = false
     if isWheelModeOn then
         wheel:onKeyPress(evt)
+    else
+        config.controllerActive = false
     end
 end
 
 local function onControllerButtonPress()
-    config.controllerActive = true
+    if not isWheelModeOn then config.controllerActive = true end
 end
 
 return {

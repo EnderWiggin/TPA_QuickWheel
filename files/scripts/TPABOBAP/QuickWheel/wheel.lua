@@ -18,6 +18,7 @@ local pi2 = 2 * math.pi
 
 local config = require('scripts.TPABOBAP.QuickWheel.config')
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
+local anim = require('scripts.TPABOBAP.QuickWheel.animation')
 local C = require('scripts.TPABOBAP.QuickWheel.constants')
 
 local R
@@ -339,7 +340,8 @@ end
 ---@param show boolean
 ---@param opts {name: string, keybinds: WheelKeybinds?, provider: IconProvider? }?
 function Wheel:show(show, opts)
-    --if self.shown == show then return end
+    local wasShown = self.shown
+    anim.onBeforeShow(self, show)
 
     if show then
         updateSizeConfigs()
@@ -354,6 +356,8 @@ function Wheel:show(show, opts)
     self.itemProvider = opts and opts.provider
     self.name = opts and opts.name
     self.keybinds = opts and opts.keybinds
+
+    anim.onAfterShow(self, wasShown, show)
     self:update()
 end
 
@@ -393,6 +397,7 @@ function Wheel:update()
         self.selected = 0
     end
 
+    anim.onAfterUpdate(self)
     wheel:update()
 end
 
@@ -429,6 +434,9 @@ end
 
 ---@param offset openmw.util.Vector2
 function Wheel:onOffsetChanged(offset)
+    -- The widget stays visible while closing, so it keeps receiving mouseMove.
+    -- Selection must stay frozen once the wheel is logically shut.
+    if not self.shown then return end
     self.lastOffset = offset
     self.selected = getSectorIdx(offset, #self.items, DEAD_ZONE)
     self:updateIcons()
@@ -606,6 +614,11 @@ function Wheel:toggleKeybindMode()
         self:destroyKeybindTutorial()
     end
     self:markDirty()
+end
+
+---called every frame from onUpdate
+function Wheel:tickAnimation()
+    anim.tick(self)
 end
 
 return Wheel

@@ -175,6 +175,10 @@ local function getControllerDirection()
 end
 
 local function onUpdate()
+    -- Outside the isWheelModeOn branch on purpose: the close animation plays
+    -- after the wheel has logically shut.
+    wheel:tickAnimation()
+
     local wasModifiers = lastModifiers
     local wasMode = lastUIMode
     lastUIMode = I.UI.getMode()

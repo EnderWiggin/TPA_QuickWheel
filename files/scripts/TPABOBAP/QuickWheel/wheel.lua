@@ -361,10 +361,12 @@ function Wheel:update()
     local wheel = self.widget
     wheel.layout.props.visible = self.shown
     if self.shown then
-        local iconContainer = wheel.layout.content['icons'].content
-        local bindsContainer = wheel.layout.content['binds'].content
-        helpers.destroyContentChildren(iconContainer)
-        helpers.destroyContentChildren(bindsContainer)
+        helpers.destroyContentChildren(wheel.layout.content['icons'].content)
+        helpers.destroyContentChildren(wheel.layout.content['binds'].content)
+        local iconContainer = ui.content {}
+        local bindsContainer = ui.content {}
+        wheel.layout.content['icons'].content = iconContainer
+        wheel.layout.content['binds'].content = bindsContainer
 
         self.items = type(self.itemProvider) == 'function' and self.itemProvider() or {}
 
@@ -455,6 +457,7 @@ function Wheel:updateIcons()
         local place = wheel.layout.content['tooltip']
 
         helpers.destroyContentChildren(place.content)
+        place.content = ui.content {}
 
         if tip then
             place.content:add(tip)
@@ -587,7 +590,8 @@ end
 function Wheel:destroyKeybindTutorial()
     local content = self.widget and self.widget.layout.content
     if content and self.keybindTutorial then
-        table.remove(content, content:indexOf(self.keybindTutorial))
+        local idx = content:indexOf(self.keybindTutorial)
+        if idx then content[idx] = nil end
         auxUi.deepDestroy(self.keybindTutorial)
         self.keybindTutorial = nil
     end

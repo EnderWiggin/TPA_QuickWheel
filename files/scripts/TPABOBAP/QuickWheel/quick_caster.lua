@@ -87,6 +87,7 @@ local function updateWidget()
     ---@type openmw.ui.Layout
     local container = widget.layout.content['padding'].content['container']
     helpers.destroyContentChildren(container.content)
+    container.content = ui.content {}
     local props = widget.layout.props
     props.visible = config.magic.b_ShowQueueWidget and #QuickCastQueue > 0
     if not props.visible then

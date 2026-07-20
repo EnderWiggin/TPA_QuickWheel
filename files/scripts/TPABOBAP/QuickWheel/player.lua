@@ -225,6 +225,16 @@ local function onUpdate()
     end
 end
 
+-- activate-on-release -- works only on leaf items only
+local function activateSelectedLeaf()
+    if not wheel.shown or not wheel.items then return end
+    local sel = wheel.selected
+    local item = sel and sel > 0 and wheel.items[sel]
+    if item and not item.provider and item.activate then
+        item:activate()
+    end
+end
+
 local function handleWheelAction(isPressed, wheelMode)
     if wheel.isKeybindingActive then return end
     local uiMode = I.UI.getMode()
@@ -244,6 +254,8 @@ local function handleWheelAction(isPressed, wheelMode)
         if mode == C.KeyModes.Smart then
             local now = core.getRealTime()
             if (now - pressedAt) > C.KeyHoldThreshold or wasToggled then
+                -- a real hold-release confirms, a tap-then-tap close stays a cancel
+                if config.main.b_ActivateOnRelease and not wasToggled then activateSelectedLeaf() end
                 setWheelMode(false)
             else
                 wasToggled = true
@@ -255,6 +267,7 @@ local function handleWheelAction(isPressed, wheelMode)
                 wasToggled = true
             end
         elseif mode == C.KeyModes.Hold then
+            if config.main.b_ActivateOnRelease then activateSelectedLeaf() end -- activate-on-release
             setWheelMode(false)
         end
     end

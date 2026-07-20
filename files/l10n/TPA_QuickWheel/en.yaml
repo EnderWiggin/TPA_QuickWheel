@@ -76,6 +76,12 @@ SettingControllerDeadZoneDesc: |-
   Stick movement below this value will be ignored.
   Range [0.01 - 1.0]
 
+SettingActivateOnRelease: Activate on release
+SettingActivateOnReleaseDesc: |-
+  Releasing the wheel key uses the highlighted item (items & magic only, not categories).
+  Applies in Hold mode, and in Smart mode when the key was held.
+  Toggle mode is never affected.
+
 # ---- Potion Settings ----
 SettingsPotionsName: Potion Settings
 

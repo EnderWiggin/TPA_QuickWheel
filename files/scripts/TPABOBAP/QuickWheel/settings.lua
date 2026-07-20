@@ -260,6 +260,13 @@ I.Settings.registerGroup {
                 max = 1,
             }
         },
+        {
+            key = 'b_ActivateOnRelease',
+            renderer = 'checkbox',
+            name = 'SettingActivateOnRelease',
+            description = 'SettingActivateOnReleaseDesc',
+            default = true,
+        },
     },
 }
 

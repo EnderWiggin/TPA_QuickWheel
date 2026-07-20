@@ -437,6 +437,8 @@ end
 function Wheel:onControllerOffsetChanged(o)
     local r = (DEAD_ZONE.x + 2 * DEAD_ZONE.y) / 3
     if o:length() < config.main.n_ControllerDeadZone then
+        -- sticky (b_StickySelection): keep the selection instead of zeroing it
+        if config.main.b_StickySelection then return end
         if not CONTROLLER then return end
         self:onOffsetChanged(v2(0, 0))
         return

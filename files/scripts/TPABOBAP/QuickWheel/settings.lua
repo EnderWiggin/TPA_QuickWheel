@@ -250,6 +250,13 @@ I.Settings.registerGroup {
             default = false,
         },
         {
+            key = 'b_StickySelection',
+            renderer = 'checkbox',
+            name = 'SettingStickySelection',
+            description = 'SettingStickySelectionDesc',
+            default = false,
+        },
+        {
             key = 'n_ControllerDeadZone',
             renderer = 'number',
             name = 'SettingControllerDeadZone',

@@ -173,10 +173,22 @@ end
 
 ---@return openmw.util.Vector2
 local function getControllerDirection()
+    -- raw LeftX/LeftY polls one controller (controllers.begin()); a reconnect can
+    -- swap in the wrong pad and leave the stick dead. virtual Move*/Look* axes are
+    -- device-agnostic. opt-in via b_UseVirtualAxis (off: deprecated engine API)
     local stick = config.main.s_ControllerStick
+    local useVirtual = config.main.b_UseVirtualAxis or false
     if not stick or stick == C.ControllerStick.Left then
+        if useVirtual then
+            return v2(input.getAxisValue(input.CONTROLLER_AXIS.MoveLeftRight),
+                      input.getAxisValue(input.CONTROLLER_AXIS.MoveForwardBackward))
+        end
         return v2(input.getAxisValue(input.CONTROLLER_AXIS.LeftX), input.getAxisValue(input.CONTROLLER_AXIS.LeftY))
     elseif stick == C.ControllerStick.Right then
+        if useVirtual then
+            return v2(input.getAxisValue(input.CONTROLLER_AXIS.LookLeftRight),
+                      input.getAxisValue(input.CONTROLLER_AXIS.LookUpDown))
+        end
         return v2(input.getAxisValue(input.CONTROLLER_AXIS.RightX), input.getAxisValue(input.CONTROLLER_AXIS.RightY))
     end
     return v2(0, 0)

@@ -243,6 +243,13 @@ I.Settings.registerGroup {
             }
         },
         {
+            key = 'b_UseVirtualAxis',
+            renderer = 'checkbox',
+            name = 'SettingUseVirtualAxis',
+            description = 'SettingUseVirtualAxisDesc',
+            default = false,
+        },
+        {
             key = 'n_ControllerDeadZone',
             renderer = 'number',
             name = 'SettingControllerDeadZone',

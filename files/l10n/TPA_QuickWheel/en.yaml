@@ -64,6 +64,13 @@ SettingControllerStickDesc: Controller input that is used to select items.
 ControllerStickLeft: Left Stick
 ControllerStickRight: Right Stick
 
+SettingUseVirtualAxis: Use virtual axis
+SettingUseVirtualAxisDesc: |-
+  Reads the stick via the engine's virtual Move/Look axes instead of polling a
+  controller directly. Fixes stick input breaking after a reconnect when a
+  second controller (e.g. Steam Deck built-in) is also present. Off by default:
+  these axes are marked deprecated by the engine.
+
 SettingControllerDeadZone: Controller deadzone
 SettingControllerDeadZoneDesc: |-
   Stick movement below this value will be ignored.

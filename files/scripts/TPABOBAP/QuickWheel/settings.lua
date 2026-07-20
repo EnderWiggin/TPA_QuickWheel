@@ -265,7 +265,7 @@ I.Settings.registerGroup {
             renderer = 'checkbox',
             name = 'SettingActivateOnRelease',
             description = 'SettingActivateOnReleaseDesc',
-            default = true,
+            default = false,
         },
     },
 }

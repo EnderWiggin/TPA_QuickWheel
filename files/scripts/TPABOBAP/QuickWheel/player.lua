@@ -225,7 +225,7 @@ local function onUpdate()
     end
 end
 
--- activate-on-release -- works only on leaf items only
+-- activate-on-release -- works on leaf items only
 local function activateSelectedLeaf()
     if not wheel.shown or not wheel.items then return end
     local sel = wheel.selected

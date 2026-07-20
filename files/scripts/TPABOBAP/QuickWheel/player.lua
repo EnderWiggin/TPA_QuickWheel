@@ -173,10 +173,22 @@ end
 
 ---@return openmw.util.Vector2
 local function getControllerDirection()
+    -- raw LeftX/LeftY polls one controller (controllers.begin()); a reconnect can
+    -- swap in the wrong pad and leave the stick dead. virtual Move*/Look* axes are
+    -- device-agnostic. opt-in via b_UseVirtualAxis (off: deprecated engine API)
     local stick = config.main.s_ControllerStick
+    local useVirtual = config.main.b_UseVirtualAxis or false
     if not stick or stick == C.ControllerStick.Left then
+        if useVirtual then
+            return v2(input.getAxisValue(input.CONTROLLER_AXIS.MoveLeftRight),
+                      input.getAxisValue(input.CONTROLLER_AXIS.MoveForwardBackward))
+        end
         return v2(input.getAxisValue(input.CONTROLLER_AXIS.LeftX), input.getAxisValue(input.CONTROLLER_AXIS.LeftY))
     elseif stick == C.ControllerStick.Right then
+        if useVirtual then
+            return v2(input.getAxisValue(input.CONTROLLER_AXIS.LookLeftRight),
+                      input.getAxisValue(input.CONTROLLER_AXIS.LookUpDown))
+        end
         return v2(input.getAxisValue(input.CONTROLLER_AXIS.RightX), input.getAxisValue(input.CONTROLLER_AXIS.RightY))
     end
     return v2(0, 0)
@@ -213,6 +225,16 @@ local function onUpdate()
     end
 end
 
+-- activate-on-release -- works on leaf items only
+local function activateSelectedLeaf()
+    if not wheel.shown or not wheel.items then return end
+    local sel = wheel.selected
+    local item = sel and sel > 0 and wheel.items[sel]
+    if item and not item.provider and item.activate then
+        item:activate()
+    end
+end
+
 local function handleWheelAction(isPressed, wheelMode)
     if wheel.isKeybindingActive then return end
     local uiMode = I.UI.getMode()
@@ -232,6 +254,8 @@ local function handleWheelAction(isPressed, wheelMode)
         if mode == C.KeyModes.Smart then
             local now = core.getRealTime()
             if (now - pressedAt) > C.KeyHoldThreshold or wasToggled then
+                -- a real hold-release confirms, a tap-then-tap close stays a cancel
+                if config.main.b_ActivateOnRelease and not wasToggled then activateSelectedLeaf() end
                 setWheelMode(false)
             else
                 wasToggled = true
@@ -243,6 +267,7 @@ local function handleWheelAction(isPressed, wheelMode)
                 wasToggled = true
             end
         elseif mode == C.KeyModes.Hold then
+            if config.main.b_ActivateOnRelease then activateSelectedLeaf() end -- activate-on-release
             setWheelMode(false)
         end
     end

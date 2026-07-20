@@ -243,6 +243,20 @@ I.Settings.registerGroup {
             }
         },
         {
+            key = 'b_UseVirtualAxis',
+            renderer = 'checkbox',
+            name = 'SettingUseVirtualAxis',
+            description = 'SettingUseVirtualAxisDesc',
+            default = false,
+        },
+        {
+            key = 'b_StickySelection',
+            renderer = 'checkbox',
+            name = 'SettingStickySelection',
+            description = 'SettingStickySelectionDesc',
+            default = false,
+        },
+        {
             key = 'n_ControllerDeadZone',
             renderer = 'number',
             name = 'SettingControllerDeadZone',
@@ -252,6 +266,13 @@ I.Settings.registerGroup {
                 min = 0.01,
                 max = 1,
             }
+        },
+        {
+            key = 'b_ActivateOnRelease',
+            renderer = 'checkbox',
+            name = 'SettingActivateOnRelease',
+            description = 'SettingActivateOnReleaseDesc',
+            default = false,
         },
     },
 }

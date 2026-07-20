@@ -143,7 +143,10 @@ end
 
 updateSizeConfigs()
 
-local function getSectorIdx(c, n, z)
+-- fraction of a slice you must push into a neighbor before it takes the highlight
+local HYSTERESIS = 0.30
+
+local function getSectorIdx(c, n, z, current)
     if MIN_SECTORS and n < MIN_SECTORS then n = MIN_SECTORS end
     local x = -c.y
     local y = c.x
@@ -159,6 +162,16 @@ local function getSectorIdx(c, n, z)
     local a = math.atan2(y, x)
 
     if a < 0 then a = a + pi2 end
+
+    -- keep the current slice unless we clearly left it (its bounds widened
+    -- by HYSTERESIS on both sides)
+    if current and current > 0 and current <= n then
+        local center = (current - 1) * step
+        local diff = math.atan2(math.sin(a - center), math.cos(a - center))
+        if math.abs(diff) <= step * (0.5 + HYSTERESIS) then
+            return current
+        end
+    end
 
     a = a + step / 2
     if a > pi2 then a = a - pi2 end
@@ -424,6 +437,8 @@ end
 function Wheel:onControllerOffsetChanged(o)
     local r = (DEAD_ZONE.x + 2 * DEAD_ZONE.y) / 3
     if o:length() < config.main.n_ControllerDeadZone then
+        -- sticky (b_StickySelection): keep the selection instead of zeroing it
+        if config.main.b_StickySelection then return end
         if not CONTROLLER then return end
         self:onOffsetChanged(v2(0, 0))
         return
@@ -438,7 +453,8 @@ function Wheel:onOffsetChanged(offset)
     -- Selection must stay frozen once the wheel is logically shut.
     if not self.shown then return end
     self.lastOffset = offset
-    self.selected = getSectorIdx(offset, #self.items, DEAD_ZONE)
+    -- current selection goes in for the hysteresis check
+    self.selected = getSectorIdx(offset, #self.items, DEAD_ZONE, self.selected)
     self:updateIcons()
 end
 

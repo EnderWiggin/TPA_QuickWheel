@@ -82,6 +82,9 @@ SettingActivateOnReleaseDesc: |-
   Applies in Hold mode, and in Smart mode when the key was held.
   Toggle mode is never affected.
 
+SettingStickySelection: Sticky Selection
+SettingStickySelectionDesc: Do not reset selection when stick is released or enters deadzone.
+
 # ---- Potion Settings ----
 SettingsPotionsName: Potion Settings
 

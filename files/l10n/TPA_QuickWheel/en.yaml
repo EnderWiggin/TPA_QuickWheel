@@ -39,6 +39,13 @@ SettingTimeModeDesc: How slow should time get while the wheel is open.
 SettingShowWheelAnimation: Animate Wheel
 SettingShowWheelAnimationDesc: Wheel will open and close with fly-out animation.
 
+SettingHysteresisStrength: Selection hysteresis
+SettingHysteresisStrengthDesc: |-
+  How far you need get into a neighboring item's sector before selection changes.
+  Mostly useful for selection stability when using controller.
+  Set to 0 to disable.
+  Range [0 - 0.45], default is 0.2.
+
 SettingTimeModeNormal: Normal
 SettingTimeModeSlow: Slow
 SettingTimeModeVerySlow: Very Slow
@@ -74,7 +81,7 @@ SettingUseVirtualAxisDesc: |-
 SettingControllerDeadZone: Controller deadzone
 SettingControllerDeadZoneDesc: |-
   Stick movement below this value will be ignored.
-  Range [0.01 - 1.0]
+  Range [0.01 - 1.0], default is 0.15.
 
 SettingActivateOnRelease: Activate on release
 SettingActivateOnReleaseDesc: |-
@@ -149,13 +156,13 @@ SettingMagicCastDelay: Magic Cast Delay
 SettingMagicCastDelayDesc: |-
   Seconds before magic is cast after clicking on it. 
   Applies when not using OSSC to cast. 
-  Range [0.1 - 2].
+  Range [0.1 - 2], default is 0.35.
 
 SettingMagicCastCooldown: Magic Cast Cooldown
 SettingMagicCastCooldownDesc: |-
   Seconds after magic is cast. Added on top of delay for queued spells.
   Applies when not using OSSC to cast.
-  Range [0.2 - 2].
+  Range [0.2 - 2], default is 0.95.
 
 SettingMagicShowQueue: Show Queued Spells
 SettingMagicShowQueueDesc: Show a list of currently queued spells.

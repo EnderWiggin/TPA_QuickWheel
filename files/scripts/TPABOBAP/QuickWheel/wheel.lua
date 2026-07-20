@@ -143,9 +143,6 @@ end
 
 updateSizeConfigs()
 
--- fraction of a slice you must push into a neighbor before it takes the highlight
-local HYSTERESIS = 0.30
-
 local function getSectorIdx(c, n, z, current)
     if MIN_SECTORS and n < MIN_SECTORS then n = MIN_SECTORS end
     local x = -c.y
@@ -165,10 +162,11 @@ local function getSectorIdx(c, n, z, current)
 
     -- keep the current slice unless we clearly left it (its bounds widened
     -- by HYSTERESIS on both sides)
-    if current and current > 0 and current <= n then
+    local hysteresis = config.main.n_HysteresisStrength
+    if hysteresis and hysteresis > 0 and current and current > 0 and current <= n then
         local center = (current - 1) * step
         local diff = math.atan2(math.sin(a - center), math.cos(a - center))
-        if math.abs(diff) <= step * (0.5 + HYSTERESIS) then
+        if math.abs(diff) <= step * (0.5 + hysteresis) then
             return current
         end
     end

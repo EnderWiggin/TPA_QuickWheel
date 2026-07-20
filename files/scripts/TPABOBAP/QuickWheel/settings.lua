@@ -221,6 +221,17 @@ I.Settings.registerGroup {
             default = true,
         },
         {
+            key = 'n_HysteresisStrength',
+            renderer = 'number',
+            name = 'SettingHysteresisStrength',
+            description = 'SettingHysteresisStrengthDesc',
+            default = 0.2,
+            argument = {
+                min = 0,
+                max = 0.45,
+            }
+        },
+        {
             key = 's_ControllerMode',
             renderer = 'select',
             name = 'SettingControllerMode',

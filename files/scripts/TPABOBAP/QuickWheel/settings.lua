@@ -191,6 +191,13 @@ I.Settings.registerGroup {
             }
         },
         {
+            key = 'b_ActivateOnRelease',
+            renderer = 'checkbox',
+            name = 'SettingActivateOnRelease',
+            description = 'SettingActivateOnReleaseDesc',
+            default = false,
+        },
+        {
             key = 's_TimeMode',
             renderer = 'select',
             name = 'SettingTimeMode',
@@ -266,13 +273,6 @@ I.Settings.registerGroup {
                 min = 0.01,
                 max = 1,
             }
-        },
-        {
-            key = 'b_ActivateOnRelease',
-            renderer = 'checkbox',
-            name = 'SettingActivateOnRelease',
-            description = 'SettingActivateOnReleaseDesc',
-            default = false,
         },
     },
 }

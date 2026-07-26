@@ -57,6 +57,8 @@ local Wheel = {
     isKeybindingActive = false,
     ---@type openmw.ui.Element?
     keybindTutorial = nil,
+    ---@type integer?
+    minSectors = nil,
 }
 
 local forbiddenKeys = {}
@@ -143,8 +145,11 @@ end
 
 updateSizeConfigs()
 
-local function getSectorIdx(c, n, z, current)
-    if MIN_SECTORS and n < MIN_SECTORS then n = MIN_SECTORS end
+function Wheel:getSectorIdx(c, n, z, current)
+    local minSectors = self.minSectors or MIN_SECTORS
+    print('sector', minSectors, self.minSectors)
+    
+    if minSectors and n < minSectors then n = minSectors end
     local x = -c.y
     local y = c.x
     local r = math.sqrt(x * x + y * y)
@@ -334,8 +339,9 @@ local function makeKeybindIcon(key, pos, n)
     }
 end
 
-local function circle_pos(n, i, r)
-    if MIN_SECTORS and n < MIN_SECTORS then n = MIN_SECTORS end
+function Wheel:circle_pos(n, i, r)
+    local minSectors = self.minSectors or MIN_SECTORS
+    if minSectors and n < minSectors then n = minSectors end
     local a = 2 * i * math.pi / n - math.pi / 2
     return v2(r * math.cos(a), r * math.sin(a))
 end
@@ -349,7 +355,7 @@ end
 
 ---@function
 ---@param show boolean
----@param opts {name: string, keybinds: WheelKeybinds?, provider: IconProvider? }?
+---@param opts {name: string, keybinds: WheelKeybinds?, provider: IconProvider?, minSectors: integer? }?
 function Wheel:show(show, opts)
     local wasShown = self.shown
     anim.onBeforeShow(self, show)
@@ -363,6 +369,8 @@ function Wheel:show(show, opts)
     end
 
     self.dirty = 0
+    self.minSectors = opts and opts.minSectors
+    print('show', 'sectors: ', opts.minSectors, self.minSectors)
     self.shown = show
     self.itemProvider = opts and opts.provider
     self.name = opts and opts.name
@@ -388,17 +396,17 @@ function Wheel:update()
         local n = #self.items
         local binds = helpers.transposeTable(self.keybinds)
         if self.lastOffset then
-            self.selected = getSectorIdx(self.lastOffset, n, DEAD_ZONE)
+            self.selected = self:getSectorIdx(self.lastOffset, n, DEAD_ZONE)
         else
             self.selected = 0
         end
 
         for i = 1, #self.items do
             local item = self.items[i]
-            iconContainer:add(item:makeElement(circle_pos(n, i - 1, R)))
+            iconContainer:add(item:makeElement(self:circle_pos(n, i - 1, R)))
             local key = binds and binds[item:Id()]
             if key then
-                bindsContainer:add(makeKeybindIcon(key, circle_pos(n, i - 1, R * 0.75), i))
+                bindsContainer:add(makeKeybindIcon(key, self:circle_pos(n, i - 1, R * 0.75), i))
                 binds[key] = nil
             end
         end
@@ -452,7 +460,7 @@ function Wheel:onOffsetChanged(offset)
     if not self.shown then return end
     self.lastOffset = offset
     -- current selection goes in for the hysteresis check
-    self.selected = getSectorIdx(offset, #self.items, DEAD_ZONE, self.selected)
+    self.selected = self:getSectorIdx(offset, #self.items, DEAD_ZONE, self.selected)
     self:updateIcons()
 end
 

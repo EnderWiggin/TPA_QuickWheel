@@ -2,9 +2,10 @@
 local core = require('openmw.core')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
+local omwConstants = require('scripts.omw.mwui.constants')
 local mwui = require('openmw.interfaces').MWUI
 local l10n = core.l10n('TPA_QuickWheel')
-local input = require('openmw.input')
+
 
 local v2 = util.vector2
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
@@ -26,8 +27,8 @@ local iconMap = {
 local CENTER = v2(0.5, 0.5)
 local ICON_SIZE_NORMAL = v2(128, 128)
 local ICON_SIZE_OVER = v2(160, 160)
-local TEXT_SIZE_NORMAL = 16
-local TEXT_SIZE_OVER = 24
+local TEXT_SIZE_NORMAL = omwConstants.textNormalSize
+local TEXT_SIZE_OVER = util.round(1.5 * TEXT_SIZE_NORMAL)
 
 ---@class SpellCategoryIcon: CategoryIcon
 local SpellCategoryIcon = CategoryIcon:new()

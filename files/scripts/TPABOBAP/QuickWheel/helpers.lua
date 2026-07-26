@@ -211,6 +211,12 @@ local function getEffectType(id)
     return 'Unknown'
 end
 
+Helpers.isEquipped = function(item)
+    --TODO: add support for IE's equipped modifiers (needed for bardcraft and the like)
+    if not self then return false end
+    return self.type.hasEquipped(self, item)
+end
+
 ---@param effectParams openmw.core.MagicEffectWithParams
 Helpers.categorizeMagicEffectWithParams = function(effectParams)
     local effect = core.magic.effects.records[effectParams.id]

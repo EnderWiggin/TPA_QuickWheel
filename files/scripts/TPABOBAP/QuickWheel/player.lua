@@ -35,6 +35,7 @@ local InterfaceMode = UIMode.Interface
 
 local potions = require('scripts.TPABOBAP.QuickWheel.providers.provide_potions')
 local magics = require('scripts.TPABOBAP.QuickWheel.providers.provide_magic')
+local equipment = require('scripts.TPABOBAP.QuickWheel.providers.equipment')
 
 ---@type table<string, WheelKeybinds>
 local keybinds = {}
@@ -105,6 +106,31 @@ end
 
 local function getFavoriteMagics()
     return magics.makeIcons(magics.favoriteProvider())
+end
+
+---@param icon SpellCategoryIcon
+local function openEquipmentCategory(icon)
+    if not wheel.shown then return end
+    local spells = icon:provider()
+    if #spells == 0 then return end
+    local id = icon:Id()
+    wheel:show(true, {
+        name = id,
+        keybinds = keybinds[id],
+        provider = function()
+            return equipment.makeIcons(icon:provider())
+        end
+    })
+end
+
+local function getEquipmentCategories()
+    local cat = C.EquipmentCategories
+    return {
+        SpellCategoryIcon:new({ name = cat.Weapon, activate = openEquipmentCategory, provider = equipment.provider }),
+        SpellCategoryIcon:new({ name = cat.Armor, activate = openEquipmentCategory, provider = equipment.provider }),
+        SpellCategoryIcon:new({ name = cat.Tools, activate = openEquipmentCategory, provider = equipment.provider }),
+        SpellCategoryIcon:new({ name = cat.Clothes, activate = openEquipmentCategory, provider = equipment.provider }),
+    }
 end
 
 local function getALLCategories()
@@ -181,13 +207,13 @@ local function getControllerDirection()
     if not stick or stick == C.ControllerStick.Left then
         if useVirtual then
             return v2(input.getAxisValue(input.CONTROLLER_AXIS.MoveLeftRight),
-                      input.getAxisValue(input.CONTROLLER_AXIS.MoveForwardBackward))
+                input.getAxisValue(input.CONTROLLER_AXIS.MoveForwardBackward))
         end
         return v2(input.getAxisValue(input.CONTROLLER_AXIS.LeftX), input.getAxisValue(input.CONTROLLER_AXIS.LeftY))
     elseif stick == C.ControllerStick.Right then
         if useVirtual then
             return v2(input.getAxisValue(input.CONTROLLER_AXIS.LookLeftRight),
-                      input.getAxisValue(input.CONTROLLER_AXIS.LookUpDown))
+                input.getAxisValue(input.CONTROLLER_AXIS.LookUpDown))
         end
         return v2(input.getAxisValue(input.CONTROLLER_AXIS.RightX), input.getAxisValue(input.CONTROLLER_AXIS.RightY))
     end

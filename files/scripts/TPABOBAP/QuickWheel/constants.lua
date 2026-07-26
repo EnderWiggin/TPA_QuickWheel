@@ -334,6 +334,14 @@ local SpellCategories = {
     Favorite = 'Favorite',
 }
 
+---@enum EquipmentCategories
+local EquipmentCategories = {
+    Weapon = 'Weapon',
+    Armor = 'Armor',
+    Clothes = 'Clothes',
+    Tools = 'Tools',
+}
+
 local KeyModes = {
     Smart = 'SettingKeyModeSmart',
     Hold = 'SettingKeyModeHold',
@@ -424,6 +432,7 @@ return {
     Actions = Actions,
     WheelOpenKeyBind = WheelOpenKeyBind,
     SpellCategories = SpellCategories,
+    EquipmentCategories = EquipmentCategories,
     MagicClickModes = MagicClickModes,
     QueueWidgetPosition = QueueWidgetPosition,
     TouchRange = 192, --same as iMaxActivateDist

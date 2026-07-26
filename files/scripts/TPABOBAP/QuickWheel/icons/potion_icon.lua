@@ -1,6 +1,7 @@
 ---@omw-context player
 local ui = require('openmw.ui')
 local util = require('openmw.util')
+local omwConstants = require('scripts.omw.mwui.constants')
 local I = require('openmw.interfaces')
 local mwui = I.MWUI
 local v2 = util.vector2
@@ -11,10 +12,10 @@ local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
 ---@field item table
 local PotionIcon = Icon:new()
 local CENTER = v2(0.5, 0.5)
-local ICON_SIZE_NORMAL = v2(64, 64)
-local ICON_SIZE_OVER = v2(96, 96)
-local TEXT_SIZE_NORMAL = 16
-local TEXT_SIZE_OVER = 24
+local TEXT_SIZE_NORMAL = omwConstants.textNormalSize
+local TEXT_SIZE_OVER = util.round(1.5 * TEXT_SIZE_NORMAL)
+local ICON_SIZE_NORMAL = v2(1, 1) * (4 * TEXT_SIZE_NORMAL)
+local ICON_SIZE_OVER = v2(1, 1) * (6 * TEXT_SIZE_NORMAL)
 
 function PotionIcon:makeElement(p)
     local item = self.item

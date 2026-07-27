@@ -147,8 +147,6 @@ updateSizeConfigs()
 
 function Wheel:getSectorIdx(c, n, z, current)
     local minSectors = self.minSectors or MIN_SECTORS
-    print('sector', minSectors, self.minSectors)
-    
     if minSectors and n < minSectors then n = minSectors end
     local x = -c.y
     local y = c.x
@@ -370,7 +368,6 @@ function Wheel:show(show, opts)
 
     self.dirty = 0
     self.minSectors = opts and opts.minSectors
-    print('show', 'sectors: ', opts.minSectors, self.minSectors)
     self.shown = show
     self.itemProvider = opts and opts.provider
     self.name = opts and opts.name

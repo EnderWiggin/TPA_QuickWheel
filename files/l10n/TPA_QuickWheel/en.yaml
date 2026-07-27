@@ -226,6 +226,9 @@ SettingForceEquipDesc: |-
   If enabled, item will not be unequipped if used while already equipped.
   Hold CTRL to reverse this setting.
 
+SettingShieldsAreWeapons: Shields Are Weapons
+SettingShieldsAreWeaponsDesc: If enabled, shields will be treated as weapons.
+
 # ---- Magic Categories ----
 Magic_Category_Title_Damage: Damage
 Magic_Category_Desc_Damage: |-

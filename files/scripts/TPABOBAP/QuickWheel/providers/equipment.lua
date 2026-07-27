@@ -134,12 +134,13 @@ local function findWeapons()
     local inventory = types.Actor.inventory(player)
     addItems(types.Weapon, result, inventory)
 
-    --TODO: add option to consider shields armor?
-    addItems(types.Armor, result, inventory, function(v)
-        ---@type openmw.types.ArmorRecord
-        local record = types.Armor.records[v.recordId]
-        return record and record.type == types.Armor.TYPE.Shield
-    end)
+    if config.equip.b_ShieldsAreWeapons then
+        addItems(types.Armor, result, inventory, function(v)
+            ---@type openmw.types.ArmorRecord
+            local record = types.Armor.records[v.recordId]
+            return record and record.type == types.Armor.TYPE.Shield
+        end)
+    end
 
     return result
 end
@@ -147,12 +148,12 @@ end
 local function findArmor()
     local result = {}
     local inventory = types.Actor.inventory(player)
-    --TODO: add option to consider shields armor?
-    addItems(types.Armor, result, inventory, function(v)
+    local filter = config.equip.b_ShieldsAreWeapons and function(v)
         ---@type openmw.types.ArmorRecord
         local record = types.Armor.records[v.recordId]
         return record and record.type ~= types.Armor.TYPE.Shield
-    end)
+    end or nil
+    addItems(types.Armor, result, inventory, filter)
 
     return result
 end

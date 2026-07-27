@@ -479,5 +479,12 @@ I.Settings.registerGroup {
             description = 'SettingForceEquipDesc',
             default = true,
         },
+        {
+            key = 'b_ShieldsAreWeapons',
+            renderer = 'checkbox',
+            name = 'SettingShieldsAreWeapons',
+            description = 'SettingShieldsAreWeaponsDesc',
+            default = true,
+        },
     },
 }

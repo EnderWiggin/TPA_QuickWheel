@@ -1,17 +1,11 @@
 ---@omw-context player
 local core = require('openmw.core')
-local ui = require('openmw.ui')
-local util = require('openmw.util')
-local omwConstants = require('scripts.omw.mwui.constants')
-local mwui = require('openmw.interfaces').MWUI
 local l10n = core.l10n('TPA_QuickWheel')
 
 
-local v2 = util.vector2
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local CategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.category_icon')
 
-local UNKNOWN = 'icons/TPABOBAP/QuickWheel/magic-spell.png'
 local iconMap = {
     Restore = 'icons/TPABOBAP/QuickWheel/magic-category-restore.png',
     Util = 'icons/TPABOBAP/QuickWheel/magic-category-util.png',
@@ -24,64 +18,13 @@ local iconMap = {
     Control = 'icons/TPABOBAP/QuickWheel/magic-category-control.png',
     Summon = 'icons/TPABOBAP/QuickWheel/magic-category-summon.png',
 }
-local CENTER = v2(0.5, 0.5)
-local ICON_SIZE_NORMAL = v2(128, 128)
-local ICON_SIZE_OVER = v2(160, 160)
-local TEXT_SIZE_NORMAL = omwConstants.textNormalSize
-local TEXT_SIZE_OVER = util.round(1.5 * TEXT_SIZE_NORMAL)
 
 ---@class SpellCategoryIcon: CategoryIcon
 local SpellCategoryIcon = CategoryIcon:new()
 
 function SpellCategoryIcon:makeElement(p)
-    local count = #self:provider()
-
-    self.element = {
-        name = "wheel_icon",
-        type = ui.TYPE.Widget,
-        props = {
-            relativePosition = CENTER,
-            anchor = CENTER,
-            size = ICON_SIZE_NORMAL,
-            position = p
-        },
-        content = ui.content {
-            {
-                name = "item_icon",
-                type = ui.TYPE.Image,
-                props = {
-                    relativePosition = CENTER,
-                    anchor = CENTER,
-                    resource = helpers.createTexture(iconMap[self.name] or UNKNOWN),
-                    relativeSize = CENTER,
-                },
-            },
-            {
-                name = 'item_count',
-                template = mwui.templates.textNormal,
-                props = {
-                    relativePosition = v2(0.8, 0.85),
-                    anchor = v2(1, 1),
-                    text = tostring(count),
-                    textSize = TEXT_SIZE_NORMAL,
-                },
-            }
-        }
-    }
-
+    self:make(p, iconMap)
     return self.element
-end
-
-function SpellCategoryIcon:update(selected)
-    local props = self.element.props
-    local content = self.element.content
-    if selected then
-        props.size = ICON_SIZE_OVER
-        content['item_count'].props.textSize = TEXT_SIZE_OVER
-    else
-        props.size = ICON_SIZE_NORMAL
-        content['item_count'].props.textSize = TEXT_SIZE_NORMAL
-    end
 end
 
 function SpellCategoryIcon:makeTip()
@@ -91,10 +34,6 @@ function SpellCategoryIcon:makeTip()
     )
     tip.name = self:tipId()
     return tip
-end
-
-function SpellCategoryIcon:Id()
-    return 'category:' .. self.name
 end
 
 return SpellCategoryIcon

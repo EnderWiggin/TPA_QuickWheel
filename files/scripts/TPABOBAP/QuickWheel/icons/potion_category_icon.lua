@@ -1,12 +1,7 @@
 ---@omw-context player
 local core = require('openmw.core')
-local ui = require('openmw.ui')
-local util = require('openmw.util')
-local omwConstants = require('scripts.omw.mwui.constants')
-local mwui = require('openmw.interfaces').MWUI
 local l10n = core.l10n('TPA_QuickWheel')
 
-local v2 = util.vector2
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local CategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.category_icon')
 local PotionIcon = require('scripts.TPABOBAP.QuickWheel.icons.potion_icon')
@@ -21,68 +16,22 @@ local iconMap = {
     Buffs = 'icons/TPABOBAP/QuickWheel/category-buff.png',
     Other = 'icons/TPABOBAP/QuickWheel/category-other.png',
 }
-local CENTER = v2(0.5, 0.5)
-local ICON_SIZE_NORMAL = v2(128, 128)
-local ICON_SIZE_OVER = v2(160, 160)
-local TEXT_SIZE_NORMAL = omwConstants.textNormalSize
-local TEXT_SIZE_OVER = util.round(1.5 * TEXT_SIZE_NORMAL)
 
 ---@class PotionCategoryIcon: CategoryIcon
 local PotionCategoryIcon = CategoryIcon:new()
 
 function PotionCategoryIcon:makeElement(p)
+    self:make(p, iconMap)
+    return self.element
+end
+
+function PotionCategoryIcon:getCount()
     local count = 0
     local items = self:provider()
     for i = 1, #items do
         count = count + items[i].count
     end
-
-    self.element = {
-        name = "wheel_icon",
-        type = ui.TYPE.Widget,
-        props = {
-            relativePosition = CENTER,
-            anchor = CENTER,
-            size = ICON_SIZE_NORMAL,
-            position = p
-        },
-        content = ui.content {
-            {
-                name = "item_icon",
-                type = ui.TYPE.Image,
-                props = {
-                    relativePosition = CENTER,
-                    anchor = CENTER,
-                    resource = helpers.createTexture(iconMap[self.name]),
-                    relativeSize = CENTER,
-                },
-            },
-            {
-                name = 'item_count',
-                template = mwui.templates.textNormal,
-                props = {
-                    relativePosition = v2(0.8, 0.85),
-                    anchor = v2(1, 1),
-                    text = tostring(count),
-                    textSize = TEXT_SIZE_NORMAL,
-                },
-            }
-        }
-    }
-
-    return self.element
-end
-
-function PotionCategoryIcon:update(selected)
-    local props = self.element.props
-    local content = self.element.content
-    if selected then
-        props.size = ICON_SIZE_OVER
-        content['item_count'].props.textSize = TEXT_SIZE_OVER
-    else
-        props.size = ICON_SIZE_NORMAL
-        content['item_count'].props.textSize = TEXT_SIZE_NORMAL
-    end
+    return count
 end
 
 --- potions can be nil - uses provider in this case
@@ -110,11 +59,6 @@ function PotionCategoryIcon:getQuickUsePotion(potions)
     end
     return nil
 end
-
-function PotionCategoryIcon:Id()
-    return 'category:' .. self.name
-end
-
 --- quickUse can be nil - uses provider in this case
 function PotionCategoryIcon:tipId(quickUse)
     local id = self:Id()

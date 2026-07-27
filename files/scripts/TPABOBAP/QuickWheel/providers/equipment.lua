@@ -13,6 +13,12 @@ local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local EquipmentIcon = require('scripts.TPABOBAP.QuickWheel.icons.equipment_icon')
 
 
+local function needsDelay(item)
+    if item.type == types.Repair then return true end
+    local data = types.Item.itemData(item)
+    return data and data.soul
+end
+
 ---@param icon EquipmentIcon
 local function equipItem(icon)
     local item = icon.item and icon:item() or icon
@@ -20,12 +26,12 @@ local function equipItem(icon)
 
     if helpers.isEquipped(item) then
         player:sendEvent('Unequip', { item = item })
-    else
-        --TODO: option(?) to ready equipped weapon or pick/probe?
-        --TODO: only use timer for the repair tools and gems
+    elseif needsDelay(item) then
         async:newUnsavableGameTimer(0.1, function()
             core.sendGlobalEvent('UseItem', { object = item, actor = player })
         end)
+    else
+        core.sendGlobalEvent('UseItem', { object = item, actor = player })
     end
 end
 

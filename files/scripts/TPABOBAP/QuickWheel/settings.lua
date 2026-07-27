@@ -116,7 +116,7 @@ I.Settings.registerGroup {
             renderer = 'inputBinding',
             name = 'SettingKeyEquipWheel',
             description = 'SettingKeyEquipWheelDesc',
-            default = C.WheelOpenKeyBind.EquipAlt,
+            default = C.WheelOpenKeyBind.Equip,
             argument = {
                 type = "action",
                 key = C.Actions.Equipment

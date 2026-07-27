@@ -19,10 +19,13 @@ SettingKeyFavMagicWheel: Button to open Favorite Magic Wheel
 SettingKeyFavMagicWheelDesc: |-
   Opens the wheel that contains all spells and magic items that are marked as favorite.
   Requires Magic Window Extender.
+SettingKeyEquipWheel: Button to open Equipment Wheel
+SettingKeyEquipWheelDesc: Opens the wheel that contains all weapons, armors, clothes and tools.
 SettingKeyOmniWheelAlt: Alternate button to open Omni Wheel
 SettingKeyPotionWheelAlt: Alternate button to open Potion Wheel
 SettingKeyMagicWheelAlt: Alternate button to open Magic Wheel
 SettingKeyFavMagicWheelAlt: Alternate button to open Favorite Magic Wheel
+SettingKeyEquipWheelAlt: Alternate button to open Equipment Wheel
 SettingKeyMode: Key mode
 SettingKeyModeDesc: |-
   Smart - tap to toggle wheel or hold to close on key release. 

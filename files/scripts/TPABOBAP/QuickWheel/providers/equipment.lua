@@ -19,6 +19,13 @@ local function needsDelay(item)
     return data and data.soul
 end
 
+local function needsReady(item)
+    local t = item.type
+    return t == types.Weapon --do we need to exclude ammo?
+        or t == types.Lockpick
+        or t == types.Probe
+end
+
 ---@param icon EquipmentIcon
 local function equipItem(icon)
     local item = icon.item and icon:item() or icon
@@ -32,7 +39,7 @@ local function equipItem(icon)
 
     local ready = config.equip.b_AutoReady
     if helpers.isAltPressed() then ready = not ready end
-    ready = ready and (not equipped or force)
+    ready = ready and (not equipped or force) and needsReady(item)
 
     local opensUI = needsDelay(item)
 

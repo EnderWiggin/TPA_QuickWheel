@@ -486,5 +486,12 @@ I.Settings.registerGroup {
             description = 'SettingShieldsAreWeaponsDesc',
             default = true,
         },
+        {
+            key = 'b_FilledGemTools',
+            renderer = 'checkbox',
+            name = 'SettingFilledGemTools',
+            description = 'SettingFilledGemToolsDesc',
+            default = false,
+        },
     },
 }

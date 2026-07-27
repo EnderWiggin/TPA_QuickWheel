@@ -15,8 +15,7 @@ local EquipmentIcon = require('scripts.TPABOBAP.QuickWheel.icons.equipment_icon'
 
 local function needsDelay(item)
     if item.type == types.Repair then return true end
-    local data = types.Item.itemData(item)
-    return data and data.soul
+    return helpers.getSoul(item)
 end
 
 local function needsReady(item)
@@ -96,19 +95,26 @@ local function makeIcons(items)
     return result
 end
 
-local function addItems(type, list, inventory, filter, group)
+---@param itemType any
+---@param list? openmw.Object[][]
+---@param inventory openmw.core.Inventory?
+---@param filter? fun(item:openmw.Object):boolean
+---@param group? boolean|fun(item:openmw.Object):string
+---@return openmw.Object[][]
+local function addItems(itemType, list, inventory, filter, group)
     if not inventory then inventory = types.Actor.inventory(player) end
     if not list then list = {} end
-    local items = inventory:getAll(type)
+    local items = inventory:getAll(itemType)
     if group then
         local map = {}
         for i = 1, #items do
             local v = items[i]
             if not filter or filter(v) then
-                if not map[v.recordId] then
-                    map[v.recordId] = { v }
+                local g = type(group) == 'function' and group(v) or v.recordId
+                if not map[g] then
+                    map[g] = { v }
                 else
-                    table.insert(map[v.recordId], v)
+                    table.insert(map[g], v)
                 end
             end
         end
@@ -183,7 +189,9 @@ local function findTools()
     addItems(types.Repair, result, inventory, nil, true)
     addItems(types.Light, result, inventory, nil, true)
 
-    --TODO: option to include filled soul gems (to recharge items)
+    if config.equip.b_FilledGemTools then
+        addItems(types.Miscellaneous, result, inventory, helpers.getSoul, helpers.getSoul)
+    end
 
     return result
 end

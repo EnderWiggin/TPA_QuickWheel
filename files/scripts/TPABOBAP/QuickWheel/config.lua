@@ -14,6 +14,7 @@ local C = require('scripts.TPABOBAP.QuickWheel.constants')
 ---@field b_AutoReady boolean
 ---@field b_ForceEquip boolean
 ---@field b_ShieldsAreWeapons boolean
+---@field b_FilledGemTools boolean
 
 ---@class QuickWheelConfig
 ---@field main {s_KeyMode: string, b_ShowWheelAnimation:boolean, s_TimeMode: string, s_ControllerMode: ControllerMode, s_ControllerStick: ControllerStick, n_ControllerDeadZone: number, n_HysteresisStrength: number}

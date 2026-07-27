@@ -37,7 +37,7 @@ function EquipmentIcon:makeElement(p)
         }
     }
     local equipped = self:equipped()
-    local magic = record.enchant
+    local magic = record.enchant or helpers.getSoul(item)
     if equipped or magic then
         local magicString = magic and '_magic' or ''
         local postString = (equipped and '_equip') or (magicString ~= '' and '') or '_none'

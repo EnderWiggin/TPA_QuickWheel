@@ -117,7 +117,7 @@ Helpers.padding = function(size)
     }
 end
 
-Helpers.makeTooltip = function(title, body)
+Helpers.makeTooltip = function(title, body, width)
     local content = ui.content {
         {
             name = 'title',
@@ -133,10 +133,10 @@ Helpers.makeTooltip = function(title, body)
     if type(body) == 'string' then
         body = {
             name = 'body',
-            template = mwui.templates.textNormal,
+            template = mwui.templates.textParagraph,
             props = {
                 text = body,
-                autoSize = true,
+                size = v2(width or 250, 0),
                 multiline = true,
                 textAlignH = ui.ALIGNMENT.Center,
             }

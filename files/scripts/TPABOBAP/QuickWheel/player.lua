@@ -123,7 +123,7 @@ local function openEquipmentCategory(icon)
     })
 end
 
-local function getEquipmentCategories()
+local function getEquipCategories()
     local cat = C.EquipmentCategories
     return {
         SpellCategoryIcon:new({ name = cat.Weapon, activate = openEquipmentCategory, provider = equipment.provider }),
@@ -175,18 +175,16 @@ local function setWheelMode(isOn, mode)
     end
 
     currentWheelMode = mode
-    local id
+    local id = 'wheel:' .. (currentWheelMode or 'omni')
     if currentWheelMode == 'potions' then
-        id = 'wheel:' .. currentWheelMode
         wheel:show(isWheelModeOn, { name = id, keybinds = keybinds[id], provider = getPotionCategories })
     elseif currentWheelMode == 'magic' then
-        id = 'wheel:' .. currentWheelMode
         wheel:show(isWheelModeOn, { name = id, keybinds = keybinds[id], provider = getSpellCategories })
     elseif currentWheelMode == 'magic-favorite' then
-        id = 'wheel:' .. currentWheelMode
         wheel:show(isWheelModeOn, { name = id, keybinds = keybinds[id], provider = getFavoriteMagics })
+    elseif currentWheelMode == 'equip' then
+        wheel:show(isWheelModeOn, { name = id, keybinds = keybinds[id], provider = getEquipCategories, minSectors = 0 })
     else
-        id = 'wheel:omni'
         wheel:show(isWheelModeOn, { name = id, keybinds = keybinds[id], provider = getALLCategories })
     end
 
@@ -320,6 +318,10 @@ local function handleFavMagicWheelAction(isPressed)
     handleWheelAction(isPressed, 'magic-favorite')
 end
 
+local function handleEquipWheelAction(isPressed)
+    handleWheelAction(isPressed, 'equip')
+end
+
 local function handleActivate()
     if config.shouldUseController() then
         wheel:onMouseClick()
@@ -335,6 +337,7 @@ local function Init()
     input.registerActionHandler(C.Actions.Potion, async:callback(handlePotionWheelAction))
     input.registerActionHandler(C.Actions.Magic, async:callback(handleMagicWheelAction))
     input.registerActionHandler(C.Actions.MagicFav, async:callback(handleFavMagicWheelAction))
+    input.registerActionHandler(C.Actions.Equipment, async:callback(handleEquipWheelAction))
     input.registerTriggerHandler('Activate', async:callback(handleActivate))
 
     core.sendGlobalEvent('QW_UpdateWheelState', { state = false })

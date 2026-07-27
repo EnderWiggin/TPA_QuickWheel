@@ -4,7 +4,7 @@ local I = require('openmw.interfaces')
 local core = require('openmw.core')
 local player = require('openmw.self')
 local types = require('openmw.types')
-local auxUtil = require('openmw_aux.util')
+local ambient = require('openmw.ambient')
 local async = require('openmw.async')
 
 local C = require('scripts.TPABOBAP.QuickWheel.constants')
@@ -26,6 +26,9 @@ local function equipItem(icon)
 
     if helpers.isEquipped(item) then
         player:sendEvent('Unequip', { item = item })
+        --play unequip sounds - equip one are playing automatically
+        local sound = helpers.getItemSound(item, 'down')
+        if sound then ambient.playSound(sound) end
     elseif needsDelay(item) then
         async:newUnsavableGameTimer(0.1, function()
             core.sendGlobalEvent('UseItem', { object = item, actor = player })

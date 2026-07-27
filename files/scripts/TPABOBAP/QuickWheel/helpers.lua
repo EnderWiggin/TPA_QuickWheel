@@ -1,5 +1,6 @@
 ---@omw-context player
 local I = require('openmw.interfaces')
+local types = require('openmw.types')
 local core = require('openmw.core')
 local input = require('openmw.input')
 local ui = require('openmw.ui')
@@ -215,6 +216,144 @@ Helpers.isEquipped = function(item)
     --TODO: add support for IE's equipped modifiers (needed for bardcraft and the like)
     if not self then return false end
     return self.type.hasEquipped(self, item)
+end
+
+Helpers.isGold = function(item)
+    local id = type(item) == 'string' and item:lower() or item.recordId:lower()
+    return id == 'gold_001' or id == 'gold_005' or id == 'gold_010' or id == 'gold_025' or id == 'gold_100'
+end
+
+Helpers.getItemSound = function(item, upOrDown)
+    local itemRecord = item.type.record(item)
+    local itemStr
+    if types.Armor.objectIsInstance(item) then
+        local skill = I.Combat.getArmorSkill(item)
+        if skill == 'lightarmor' then
+            itemStr = 'armor light'
+        elseif skill == 'mediumarmor' then
+            itemStr = 'armor medium'
+        else
+            itemStr = 'armor heavy'
+        end
+    elseif types.Miscellaneous.objectIsInstance(item) then
+        itemStr = Helpers.isGold(item) and 'gold' or 'misc'
+    elseif types.Apparatus.objectIsInstance(item) then
+        itemStr = 'apparatus'
+    elseif types.Book.objectIsInstance(item) then
+        itemStr = 'book'
+    elseif types.Clothing.objectIsInstance(item) then
+        itemStr = itemRecord.type == types.Clothing.TYPE.Ring and 'ring' or 'clothes'
+    elseif types.Ingredient.objectIsInstance(item) then
+        itemStr = 'ingredient'
+    elseif types.Light.objectIsInstance(item) then
+        itemStr = 'misc'
+    elseif types.Lockpick.objectIsInstance(item) then
+        itemStr = 'lockpick'
+    elseif types.Potion.objectIsInstance(item) then
+        itemStr = 'potion'
+    elseif types.Probe.objectIsInstance(item) then
+        itemStr = 'probe'
+    elseif types.Repair.objectIsInstance(item) then
+        itemStr = 'repair'
+    elseif types.Weapon.objectIsInstance(item) then
+        local weaponInfo = Helpers.getWeaponInfo(item)
+        itemStr = weaponInfo and weaponInfo.soundId
+    end
+
+    if not itemStr then return nil end
+
+    return 'item ' .. itemStr .. ' ' .. upOrDown
+end
+
+Helpers.getWeaponInfo = function(item)
+    if not types.Weapon.objectIsInstance(item) then
+        return nil
+    end
+    ---@type openmw.types.WeaponRecord
+    local record = types.Weapon.records[item.recordId]
+    if not record then return nil end
+    local TYPE = types.Weapon.TYPE
+    if record.type == TYPE.Arrow or record.type == TYPE.Bolt then
+        return {
+            skill = 'marksman',
+            soundId = 'ammo',
+            --class = C.WeaponClass.Ammo,
+        }
+    elseif record.type == TYPE.MarksmanBow then
+        return {
+            skill = 'marksman',
+            soundId = 'weapon bow',
+            --class = C.WeaponClass.Ranged,
+        }
+    elseif record.type == TYPE.MarksmanCrossbow then
+        return {
+            skill = 'marksman',
+            soundId = 'weapon crossbow',
+            --class = C.WeaponClass.Ranged,
+        }
+    elseif record.type == TYPE.MarksmanThrown then
+        return {
+            skill = 'marksman',
+            soundId = 'weapon blunt',
+            --class = C.WeaponClass.Thrown,
+        }
+    elseif record.type == TYPE.AxeOneHand then
+        return {
+            skill = 'axe',
+            soundId = 'weapon blunt',
+            --class = C.WeaponClass.Melee,
+            isTwoHanded = false,
+        }
+    elseif record.type == TYPE.AxeTwoHand then
+        return {
+            skill = 'axe',
+            soundId = 'weapon blunt',
+            --class = C.WeaponClass.Melee,
+            isTwoHanded = true,
+        }
+    elseif record.type == TYPE.BluntOneHand then
+        return {
+            skill = 'bluntweapon',
+            soundId = 'weapon blunt',
+            --class = C.WeaponClass.Melee,
+            isTwoHanded = false,
+        }
+    elseif record.type == TYPE.BluntTwoClose or record.type == TYPE.BluntTwoWide then
+        return {
+            skill = 'bluntweapon',
+            soundId = 'weapon blunt',
+            --class = C.WeaponClass.Melee,
+            isTwoHanded = true,
+        }
+    elseif record.type == TYPE.LongBladeOneHand then
+        return {
+            skill = 'longblade',
+            soundId = 'weapon longblade',
+            --class = C.WeaponClass.Melee,
+            isTwoHanded = false,
+        }
+    elseif record.type == TYPE.LongBladeTwoHand then
+        return {
+            skill = 'longblade',
+            soundId = 'weapon longblade',
+            --class = C.WeaponClass.Melee,
+            isTwoHanded = true,
+        }
+    elseif record.type == TYPE.ShortBladeOneHand then
+        return {
+            skill = 'shortblade',
+            soundId = 'weapon shortblade',
+            --class = C.WeaponClass.Melee,
+            isTwoHanded = false,
+        }
+    elseif record.type == TYPE.SpearTwoWide then
+        return {
+            skill = 'spear',
+            soundId = 'weapon spear',
+            --class = C.WeaponClass.Melee,
+            isTwoHanded = true,
+        }
+    end
 end
 
 ---@param effectParams openmw.core.MagicEffectWithParams

@@ -232,6 +232,20 @@ SettingShieldsAreWeaponsDesc: If enabled, shields will be treated as weapons.
 SettingFilledGemTools: Filled Sou Gems Are Tools
 SettingFilledGemToolsDesc: If enabled, filled soul gems will be treated as tools.
 
+# ---- Equip Categories ----
+
+Equip_Category_Title_Weapon: Weapons
+Equip_Category_Desc_Weapon: All weapons and optionally shields.
+
+Equip_Category_Title_Armor: Armors
+Equip_Category_Desc_Armor: All armors.
+
+Equip_Category_Title_Clothes: Clothes
+Equip_Category_Desc_Clothes: All clothes and jewelry.
+
+Equip_Category_Title_Tools: Tools
+Equip_Category_Desc_Tools: All lockpicks, probes, torches, repair tools and optionally filled soul gems.
+
 # ---- Magic Categories ----
 Magic_Category_Title_Damage: Damage
 Magic_Category_Desc_Damage: |-

@@ -13,6 +13,7 @@ local config = require('scripts.TPABOBAP.QuickWheel.config')
 local wheel = require('scripts.TPABOBAP.QuickWheel.wheel')
 local PotionCategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.potion_category_icon')
 local SpellCategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.magic_category_icon')
+local EquipCategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.equip_category')
 local C = require('scripts.TPABOBAP.QuickWheel.constants')
 
 local isWheelModeOn = false
@@ -126,10 +127,10 @@ end
 local function getEquipCategories()
     local cat = C.EquipmentCategories
     return {
-        SpellCategoryIcon:new({ name = cat.Weapon, activate = openEquipmentCategory, provider = equipment.provider }),
-        SpellCategoryIcon:new({ name = cat.Armor, activate = openEquipmentCategory, provider = equipment.provider }),
-        SpellCategoryIcon:new({ name = cat.Tools, activate = openEquipmentCategory, provider = equipment.provider }),
-        SpellCategoryIcon:new({ name = cat.Clothes, activate = openEquipmentCategory, provider = equipment.provider }),
+        EquipCategoryIcon:new({ name = cat.Weapon, activate = openEquipmentCategory, provider = equipment.provider }),
+        EquipCategoryIcon:new({ name = cat.Armor, activate = openEquipmentCategory, provider = equipment.provider }),
+        EquipCategoryIcon:new({ name = cat.Tools, activate = openEquipmentCategory, provider = equipment.provider }),
+        EquipCategoryIcon:new({ name = cat.Clothes, activate = openEquipmentCategory, provider = equipment.provider }),
     }
 end
 

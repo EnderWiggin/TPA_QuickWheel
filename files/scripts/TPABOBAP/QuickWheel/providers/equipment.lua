@@ -22,19 +22,42 @@ end
 ---@param icon EquipmentIcon
 local function equipItem(icon)
     local item = icon.item and icon:item() or icon
-    player:sendEvent('QW_UpdateWheelState', { wheelState = false })
+    local equipped = helpers.isEquipped(item)
 
-    if helpers.isEquipped(item) then
-        player:sendEvent('Unequip', { item = item })
-        --play unequip sounds - equip one are playing automatically
-        local sound = helpers.getItemSound(item, 'down')
-        if sound then ambient.playSound(sound) end
-    elseif needsDelay(item) then
+    local close = config.equip.b_AutoClose
+    if helpers.isShiftPressed() then close = not close end
+
+    local force = config.equip.b_ForceEquip
+    if helpers.isCtrlPressed() then force = not force end
+
+    local ready = config.equip.b_AutoReady
+    if helpers.isAltPressed() then ready = not ready end
+    ready = ready and (not equipped or force)
+
+    local opensUI = needsDelay(item)
+
+    if close or opensUI then player:sendEvent('QW_UpdateWheelState', { wheelState = false }) end
+
+    if equipped then
+        if force then
+            if ready then player.type.setStance(player, types.Actor.STANCE.Weapon) end
+        else
+            player:sendEvent('Unequip', { item = item })
+            --play unequip sounds - equip one are playing automatically
+            local sound = helpers.getItemSound(item, 'down')
+            if sound then ambient.playSound(sound) end
+        end
+    elseif opensUI then
         async:newUnsavableGameTimer(0.1, function()
             core.sendGlobalEvent('UseItem', { object = item, actor = player })
         end)
     else
         core.sendGlobalEvent('UseItem', { object = item, actor = player })
+        if ready then
+            async:newUnsavableGameTimer(0.1, function()
+                player.type.setStance(player, types.Actor.STANCE.Weapon)
+            end)
+        end
     end
 end
 

@@ -449,3 +449,35 @@ I.Settings.registerGroup {
         },
     }
 }
+
+I.Settings.registerGroup {
+    key = MODNAME .. '/EquipSettings',
+    page = MODNAME,
+    l10n = MODNAME,
+    name = 'SettingsEquipName',
+    order = 4,
+    permanentStorage = true,
+    settings = {
+        {
+            key = 'b_AutoClose',
+            renderer = 'checkbox',
+            name = 'SettingAutoClose',
+            description = 'SettingAutoCloseDesc',
+            default = true,
+        },
+        {
+            key = 'b_AutoReady',
+            renderer = 'checkbox',
+            name = 'SettingAutoReady',
+            description = 'SettingAutoReadyDesc',
+            default = true,
+        },
+        {
+            key = 'b_ForceEquip',
+            renderer = 'checkbox',
+            name = 'SettingForceEquip',
+            description = 'SettingForceEquipDesc',
+            default = true,
+        },
+    },
+}

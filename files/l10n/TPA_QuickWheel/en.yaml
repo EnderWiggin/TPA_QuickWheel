@@ -207,6 +207,25 @@ Potion_Category_Desc_Buffs: |-
 Potion_Category_Title_Other: Other
 Potion_Category_Desc_Other: Potions that didn't fit into any other category.
 
+# ---- Equip Settings ----
+SettingsEquipName: Equipment Settings
+
+SettingAutoClose: Close Wheel On Use 
+SettingAutoCloseDesc: |-
+  If enabled, wheel will close after using an item.
+  Hold SHIFT to reverse this setting.
+  Wheel always closes when using repair tools or filled soul gems. 
+
+SettingAutoReady: Ready Used Item
+SettingAutoReadyDesc: |-
+  If enabled, item will be readied.
+  Hold ALT to reverse this setting.
+
+SettingForceEquip: Always Equip
+SettingForceEquipDesc: |-
+  If enabled, item will not be unequipped if used while already equipped.
+  Hold CTRL to reverse this setting.
+
 # ---- Magic Categories ----
 Magic_Category_Title_Damage: Damage
 Magic_Category_Desc_Damage: |-

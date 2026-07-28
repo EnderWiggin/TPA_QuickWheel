@@ -7,14 +7,14 @@ local CategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.category_icon')
 local PotionIcon = require('scripts.TPABOBAP.QuickWheel.icons.potion_icon')
 
 local iconMap = {
-    Health = 'icons/TPABOBAP/QuickWheel/category-health.png',
-    Stamina = 'icons/TPABOBAP/QuickWheel/category-stamina.png',
-    Magicka = 'icons/TPABOBAP/QuickWheel/category-magicka.png',
-    Poison = 'icons/TPABOBAP/QuickWheel/category-poison.png',
-    Cure = 'icons/TPABOBAP/QuickWheel/category-cure.png',
-    Combat = 'icons/TPABOBAP/QuickWheel/category-combat.png',
-    Buffs = 'icons/TPABOBAP/QuickWheel/category-buff.png',
-    Other = 'icons/TPABOBAP/QuickWheel/category-other.png',
+    Health = helpers.createTexture('icons/TPABOBAP/QuickWheel/category-health.png'),
+    Stamina = helpers.createTexture('icons/TPABOBAP/QuickWheel/category-stamina.png'),
+    Magicka = helpers.createTexture('icons/TPABOBAP/QuickWheel/category-magicka.png'),
+    Poison = helpers.createTexture('icons/TPABOBAP/QuickWheel/category-poison.png'),
+    Cure = helpers.createTexture('icons/TPABOBAP/QuickWheel/category-cure.png'),
+    Combat = helpers.createTexture('icons/TPABOBAP/QuickWheel/category-combat.png'),
+    Buffs = helpers.createTexture('icons/TPABOBAP/QuickWheel/category-buff.png'),
+    Other = helpers.createTexture('icons/TPABOBAP/QuickWheel/category-other.png'),
 }
 
 ---@class PotionCategoryIcon: CategoryIcon

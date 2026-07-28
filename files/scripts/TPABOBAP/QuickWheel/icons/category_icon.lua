@@ -14,7 +14,7 @@ local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
 ---@field public provider fun():any[]
 ---@field public quickUse boolean
 
-local UNKNOWN = 'icons/TPABOBAP/QuickWheel/magic-spell.png'
+local UNKNOWN = helpers.createTexture('icons/TPABOBAP/QuickWheel/magic-spell.png')
 local CENTER = v2(0.5, 0.5)
 local ICON_SIZE_NORMAL = v2(128, 128)
 local ICON_SIZE_OVER = v2(160, 160)
@@ -43,7 +43,7 @@ function CategoryIcon:make(p, iconMap)
                 props = {
                     relativePosition = CENTER,
                     anchor = CENTER,
-                    resource = helpers.createTexture(iconMap[self.name] or UNKNOWN),
+                    resource = iconMap[self.name] or UNKNOWN,
                     relativeSize = CENTER,
                 },
             },

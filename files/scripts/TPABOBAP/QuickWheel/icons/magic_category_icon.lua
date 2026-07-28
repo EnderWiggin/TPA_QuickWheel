@@ -7,16 +7,15 @@ local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local CategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.category_icon')
 
 local iconMap = {
-    Restore = 'icons/TPABOBAP/QuickWheel/magic-category-restore.png',
-    Util = 'icons/TPABOBAP/QuickWheel/magic-category-util.png',
-    Debuff = 'icons/TPABOBAP/QuickWheel/magic-category-debuff.png',
-    Damage = 'icons/TPABOBAP/QuickWheel/magic-category-damage.png',
-    Combat = 'icons/TPABOBAP/QuickWheel/magic-category-combat.png',
-    Buff = 'icons/TPABOBAP/QuickWheel/magic-category-buff.png',
-    Other = nil,
-    Transport = 'icons/TPABOBAP/QuickWheel/magic-category-travel.png',
-    Control = 'icons/TPABOBAP/QuickWheel/magic-category-control.png',
-    Summon = 'icons/TPABOBAP/QuickWheel/magic-category-summon.png',
+    Restore = helpers.createTexture('icons/TPABOBAP/QuickWheel/magic-category-restore.png'),
+    Util = helpers.createTexture('icons/TPABOBAP/QuickWheel/magic-category-util.png'),
+    Debuff = helpers.createTexture('icons/TPABOBAP/QuickWheel/magic-category-debuff.png'),
+    Damage = helpers.createTexture('icons/TPABOBAP/QuickWheel/magic-category-damage.png'),
+    Combat = helpers.createTexture('icons/TPABOBAP/QuickWheel/magic-category-combat.png'),
+    Buff = helpers.createTexture('icons/TPABOBAP/QuickWheel/magic-category-buff.png'),
+    Transport = helpers.createTexture('icons/TPABOBAP/QuickWheel/magic-category-travel.png'),
+    Control = helpers.createTexture('icons/TPABOBAP/QuickWheel/magic-category-control.png'),
+    Summon = helpers.createTexture('icons/TPABOBAP/QuickWheel/magic-category-summon.png'),
 }
 
 ---@class SpellCategoryIcon: CategoryIcon

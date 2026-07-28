@@ -7,10 +7,10 @@ local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local CategoryIcon = require('scripts.TPABOBAP.QuickWheel.icons.category_icon')
 
 local iconMap = {
-    Weapon = 'icons/TPABOBAP/QuickWheel/equip-category-weapon.png',
-    Armor = 'icons/TPABOBAP/QuickWheel/equip-category-armor.png',
-    Clothes = 'icons/TPABOBAP/QuickWheel/equip-category-clothes.png',
-    Tools = 'icons/TPABOBAP/QuickWheel/equip-category-tools.png',
+    Weapon = helpers.createTexture('icons/TPABOBAP/QuickWheel/equip-category-weapon.png'),
+    Armor = helpers.createTexture('icons/TPABOBAP/QuickWheel/equip-category-armor.png'),
+    Clothes = helpers.createTexture('icons/TPABOBAP/QuickWheel/equip-category-clothes.png'),
+    Tools = helpers.createTexture('icons/TPABOBAP/QuickWheel/equip-category-tools.png'),
 }
 
 ---@class EquipCategoryIcon: CategoryIcon

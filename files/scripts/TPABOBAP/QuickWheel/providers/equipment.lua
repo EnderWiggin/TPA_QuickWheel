@@ -73,6 +73,87 @@ local function equipItem(icon)
     end
 end
 
+local TypeOrder = {
+    [types.Weapon] = 10,
+    [types.Armor] = 20,
+    [types.Lockpick] = 50,
+    [types.Probe] = 60,
+    [types.Repair] = 70,
+    [types.Light] = 80,
+    [types.Miscellaneous] = 90,
+}
+
+---@param r openmw.types.WeaponRecord
+---@return number
+local function getWeaponOrderShift(r)
+    if r.type == types.Weapon.TYPE.MarksmanThrown then
+        return 5
+    elseif r.type == types.Weapon.TYPE.MarksmanBow then
+        return 10
+    elseif r.type == types.Weapon.TYPE.Arrow then
+        return 15
+    elseif r.type == types.Weapon.TYPE.MarksmanCrossbow then
+        return 20
+    elseif r.type == types.Weapon.TYPE.Bolt then
+        return 25
+    end
+    return 0
+end
+
+---@param a openmw.Object
+---@param b openmw.Object
+local function compareTypeOrder(a, b)
+    local ta = a.type
+    local tb = b.type
+
+    local oa = TypeOrder[ta]
+    local ob = TypeOrder[tb]
+
+    local ra = ta.records[a.recordId]
+    local rb = tb.records[b.recordId]
+
+    if not ra or not rb then return nil end
+
+    if ta == tb then
+        if ta == types.Weapon then
+            oa = oa + getWeaponOrderShift(ra)
+            ob = ob + getWeaponOrderShift(rb)
+        elseif ta == types.Armor then
+            ---@cast ra openmw.types.ArmorRecord
+            ---@cast rb openmw.types.ArmorRecord
+            oa = ra.type
+            ob = rb.type
+        elseif ta == types.Clothing then
+            ---@cast ra openmw.types.ClothingRecord
+            ---@cast rb openmw.types.ClothingRecord
+            oa = ra.type
+            ob = rb.type
+        end
+    end
+
+    if oa == ob then return nil end
+    if oa == nil then return false end
+    if ob == nil then return true end
+    return oa < ob
+end
+
+local function compareItems(a, b)
+    local itemA = a:item()
+    local itemB = b:item()
+
+    local order = compareTypeOrder(itemA, itemB)
+    if order ~= nil then return order end
+
+    local ra = itemA.type.records[itemA.recordId]
+    local rb = itemB.type.records[itemB.recordId]
+
+    if ra.name ~= rb.name then
+        return ra.name < rb.name
+    end
+
+    return itemA.id < itemB.id --id as tie breaker
+end
+
 local function makeIcons(items)
     ---@type table<number, PotionIcon>
     local result = {}
@@ -81,23 +162,7 @@ local function makeIcons(items)
         if not tmp[1] then tmp = { tmp } end
         table.insert(result, EquipmentIcon:new({ items = tmp, activate = equipItem }))
     end
-    table.sort(result, function(a, b)
-        local itemA = a:item()
-        local itemB = b:item()
-
-        local ra = itemA.type.record(itemA.recordId)
-        local rb = itemB.type.record(itemB.recordId)
-
-        if ra.name ~= rb.name then
-            return ra.name < rb.name
-        end
-
-        if ra.value ~= rb.value then
-            return ra.value < rb.value --cheaper first
-        end
-
-        return itemA.id < itemB.id --id as tie breaker
-    end)
+    table.sort(result, compareItems)
     return result
 end
 

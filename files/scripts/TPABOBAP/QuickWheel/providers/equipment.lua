@@ -25,6 +25,12 @@ local function needsReady(item)
         or t == types.Probe
 end
 
+---@param item openmw.Object
+local function getEnchantId(item)
+    local record = item.type.records[item.recordId]
+    return record and record.enchant
+end
+
 ---@param icon EquipmentIcon
 local function equipItem(icon)
     local item = icon.item and icon:item() or icon
@@ -174,8 +180,8 @@ end
 local function findClothing()
     local result = {}
     local inventory = types.Actor.inventory(player)
-    --TODO: option to show only constant effect clothes? (magic in general?)
-    addItems(types.Clothing, result, inventory)
+    local filter = config.equip.b_OnlyMagicClothes and getEnchantId or nil
+    addItems(types.Clothing, result, inventory, filter)
 
     return result
 end

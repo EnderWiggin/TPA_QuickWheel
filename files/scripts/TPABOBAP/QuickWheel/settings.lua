@@ -487,6 +487,13 @@ I.Settings.registerGroup {
             default = true,
         },
         {
+            key = 'b_OnlyMagicClothes',
+            renderer = 'checkbox',
+            name = 'SettingOnlyMagicClothes',
+            description = 'SettingOnlyMagicClothesDesc',
+            default = true,
+        },
+        {
             key = 'b_FilledGemTools',
             renderer = 'checkbox',
             name = 'SettingFilledGemTools',

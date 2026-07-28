@@ -229,6 +229,9 @@ SettingForceEquipDesc: |-
 SettingShieldsAreWeapons: Shields Are Weapons
 SettingShieldsAreWeaponsDesc: If enabled, shields will be treated as weapons.
 
+SettingOnlyMagicClothes: Only Enchanted Clothes
+SettingOnlyMagicClothesDesc: If enabled, only enchanted clothes and jewelry will be shown.
+
 SettingFilledGemTools: Filled Sou Gems Are Tools
 SettingFilledGemToolsDesc: If enabled, filled soul gems will be treated as tools.
 

@@ -21,20 +21,29 @@ local function isPotionOfType(potion, type)
     if toxicology and toxicology.isAlcohol then
         if toxicology.isAlcohol(potion) then return false end
     end
-    local limit = config.potions.b_NoUnknownCategory and helpers.getKnownAlchemyEffectCount(true) or math.huge
-    local known
+    local limit = helpers.getKnownAlchemyEffectCount(true)
+    local knowledge
     if I.TPA_AlchemyRedone and I.TPA_AlchemyRedone.isEnabled() then
-        known = I.TPA_AlchemyRedone.getKnownEffectFlagsForItem(potion)
+        knowledge = I.TPA_AlchemyRedone.getKnownEffectFlagsForItem(potion)
     end
 
     local valid = false
     for i = 1, #record.effects do
-        if not known and i > limit or not known[i] then return valid end
-        local t = test[record.effects[i].id]
-        if t == false then
-            return false
-        elseif t == true then
-            valid = true
+        local isKnown = not config.potions.b_NoUnknownCategory
+        if not isKnown then
+            if not knowledge then
+                isKnown = i > limit
+            else
+                isKnown = knowledge[i]
+            end
+        end
+        if isKnown then
+            local t = test[record.effects[i].id]
+            if t == false then
+                return false
+            elseif t == true then
+                valid = true
+            end
         end
     end
     return valid

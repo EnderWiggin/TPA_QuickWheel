@@ -9,6 +9,7 @@ local auxUi = require('openmw_aux.ui')
 local _, self = pcall(require, 'openmw.self')
 local mwui = I.MWUI
 
+local config = require('scripts.TPABOBAP.QuickWheel.config')
 local C = require('scripts.TPABOBAP.QuickWheel.constants')
 
 local v2 = util.vector2
@@ -169,29 +170,69 @@ Helpers.makeTooltip = function(title, body, width)
     }
 end
 
----@param item openmw.Object
-Helpers.makeItemTooltip = function(item)
-    local CENTER = v2(0.5, 0.5)
-    local tip
+local function tryMakeSharedTip(item)
+    local ST = I.SharedTooltip
+    if ST and ST.createLayout then
+        return ST.createLayout(item)
+    end
+
+    return nil
+end
+
+local function tryMakeIETip(item)
     local IE = I.InventoryExtender
     local isOKIE, makeIETip = pcall(function() return IE and IE.Templates.MAGIC.itemTooltip end)
-    isOKIE = false
     if isOKIE and IE and type(makeIETip) == 'function' then
-        tip = makeIETip(item, false, IE.getContext())
-        tip.props.anchor = CENTER
-        tip.props.relativePosition = CENTER
-    else
-        local MW = I.MagicWindow
-        local isOKMW, makeMWTip = pcall(function() return MW and MW.Templates.MAGIC.itemTooltip end)
-        if isOKMW and type(makeMWTip) == 'function' then
-            tip = makeMWTip(item)
-            tip.props.anchor = CENTER
-            tip.props.relativePosition = CENTER
-        else
-            --TODO: improve this tooltip
-            local record = item.type.record(item.recordId)
-            return Helpers.makeTooltip(record.name)
-        end
+        return makeIETip(item, false, IE.getContext())
+    end
+
+    return nil
+end
+
+local function tryMakeMETip(item)
+    local MW = I.MagicWindow
+    local isOKMW, makeMWTip = pcall(function() return MW and MW.Templates.MAGIC.itemTooltip end)
+    if isOKMW and type(makeMWTip) == 'function' then
+        return makeMWTip(item)
+    end
+
+    return nil
+end
+
+local function makeSimpleTip(item)
+    --TODO: improve this tooltip
+    local record = item.type.record(item.recordId)
+    return Helpers.makeTooltip(record.name)
+end
+
+local function getTipBuilders()
+    if config.main.s_TipProvider == C.TipProviders.Onwlyme then
+        return {
+            tryMakeSharedTip,
+            tryMakeIETip,
+            tryMakeMETip,
+            makeSimpleTip,
+        }
+    end
+    return {
+        tryMakeIETip,
+        tryMakeMETip,
+        tryMakeSharedTip,
+        makeSimpleTip,
+    }
+end
+
+---@param item openmw.Object
+Helpers.makeItemTooltip = function(item)
+    local builders = getTipBuilders()
+    local tip
+    for i = 1, #builders do
+        tip = builders[i](item)
+        if tip then break end
+    end
+    if tip then
+        tip.props.anchor = v2(0.5, 0.5)
+        tip.props.relativePosition = v2(0.5, 0.5)
     end
     return tip
 end

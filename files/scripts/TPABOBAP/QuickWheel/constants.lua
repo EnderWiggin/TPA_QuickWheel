@@ -347,6 +347,12 @@ local KeyModes = {
     Hold = 'SettingKeyModeHold',
     Toggle = 'SettingKeyModeToggle'
 }
+
+local TipProviders = {
+    Ralts = 'SettingTipProviderRalts',
+    Onwlyme = 'SettingTipProviderOnwlyme',
+}
+
 local TimeModes = {
     Normal = 'SettingTimeModeNormal',
     Slow = 'SettingTimeModeSlow',
@@ -426,6 +432,7 @@ return {
     PotionTypes = PotionTypes,
     MagicEffectTypes = MagicEffectTypes,
     KeyModes = KeyModes,
+    TipProviders = TipProviders,
     TimeModes = TimeModes,
     ControllerStick = ControllerStick,
     ControllerMode = ControllerMode,

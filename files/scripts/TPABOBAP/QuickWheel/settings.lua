@@ -249,6 +249,20 @@ I.Settings.registerGroup {
             }
         },
         {
+            key = 's_TipProvider',
+            renderer = 'select',
+            name = 'SettingTipProviders',
+            description = 'SettingTipProvidersDesc',
+            default = C.TipProviders.Ralts,
+            argument = {
+                l10n = MODNAME,
+                items = {
+                    C.TipProviders.Ralts,
+                    C.TipProviders.Onwlyme,
+                },
+            }
+        },
+        {
             key = 'b_ShowWheelAnimation',
             renderer = 'checkbox',
             name = 'SettingShowWheelAnimation',

@@ -9,6 +9,16 @@ local magic = storage.playerSection('TPA_QuickWheel/MagicSettings')
 local equip = storage.playerSection('TPA_QuickWheel/EquipSettings')
 local C = require('scripts.TPABOBAP.QuickWheel.constants')
 
+---@class MainConfig
+---@field s_KeyMode string 
+---@field s_TipProvider string 
+---@field b_ShowWheelAnimation boolean 
+---@field s_TimeMode string
+---@field s_ControllerMode ControllerMode
+---@field s_ControllerStick ControllerStick 
+---@field n_ControllerDeadZone number
+---@field n_HysteresisStrength number
+
 ---@class EquipWheelCfg
 ---@field b_AutoClose boolean
 ---@field b_AutoReady boolean
@@ -18,7 +28,7 @@ local C = require('scripts.TPABOBAP.QuickWheel.constants')
 ---@field b_FilledGemTools boolean
 
 ---@class QuickWheelConfig
----@field main {s_KeyMode: string, b_ShowWheelAnimation:boolean, s_TimeMode: string, s_ControllerMode: ControllerMode, s_ControllerStick: ControllerStick, n_ControllerDeadZone: number, n_HysteresisStrength: number}
+---@field main MainConfig
 ---@field potions {b_NoUnknownCategory: boolean, b_FilterPoisons: boolean, b_QuickApplyPoison: boolean, s_SeparateAlcohol: AlcoholModes}
 ---@field magic {s_MagicClickMode: MagicClickModes, b_UseOSSC: boolean, n_MagicCastDelay: number, n_MagicCastCooldown: number, s_QueueWidgetPosition: QueueWidgetPosition, b_ShowQueueWidget: boolean}
 ---@field equip EquipWheelCfg

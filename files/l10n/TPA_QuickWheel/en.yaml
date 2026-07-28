@@ -54,6 +54,15 @@ SettingTimeModeSlow: Slow
 SettingTimeModeVerySlow: Very Slow
 SettingTimeModePaused: Paused
 
+SettingTipProviders: Preferred tooltip provider
+SettingTipProvidersDesc: |-
+  What is a preferred way to render tooltips:
+  Ralts - tooltips from Inventory Extender and Magic Window Extender
+  Ownlyme - tooltips from Shared Tooltips mod, or Quick Loot or any other mod that bundles Shared Tooltips mod 
+  
+SettingTipProviderRalts: Ralts
+SettingTipProviderOnwlyme: Ownlyme
+
 SettingControllerMode: Controller exclusive mode
 SettingControllerModeDesc: |-
   If turned on there will be no cursor when opening the wheels. Time will be paused regardless of the slowdown settings.

@@ -106,28 +106,7 @@ function PotionIcon:makeTip()
 end
 
 function PotionIcon.makeTipForItem(item)
-    local tip
-    local IE = I.InventoryExtender
-    local isOKIE, makeIETip = pcall(function() return IE and IE.Templates.MAGIC.itemTooltip end)
-    isOKIE = false
-    if isOKIE and IE and type(makeIETip) == 'function' then
-        tip = makeIETip(item, false, IE.getContext())
-        tip.props.anchor = CENTER
-        tip.props.relativePosition = CENTER
-    else
-        local MW = I.MagicWindow
-        local isOKMW, makeMWTip = pcall(function() return MW and MW.Templates.MAGIC.itemTooltip end)
-        if isOKMW and type(makeMWTip) == 'function' then
-            tip = makeMWTip(item)
-            tip.props.anchor = CENTER
-            tip.props.relativePosition = CENTER
-        else
-            --TODO: improve this tooltip
-            local record = item.type.record(item.recordId)
-            return helpers.makeTooltip(record.name)
-        end
-    end
-    return tip
+    return helpers.makeItemTooltip(item)
 end
 
 function PotionIcon:Id()

@@ -169,6 +169,33 @@ Helpers.makeTooltip = function(title, body, width)
     }
 end
 
+---@param item openmw.Object
+Helpers.makeItemTooltip = function(item)
+    local CENTER = v2(0.5, 0.5)
+    local tip
+    local IE = I.InventoryExtender
+    local isOKIE, makeIETip = pcall(function() return IE and IE.Templates.MAGIC.itemTooltip end)
+    isOKIE = false
+    if isOKIE and IE and type(makeIETip) == 'function' then
+        tip = makeIETip(item, false, IE.getContext())
+        tip.props.anchor = CENTER
+        tip.props.relativePosition = CENTER
+    else
+        local MW = I.MagicWindow
+        local isOKMW, makeMWTip = pcall(function() return MW and MW.Templates.MAGIC.itemTooltip end)
+        if isOKMW and type(makeMWTip) == 'function' then
+            tip = makeMWTip(item)
+            tip.props.anchor = CENTER
+            tip.props.relativePosition = CENTER
+        else
+            --TODO: improve this tooltip
+            local record = item.type.record(item.recordId)
+            return Helpers.makeTooltip(record.name)
+        end
+    end
+    return tip
+end
+
 Helpers.getKnownAlchemyEffectCount = function(isPotion)
     if not self or not self.type or not self.type.stats or not self.type.stats.skills or not self.type.stats.skills.alchemy then
         return 0

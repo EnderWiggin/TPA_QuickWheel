@@ -172,7 +172,7 @@ function MagicIcon:makeTip()
         return MagicIcon.makeTipForSpell(self.spell)
     end
     if self.item then
-        return MagicIcon.makeTipForItem(self.item)
+        return helpers.makeItemTooltip(self.item)
     end
 end
 
@@ -187,30 +187,6 @@ function MagicIcon.makeTipForSpell(spell)
     else
         --TODO: improve this tooltip
         return helpers.makeTooltip(spell.name)
-    end
-    return tip
-end
-
-function MagicIcon.makeTipForItem(item)
-    local tip
-    local IE = I.InventoryExtender
-    local isOKIE, makeIETip = pcall(function() return IE and IE.Templates.MAGIC.itemTooltip end)
-    if isOKIE and IE and type(makeIETip) == 'function' then
-        tip = makeIETip(item, false, IE.getContext())
-        tip.props.anchor = CENTER
-        tip.props.relativePosition = CENTER
-    else
-        local MW = I.MagicWindow
-        local isOKMW, makeMWTip = pcall(function() return MW and MW.Templates.MAGIC.itemTooltip end)
-        if isOKMW and type(makeMWTip) == 'function' then
-            tip = makeMWTip(item)
-            tip.props.anchor = CENTER
-            tip.props.relativePosition = CENTER
-        else
-            --TODO: improve this tooltip
-            local record = item.type.record(item.recordId)
-            return helpers.makeTooltip(record.name)
-        end
     end
     return tip
 end

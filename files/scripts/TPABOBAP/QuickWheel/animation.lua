@@ -121,7 +121,7 @@ local function outgoingContainer(w)
             },
             content = ui.content {},
         }
-        w.widget.layout.content:add(layout)
+        w.widget.layout.content:insert(#w.widget.layout.content, layout)
         r.out = layout
     end
     return r.out

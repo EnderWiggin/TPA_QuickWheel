@@ -290,11 +290,10 @@ local function makeWheel(self)
                     anchor = v2(0.5, 0.5),
                 },
                 content = ui.content {}
-            }
+            },
+            makeKeybindButton(self),
         }),
     }
-
-    wheel.layout.content:add(makeKeybindButton(self))
 
     return wheel
 end

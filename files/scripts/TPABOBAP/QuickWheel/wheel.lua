@@ -360,9 +360,7 @@ function Wheel:show(show, opts)
     if show then
         updateSizeConfigs()
     else
-        self.isKeybindingActive = false
-        self:destroyKeybindTutorial()
-        pendingBind = nil
+        self:toggleKeybindMode(false)
     end
 
     self.dirty = 0
@@ -547,7 +545,7 @@ end
 function Wheel:onKeyPress(evt)
     if self.isKeybindingActive then
         if evt.code == input.KEY.Escape then
-            self:toggleKeybindMode()
+            self:toggleKeybindMode(false)
             return
         end
         self:makeKeyBind(evt)
@@ -623,13 +621,18 @@ function Wheel:destroyKeybindTutorial()
     end
 end
 
-function Wheel:toggleKeybindMode()
-    self.isKeybindingActive = not self.isKeybindingActive
+function Wheel:toggleKeybindMode(on)
+    if on == nil then
+        self.isKeybindingActive = not self.isKeybindingActive
+    else
+        self.isKeybindingActive = on
+    end
     if self.isKeybindingActive then
         updateForbiddenKeys()
         self:makeKeybindTutorial()
     else
         self:destroyKeybindTutorial()
+        pendingBind = nil
     end
     self:markDirty()
 end

@@ -135,23 +135,28 @@ local function getEquipCategories()
 end
 
 local function getALLCategories()
-    local categories = C.SpellCategories
+    local equip = C.EquipmentCategories
+    local magic = C.SpellCategories
     return {
         PotionCategoryIcon:new({ name = 'Health', activate = openPotionCategory, provider = potions.provider, quickUse = true }),
         PotionCategoryIcon:new({ name = 'Stamina', activate = openPotionCategory, provider = potions.provider, quickUse = true }),
         PotionCategoryIcon:new({ name = 'Combat', activate = openPotionCategory, provider = potions.provider }),
         PotionCategoryIcon:new({ name = 'Cure', activate = openPotionCategory, provider = potions.provider }),
         PotionCategoryIcon:new({ name = 'Poison', activate = openPotionCategory, provider = potions.provider }),
-        SpellCategoryIcon:new({ name = categories.Damage, activate = openSpellCategory, provider = magics.provider }),
-        SpellCategoryIcon:new({ name = categories.Combat, activate = openSpellCategory, provider = magics.provider }),
-        SpellCategoryIcon:new({ name = categories.Debuff, activate = openSpellCategory, provider = magics.provider }),
-        SpellCategoryIcon:new({ name = categories.Util, activate = openSpellCategory, provider = magics.provider }),
-        SpellCategoryIcon:new({ name = categories.Restore, activate = openSpellCategory, provider = magics.provider }),
-        SpellCategoryIcon:new({ name = categories.Buff, activate = openSpellCategory, provider = magics.provider }),
-        SpellCategoryIcon:new({ name = categories.Summon, activate = openSpellCategory, provider = magics.provider }),
-        SpellCategoryIcon:new({ name = categories.Transport, activate = openSpellCategory, provider = magics.provider }),
-        SpellCategoryIcon:new({ name = categories.Control, activate = openSpellCategory, provider = magics.provider }),
-        SpellCategoryIcon:new({ name = categories.Other, activate = openSpellCategory, provider = magics.provider }),
+        EquipCategoryIcon:new({ name = equip.Weapon, activate = openEquipmentCategory, provider = equipment.provider }),
+        EquipCategoryIcon:new({ name = equip.Armor, activate = openEquipmentCategory, provider = equipment.provider }),
+        EquipCategoryIcon:new({ name = equip.Clothes, activate = openEquipmentCategory, provider = equipment.provider }),
+        EquipCategoryIcon:new({ name = equip.Tools, activate = openEquipmentCategory, provider = equipment.provider }),
+        SpellCategoryIcon:new({ name = magic.Damage, activate = openSpellCategory, provider = magics.provider }),
+        SpellCategoryIcon:new({ name = magic.Combat, activate = openSpellCategory, provider = magics.provider }),
+        SpellCategoryIcon:new({ name = magic.Debuff, activate = openSpellCategory, provider = magics.provider }),
+        SpellCategoryIcon:new({ name = magic.Util, activate = openSpellCategory, provider = magics.provider }),
+        SpellCategoryIcon:new({ name = magic.Restore, activate = openSpellCategory, provider = magics.provider }),
+        SpellCategoryIcon:new({ name = magic.Buff, activate = openSpellCategory, provider = magics.provider }),
+        SpellCategoryIcon:new({ name = magic.Summon, activate = openSpellCategory, provider = magics.provider }),
+        SpellCategoryIcon:new({ name = magic.Transport, activate = openSpellCategory, provider = magics.provider }),
+        SpellCategoryIcon:new({ name = magic.Control, activate = openSpellCategory, provider = magics.provider }),
+        SpellCategoryIcon:new({ name = magic.Other, activate = openSpellCategory, provider = magics.provider }),
         PotionCategoryIcon:new({ name = 'Other', activate = openPotionCategory, provider = potions.provider }),
         PotionCategoryIcon:new({ name = 'Buffs', activate = openPotionCategory, provider = potions.provider }),
         PotionCategoryIcon:new({ name = 'Magicka', activate = openPotionCategory, provider = potions.provider, quickUse = true }),

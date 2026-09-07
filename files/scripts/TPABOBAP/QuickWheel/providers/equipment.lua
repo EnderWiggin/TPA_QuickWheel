@@ -7,6 +7,21 @@ local types = require('openmw.types')
 local ambient = require('openmw.ambient')
 local async = require('openmw.async')
 
+local Actor = types.Actor
+local Armor = types.Armor
+local Clothing = types.Clothing
+local Item = types.Item
+local Light = types.Light
+local Lockpick = types.Lockpick
+local Miscellaneous = types.Miscellaneous
+local Probe = types.Probe
+local Repair = types.Repair
+local Weapon = types.Weapon
+
+local ActorStance = Actor.STANCE
+local ArmorType = Armor.TYPE
+local WeaponType = Weapon.TYPE
+
 local C = require('scripts.TPABOBAP.QuickWheel.constants')
 local config = require('scripts.TPABOBAP.QuickWheel.config')
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
@@ -14,15 +29,15 @@ local EquipmentIcon = require('scripts.TPABOBAP.QuickWheel.icons.equipment_icon'
 
 
 local function needsDelay(item)
-    if item.type == types.Repair then return true end
+    if item.type == Repair then return true end
     return helpers.getSoul(item)
 end
 
 local function needsReady(item)
     local t = item.type
-    return t == types.Weapon --do we need to exclude ammo?
-        or t == types.Lockpick
-        or t == types.Probe
+    return t == Weapon --do we need to exclude ammo?
+        or t == Lockpick
+        or t == Probe
 end
 
 ---@param item openmw.Object
@@ -52,7 +67,7 @@ local function equipItem(icon)
 
     if equipped then
         if force then
-            if ready then player.type.setStance(player, types.Actor.STANCE.Weapon) end
+            if ready then player.type.setStance(player, ActorStance.Weapon) end
         else
             player:sendEvent('Unequip', { item = item })
             --play unequip sounds - equip one are playing automatically
@@ -67,34 +82,34 @@ local function equipItem(icon)
         core.sendGlobalEvent('UseItem', { object = item, actor = player })
         if ready then
             async:newUnsavableGameTimer(0.1, function()
-                player.type.setStance(player, types.Actor.STANCE.Weapon)
+                player.type.setStance(player, ActorStance.Weapon)
             end)
         end
     end
 end
 
 local TypeOrder = {
-    [types.Weapon] = 10,
-    [types.Armor] = 20,
-    [types.Lockpick] = 50,
-    [types.Probe] = 60,
-    [types.Repair] = 70,
-    [types.Light] = 80,
-    [types.Miscellaneous] = 90,
+    [Weapon] = 10,
+    [Armor] = 20,
+    [Lockpick] = 50,
+    [Probe] = 60,
+    [Repair] = 70,
+    [Light] = 80,
+    [Miscellaneous] = 90,
 }
 
 ---@param r openmw.types.WeaponRecord
 ---@return number
 local function getWeaponOrderShift(r)
-    if r.type == types.Weapon.TYPE.MarksmanThrown then
+    if r.type == WeaponType.MarksmanThrown then
         return 5
-    elseif r.type == types.Weapon.TYPE.MarksmanBow then
+    elseif r.type == WeaponType.MarksmanBow then
         return 10
-    elseif r.type == types.Weapon.TYPE.Arrow then
+    elseif r.type == WeaponType.Arrow then
         return 15
-    elseif r.type == types.Weapon.TYPE.MarksmanCrossbow then
+    elseif r.type == WeaponType.MarksmanCrossbow then
         return 20
-    elseif r.type == types.Weapon.TYPE.Bolt then
+    elseif r.type == WeaponType.Bolt then
         return 25
     end
     return 0
@@ -115,15 +130,15 @@ local function compareTypeOrder(a, b)
     if not ra or not rb then return nil end
 
     if ta == tb then
-        if ta == types.Weapon then
+        if ta == Weapon then
             oa = oa + getWeaponOrderShift(ra)
             ob = ob + getWeaponOrderShift(rb)
-        elseif ta == types.Armor then
+        elseif ta == Armor then
             ---@cast ra openmw.types.ArmorRecord
             ---@cast rb openmw.types.ArmorRecord
             oa = ra.type
             ob = rb.type
-        elseif ta == types.Clothing then
+        elseif ta == Clothing then
             ---@cast ra openmw.types.ClothingRecord
             ---@cast rb openmw.types.ClothingRecord
             oa = ra.type
@@ -173,7 +188,7 @@ end
 ---@param group? boolean|fun(item:openmw.Object):string
 ---@return openmw.Object[][]
 local function addItems(itemType, list, inventory, filter, group)
-    if not inventory then inventory = types.Actor.inventory(player) end
+    if not inventory then inventory = Actor.inventory(player) end
     if not list then list = {} end
     local items = inventory:getAll(itemType)
     if group then
@@ -192,8 +207,8 @@ local function addItems(itemType, list, inventory, filter, group)
         for _, v in pairs(map) do
             --put least durable item first
             table.sort(v, function(a, b)
-                local da = types.Item.itemData(a)
-                local db = types.Item.itemData(b)
+                local da = Item.itemData(a)
+                local db = Item.itemData(b)
 
                 local ca = da and da.condition or 0
                 local cb = db and db.condition or 0
@@ -215,14 +230,14 @@ end
 
 local function findWeapons()
     local result = {}
-    local inventory = types.Actor.inventory(player)
-    addItems(types.Weapon, result, inventory)
+    local inventory = Actor.inventory(player)
+    addItems(Weapon, result, inventory)
 
     if config.equip.b_ShieldsAreWeapons then
-        addItems(types.Armor, result, inventory, function(v)
+        addItems(Armor, result, inventory, function(v)
             ---@type openmw.types.ArmorRecord
-            local record = types.Armor.records[v.recordId]
-            return record and record.type == types.Armor.TYPE.Shield
+            local record = Armor.records[v.recordId]
+            return record and record.type == ArmorType.Shield
         end)
     end
 
@@ -231,37 +246,37 @@ end
 
 local function findArmor()
     local result = {}
-    local inventory = types.Actor.inventory(player)
+    local inventory = Actor.inventory(player)
     local filter = config.equip.b_ShieldsAreWeapons and function(v)
         ---@type openmw.types.ArmorRecord
-        local record = types.Armor.records[v.recordId]
-        return record and record.type ~= types.Armor.TYPE.Shield
+        local record = Armor.records[v.recordId]
+        return record and record.type ~= ArmorType.Shield
     end or nil
-    addItems(types.Armor, result, inventory, filter)
+    addItems(Armor, result, inventory, filter)
 
     return result
 end
 
 local function findClothing()
     local result = {}
-    local inventory = types.Actor.inventory(player)
+    local inventory = Actor.inventory(player)
     local filter = config.equip.b_OnlyMagicClothes and getEnchantId or nil
-    addItems(types.Clothing, result, inventory, filter)
+    addItems(Clothing, result, inventory, filter)
 
     return result
 end
 
 local function findTools()
     local result = {}
-    local inventory = types.Actor.inventory(player)
+    local inventory = Actor.inventory(player)
 
-    addItems(types.Lockpick, result, inventory, nil, true)
-    addItems(types.Probe, result, inventory, nil, true)
-    addItems(types.Repair, result, inventory, nil, true)
-    addItems(types.Light, result, inventory, nil, true)
+    addItems(Lockpick, result, inventory, nil, true)
+    addItems(Probe, result, inventory, nil, true)
+    addItems(Repair, result, inventory, nil, true)
+    addItems(Light, result, inventory, nil, true)
 
     if config.equip.b_FilledGemTools then
-        addItems(types.Miscellaneous, result, inventory, helpers.getSoul, helpers.getSoul)
+        addItems(Miscellaneous, result, inventory, helpers.getSoul, helpers.getSoul)
     end
 
     return result

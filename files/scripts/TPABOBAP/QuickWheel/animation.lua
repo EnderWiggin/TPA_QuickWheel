@@ -35,11 +35,12 @@ local ANIM_SWEEP = math.pi * 0.5 -- quarter turn travelled on the way out
 local ANIM_OUT_RADIUS = 2.6      -- outgoing ring's final radius, in units of its own
 local ANIM_OUT_SWEEP = math.pi * 0.35
 local BG_ALPHA = 0.5             -- wheel.lua's dim backdrop
+local FAV_ALPHA = 0.5              -- 
 local BIND_ALPHA = 0.2           -- wheel.lua's keybind box
 local OUT_CONTAINER = 'qwp_outgoing'
 
 ---@type {t:number, dir:number, closing:boolean, swap:boolean, last:number, icons:table[], binds:table[], out:table[]}
-local anim = { t = 0, dir = 0, closing = false, swap = false, last = 0, icons = {}, binds = {}, out = {} }
+local anim = { t = 0, dir = 0, closing = false, swap = false, last = 0, icons = {}, binds = {}, favorites = {}, out = {} }
 
 ---nil-safe replacement for content[name], which raises rather than returning nil
 local function childByName(content, name)
@@ -55,6 +56,7 @@ local function resolveRefs(w)
         widget = w.widget,
         bg = content[1],
         icons = childByName(content, 'icons'),
+        favorites = childByName(content, 'favorites'),
         binds = childByName(content, 'binds'),
         tooltip = childByName(content, 'tooltip'),
         out = childByName(content, OUT_CONTAINER), -- survives a hot reload
@@ -78,6 +80,7 @@ end
 ---position without knowing anything about wheel.lua's radius or sector maths.
 local function captureBases(w)
     anim.icons = {}
+    anim.favorites = {}
     anim.binds = {}
 
     if w.items then
@@ -91,6 +94,22 @@ local function captureBases(w)
     end
 
     local r = resolveRefs(w)
+    local favorites = r and r.favorites and r.favorites.content
+    if favorites then
+        for i = 1, #favorites do
+            local layout = favorites[i]
+            local p = layout.props and layout.props.position
+            if p then
+                anim.favorites[#anim.favorites + 1] = {
+                    props = layout.props,
+                    title = bindTitleProps(layout),
+                    r = p:length(),
+                    a = math.atan2(p.y, p.x),
+                }
+            end
+        end
+    end
+
     local binds = r and r.binds and r.binds.content
     if binds then
         for i = 1, #binds do
@@ -169,6 +188,7 @@ local function beginSwap(w)
     end
 
     steal(r.icons, false)
+    steal(r.favorites, false)
     steal(r.binds, true)
 
     anim.swap = #anim.out > 0
@@ -186,6 +206,13 @@ local function applyAnim(w)
     for _, icon in ipairs(anim.icons) do
         local r, a = icon.r * scale, icon.a + sweep
         icon.props.position = v2(r * math.cos(a), r * math.sin(a))
+    end
+
+    for _, bind in ipairs(anim.favorites) do
+        local r, a = bind.r * scale, bind.a + sweep
+        bind.props.position = v2(r * math.cos(a), r * math.sin(a))
+        bind.props.alpha = FAV_ALPHA * e
+        if bind.title then bind.title.alpha = e end
     end
 
     for _, bind in ipairs(anim.binds) do

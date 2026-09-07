@@ -167,6 +167,20 @@ function MagicIcon:update(selected)
     end
 end
 
+function MagicIcon:isFavorite()
+    if not I.MagicWindow then return false end
+    local pinned = I.MagicWindow.getStat('pinned')
+    if self.spell then
+        pinned = pinned and pinned.spells
+        return pinned and pinned[self.spell.id]
+    end
+    if self.item then
+        pinned = pinned and pinned.magicItems
+        return pinned and pinned[self.item.id]
+    end
+    return false
+end
+
 function MagicIcon:makeTip()
     if self.spell then
         return MagicIcon.makeTipForSpell(self.spell)

@@ -123,6 +123,10 @@ function EquipmentIcon:equipped()
     return false
 end
 
+function EquipmentIcon:isFavorite()
+    return helpers.isFavorite(self:item())
+end
+
 function EquipmentIcon:makeTip()
     return EquipmentIcon.makeTipForItem(self:item())
 end

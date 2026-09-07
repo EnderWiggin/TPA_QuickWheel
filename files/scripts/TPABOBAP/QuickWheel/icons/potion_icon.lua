@@ -101,6 +101,10 @@ function PotionIcon:update(selected)
     end
 end
 
+function PotionIcon:isFavorite()
+    return helpers.isFavorite(self.item)
+end
+
 function PotionIcon:makeTip()
     return PotionIcon.makeTipForItem(self.item)
 end

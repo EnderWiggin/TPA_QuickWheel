@@ -8,6 +8,7 @@ local ambient = require('openmw.ambient')
 local async = require('openmw.async')
 local auxUi = require('openmw_aux.ui')
 local omwself = require('openmw.self')
+local omwConstants = require('scripts.omw.mwui.constants')
 local storage = require('openmw.storage')
 
 local bindingSection = storage.playerSection('OMWInputBindings')
@@ -26,6 +27,8 @@ local DEAD_ZONE
 local CENTER
 local MIN_SECTORS = 8
 local CONTROLLER = false
+local TEXT_SIZE_NORMAL = omwConstants.textNormalSize
+local FAV_SHIFT = 3.5 * TEXT_SIZE_NORMAL
 
 local MWUIConstants = require('scripts.omw.mwui.constants')
 local TextDefault = MWUI.textNormal.props.textColor
@@ -274,6 +277,15 @@ local function makeWheel(self)
                 content = ui.content {}
             },
             {
+                name = 'favorites',
+                props = {
+                    relativeSize = v2(1, 1),
+                    relativePosition = v2(0.5, 0.5),
+                    anchor = v2(0.5, 0.5),
+                },
+                content = ui.content {}
+            },
+            {
                 name = 'binds',
                 props = {
                     relativeSize = v2(1, 1),
@@ -379,10 +391,13 @@ function Wheel:update()
     wheel.layout.props.visible = self.shown
     if self.shown then
         helpers.destroyContentChildren(wheel.layout.content['icons'].content)
+        helpers.destroyContentChildren(wheel.layout.content['favorites'].content)
         helpers.destroyContentChildren(wheel.layout.content['binds'].content)
         local iconContainer = ui.content {}
+        local favorites = ui.content {}
         local bindsContainer = ui.content {}
         wheel.layout.content['icons'].content = iconContainer
+        wheel.layout.content['favorites'].content = favorites
         wheel.layout.content['binds'].content = bindsContainer
 
         self.items = type(self.itemProvider) == 'function' and self.itemProvider() or {}
@@ -398,9 +413,23 @@ function Wheel:update()
         for i = 1, #self.items do
             local item = self.items[i]
             iconContainer:add(item:makeElement(self:circle_pos(n, i - 1, R)))
+            if item:isFavorite() then
+                favorites:add({
+                    type = ui.TYPE.Image,
+                    props = {
+                        resource = helpers.createTexture 'icons/TPABOBAP/QuickWheel/favorite.dds',
+                        color = util.color.rgb(0.9, 0.1, 0.15),
+                        size = v2(TEXT_SIZE_NORMAL, TEXT_SIZE_NORMAL),
+                        anchor = v2(0.5, 0.5),
+                        alpha = 0.5,
+                        relativePosition = v2(0.5, 0.5),
+                        position = self:circle_pos(n, i - 1, R - FAV_SHIFT),
+                    },
+                })
+            end
             local key = binds and binds[item:Id()]
             if key then
-                bindsContainer:add(makeKeybindIcon(key, self:circle_pos(n, i - 1, R * 0.75), i))
+                bindsContainer:add(makeKeybindIcon(key, self:circle_pos(n, i - 1, R - 2 * FAV_SHIFT), i))
                 binds[key] = nil
             end
         end

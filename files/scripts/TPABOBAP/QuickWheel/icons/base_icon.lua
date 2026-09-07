@@ -50,6 +50,8 @@ function Icon:update(selected)
     end
 end
 
+function Icon:isFavorite() return false end
+
 function Icon:makeTip()
     return nil
 end

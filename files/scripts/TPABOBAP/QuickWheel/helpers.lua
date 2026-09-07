@@ -286,6 +286,20 @@ Helpers.isEquipped = function(item)
     return self.type.hasEquipped(self, item)
 end
 
+---@param item {id:string}
+---@return boolean
+function Helpers.isFavorite(item)
+    if not item then return false end
+
+    local IE = I.InventoryExtender
+    if not IE then return false end
+
+    local ctx = IE.getContext()
+    if not ctx or not ctx.favoriteItems then return false end
+
+    return ctx.favoriteItems[item.id] == true
+end
+
 Helpers.isGold = function(item)
     local id = type(item) == 'string' and item:lower() or item.recordId:lower()
     return id == 'gold_001' or id == 'gold_005' or id == 'gold_010' or id == 'gold_025' or id == 'gold_100'

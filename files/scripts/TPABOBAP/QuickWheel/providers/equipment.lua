@@ -159,6 +159,11 @@ local function compareItems(a, b)
     local order = compareTypeOrder(itemA, itemB)
     if order ~= nil then return order end
 
+    local favA = helpers.isFavorite(itemA)
+    local favB = helpers.isFavorite(itemB)
+
+    if favA ~= favB then return favA end
+
     local ra = itemA.type.records[itemA.recordId]
     local rb = itemB.type.records[itemB.recordId]
 

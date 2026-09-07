@@ -1,12 +1,17 @@
 ---@omw-context player
 local ui = require('openmw.ui')
 local util = require('openmw.util')
+local types = require('openmw.types')
 local I = require('openmw.interfaces')
 local omwConstants = require('scripts.omw.mwui.constants')
 local mwui = I.MWUI
 local v2 = util.vector2
 local helpers = require('scripts.TPABOBAP.QuickWheel.helpers')
 local Icon = require('scripts.TPABOBAP.QuickWheel.icons.base_icon')
+
+local Lockpick = types.Lockpick
+local Probe = types.Probe
+local Repair = types.Repair
 
 ---@class EquipmentIcon: Icon
 ---@field items openmw.Object[]
@@ -126,8 +131,18 @@ function EquipmentIcon.makeTipForItem(item)
     return helpers.makeItemTooltip(item)
 end
 
+local function getId(self)
+    local item = self:item()
+    local recordId = item.recordId
+    if Lockpick.objectIsInstance(item) then return 'lockpick:' .. recordId end
+    if Probe.objectIsInstance(item) then return 'probe:' .. recordId end
+    if Repair.objectIsInstance(item) then return 'repair:' .. recordId end
+    return 'equipment:' .. item.id
+end
+
 function EquipmentIcon:Id()
-    return 'equipment:' .. self:item().id
+    if not self.id then self.id = getId(self) end
+    return self.id
 end
 
 return EquipmentIcon

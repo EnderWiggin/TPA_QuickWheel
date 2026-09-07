@@ -196,6 +196,7 @@ local MagicEffectTypes = {
 
         nsp_alacrity = true,      --nifty spell pack Alacrity (cast speed)
         spellsword_effect = true, --spellsword mod - imbue weapon with magic
+        t_mysticism_reflectdmg = true, -- TR Reflect Damage
     },
     Buff = {
         chameleon = true,

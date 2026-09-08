@@ -57,9 +57,11 @@ SettingTimeModePaused: Paused
 SettingTipProviders: Preferred tooltip provider
 SettingTipProvidersDesc: |-
   What is a preferred way to render tooltips:
+  UI Toolkit - tooltips from UI Toolkit mod
   Ralts - tooltips from Inventory Extender and Magic Window Extender
   Ownlyme - tooltips from Shared Tooltips mod, or Quick Loot or any other mod that bundles Shared Tooltips mod 
   
+SettingTipProviderUIToolkit: UI Toolkit
 SettingTipProviderRalts: Ralts
 SettingTipProviderOnwlyme: Ownlyme
 

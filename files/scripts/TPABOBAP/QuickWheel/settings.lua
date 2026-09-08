@@ -253,10 +253,11 @@ I.Settings.registerGroup {
             renderer = 'select',
             name = 'SettingTipProviders',
             description = 'SettingTipProvidersDesc',
-            default = C.TipProviders.Ralts,
+            default = C.TipProviders.UIToolkit,
             argument = {
                 l10n = MODNAME,
                 items = {
+                    C.TipProviders.UIToolkit,
                     C.TipProviders.Ralts,
                     C.TipProviders.Onwlyme,
                 },

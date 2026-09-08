@@ -350,6 +350,7 @@ local KeyModes = {
 }
 
 local TipProviders = {
+    UIToolkit = 'SettingTipProviderUIToolkit',
     Ralts = 'SettingTipProviderRalts',
     Onwlyme = 'SettingTipProviderOnwlyme',
 }

@@ -199,36 +199,51 @@ local function tryMakeMETip(item)
     return nil
 end
 
+local function tryMakeRaltsItemTooltip(item)
+    local tip = tryMakeIETip(item)
+    if tip then return tip end
+    return tryMakeMETip(item)
+end
+
+local function tryMakeUTKTip(item)
+    if I.UTKTooltips then
+        return I.UTKTooltips.createTooltipLayout({ object = item, observer = self })
+    end
+
+    return nil
+end
+
 local function makeSimpleTip(item)
     --TODO: improve this tooltip
     local record = item.type.record(item.recordId)
     return Helpers.makeTooltip(record.name)
 end
 
-local function getTipBuilders()
-    if config.main.s_TipProvider == C.TipProviders.Onwlyme then
-        return {
-            tryMakeSharedTip,
-            tryMakeIETip,
-            tryMakeMETip,
-            makeSimpleTip,
-        }
-    end
-    return {
-        tryMakeIETip,
-        tryMakeMETip,
-        tryMakeSharedTip,
-        makeSimpleTip,
-    }
-end
+local ALL_ITEM_BUILDERS = {
+    tryMakeUTKTip,
+    tryMakeSharedTip,
+    tryMakeRaltsItemTooltip,
+    makeSimpleTip,
+}
+
+local ITEM_BUILDERS_BY_PROVIDER = {
+    [C.TipProviders.UIToolkit] = tryMakeUTKTip,
+    [C.TipProviders.Ralts]     = tryMakeRaltsItemTooltip,
+    [C.TipProviders.Onwlyme]   = tryMakeSharedTip,
+}
 
 ---@param item openmw.Object
 Helpers.makeItemTooltip = function(item)
-    local builders = getTipBuilders()
-    local tip
-    for i = 1, #builders do
-        tip = builders[i](item)
-        if tip then break end
+    local preferred = ITEM_BUILDERS_BY_PROVIDER[config.main.s_TipProvider]
+    local tip = preferred and preferred(item)
+    if not item then
+        for i = 1, #ALL_ITEM_BUILDERS do
+            local builder = ALL_ITEM_BUILDERS[i]
+            if builder ~= preferred then
+                tip = builder(item)
+                if tip then break end
+            end
+        end
     end
     if tip then
         tip.props.anchor = v2(0.5, 0.5)

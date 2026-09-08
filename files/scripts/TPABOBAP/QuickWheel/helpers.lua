@@ -236,11 +236,66 @@ local ITEM_BUILDERS_BY_PROVIDER = {
 Helpers.makeItemTooltip = function(item)
     local preferred = ITEM_BUILDERS_BY_PROVIDER[config.main.s_TipProvider]
     local tip = preferred and preferred(item)
-    if not item then
+    if not tip then
         for i = 1, #ALL_ITEM_BUILDERS do
             local builder = ALL_ITEM_BUILDERS[i]
             if builder ~= preferred then
                 tip = builder(item)
+                if tip then break end
+            end
+        end
+    end
+    if tip then
+        tip.props.anchor = v2(0.5, 0.5)
+        tip.props.relativePosition = v2(0.5, 0.5)
+    end
+    return tip
+end
+
+---@param spell openmw.core.Spell
+---@return openmw.ui.Layout?
+local function makeUIToolkitSpellTip(spell)
+    if I.UTKTooltips then
+        return I.UTKTooltips.createTooltipLayout({ key = spell.id, type = I.UTKTooltips.TYPE.Spell, observer = self })
+    end
+
+    return nil
+end
+
+---@param spell openmw.core.Spell
+---@return openmw.ui.Layout?
+local function makeRaltsSpellTip(spell)
+    local MW = I.MagicWindow
+    local makeMWTip = MW and MW.Templates.MAGIC.spellTooltip
+    if type(makeMWTip) == 'function' then
+        return makeMWTip(spell.id)
+    end
+    return nil
+end
+
+---@param spell openmw.core.Spell
+---@return openmw.ui.Layout
+local function makeSimpleSpellTip(spell)
+    return Helpers.makeTooltip(spell.name)
+end
+
+local ALL_SPELL_BUILDERS = {
+    makeUIToolkitSpellTip,
+    makeRaltsSpellTip,
+    makeSimpleSpellTip,
+}
+local SPELL_BUILDERS_BYPROVIDER = {}
+
+---@param spell openmw.core.Spell
+---@return openmw.ui.Layout?
+function Helpers.makeSpellTooltip(spell)
+ local preferred = SPELL_BUILDERS_BYPROVIDER[config.main.s_TipProvider]
+    local tip = preferred and preferred(spell)
+    if not tip then
+        for i = 1, #ALL_SPELL_BUILDERS do
+            local builder = ALL_SPELL_BUILDERS[i]
+            if builder ~= preferred then
+                tip = builder(spell)
                 if tip then break end
             end
         end

@@ -183,26 +183,11 @@ end
 
 function MagicIcon:makeTip()
     if self.spell then
-        return MagicIcon.makeTipForSpell(self.spell)
+        return helpers.makeSpellTooltip(self.spell)
     end
     if self.item then
         return helpers.makeItemTooltip(self.item)
     end
-end
-
-function MagicIcon.makeTipForSpell(spell)
-    local MW = I.MagicWindow
-    local isOK, makeMWTip = pcall(function() return MW and MW.Templates.MAGIC.spellTooltip end)
-    local tip
-    if isOK and type(makeMWTip) == 'function' then
-        tip = makeMWTip(spell.id)
-        tip.props.anchor = CENTER
-        tip.props.relativePosition = CENTER
-    else
-        --TODO: improve this tooltip
-        return helpers.makeTooltip(spell.name)
-    end
-    return tip
 end
 
 function MagicIcon:Id()

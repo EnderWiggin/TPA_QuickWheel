@@ -174,9 +174,10 @@ local function setWheelMode(isOn, mode)
     local controllerMode = openControllerMode
     if not controllerMode then
         if isWheelModeOn then
-            I.UI.setMode(InterfaceMode, { windows = {} })
+            I.UI.addMode(InterfaceMode, { windows = {} })
         else
-            I.UI.setMode()
+            I.UI.addMode(InterfaceMode) --This is needed to restore pinned windows
+            I.UI.removeMode(InterfaceMode)
         end
     end
 

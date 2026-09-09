@@ -133,8 +133,8 @@ local function checkPendingBind(self)
 end
 
 local function updateSizeConfigs()
-    local windowsIndex = ui.layers.indexOf('Windows')
-    local layer = ui.layers[windowsIndex]
+    local layerIndex = ui.layers.indexOf(C.QuickWheelLayer)
+    local layer = ui.layers[layerIndex]
     local screenSize = ui.screenSize()
     local uiScale = screenSize.x / layer.size.x
 
@@ -145,8 +145,6 @@ local function updateSizeConfigs()
     --TODO: get from settings and allow for it to be nil?
     MIN_SECTORS = 8
 end
-
-updateSizeConfigs()
 
 function Wheel:getSectorIdx(c, n, z, current)
     local minSectors = self.minSectors or MIN_SECTORS
@@ -237,7 +235,7 @@ end
 local function makeWheel(self)
     local wheel = ui.create {
         name = 'QuickWheel',
-        layer = 'Windows',
+        layer = C.QuickWheelLayer,
         type = ui.TYPE.Widget,
         props = {
             relativeSize = v2(1, 1),

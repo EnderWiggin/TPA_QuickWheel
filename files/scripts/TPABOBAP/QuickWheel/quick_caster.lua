@@ -20,7 +20,7 @@ local QuickCaster = {}
 local QuickCastQueue = {}
 local isQuickCasting = false
 
----@alias QueuePositioning {relativePosition:openmw.util.Vector2, anchor:openmw.util.Vector2, arrange:openmw.ui.ALIGNMENT, reverse?: boolean}
+---@alias QueuePositioning {relativePosition:openmw.util.Vector2, anchor:openmw.util.Vector2, arrange:openmw.ui.Alignment, reverse?: boolean}
 
 ---@type table<QueueWidgetPosition, QueuePositioning>
 local QueuePositioningTypes = {
@@ -56,34 +56,40 @@ local QueuePositioningTypes = {
 local lastPositioning = config.magic.s_QueueWidgetPosition or C.QueueWidgetPosition.BOTTOM_LEFT
 local Positioning = QueuePositioningTypes[lastPositioning]
 
-local widget = ui.create {
-    name = 'QuickCastQueue',
-    layer = 'Windows',
-    type = ui.TYPE.Container,
-    props = {
-        relativePosition = Positioning.relativePosition,
-        anchor = Positioning.anchor,
-        visible = false,
-    },
-    content = ui.content {
-        {
-            name = 'padding',
-            template = helpers.padding(10),
-            content = ui.content {
-                {
-                    name = 'container',
-                    type = ui.TYPE.Flex,
-                    props = {
-                        arrange = Positioning.arrange,
-                    },
-                    content = ui.content {}
-                },
-            }
+---@type openmw.ui.Element
+local widget
+
+local function makeWidget()
+    return ui.create {
+        name = 'QuickCastQueue',
+        layer = C.QuickWheelLayer,
+        type = ui.TYPE.Container,
+        props = {
+            relativePosition = Positioning.relativePosition,
+            anchor = Positioning.anchor,
+            visible = false,
         },
-    },
-}
+        content = ui.content {
+            {
+                name = 'padding',
+                template = helpers.padding(10),
+                content = ui.content {
+                    {
+                        name = 'container',
+                        type = ui.TYPE.Flex,
+                        props = {
+                            arrange = Positioning.arrange,
+                        },
+                        content = ui.content {}
+                    },
+                }
+            },
+        },
+    }
+end
 
 local function updateWidget()
+    if not widget then widget = makeWidget() end
     ---@type openmw.ui.Layout
     local container = widget.layout.content['padding'].content['container']
     helpers.destroyContentChildren(container.content)

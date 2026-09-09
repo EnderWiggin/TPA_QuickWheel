@@ -431,6 +431,7 @@ local getTimeScale = function(mode)
 end
 
 return {
+    QuickWheelLayer = 'TPA:QuickWheel',
     PotionTypes = PotionTypes,
     MagicEffectTypes = MagicEffectTypes,
     KeyModes = KeyModes,

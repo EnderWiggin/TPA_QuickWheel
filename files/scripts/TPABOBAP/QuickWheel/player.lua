@@ -389,6 +389,10 @@ local function onControllerButtonPress()
     if not isWheelModeOn then config.controllerActive = true end
 end
 
+if not ui.layers.indexOf(C.QuickWheelLayer) then
+    ui.layers.insertBefore('DragAndDrop', C.QuickWheelLayer, { interactive = true })
+end
+
 return {
     engineHandlers = {
         onUpdate = onUpdate,

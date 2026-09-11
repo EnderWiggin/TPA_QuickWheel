@@ -7,6 +7,18 @@ local C = require('scripts.TPABOBAP.QuickWheel.constants')
 
 I.Settings.registerRenderer('TPABOBAP/ClearInputBindings', require('scripts.TPABOBAP.clear_input_bind_renderer'))
 
+local hasToolkit = I.UIToolkit ~= nil
+local tipProviders = hasToolkit
+    and {
+        C.TipProviders.UIToolkit,
+        C.TipProviders.Ralts,
+        C.TipProviders.Onwlyme,
+    }
+    or {
+        C.TipProviders.Ralts,
+        C.TipProviders.Onwlyme,
+    }
+
 input.registerAction {
     key = C.Actions.Omni,
     type = input.ACTION_TYPE.Boolean,
@@ -212,7 +224,7 @@ I.Settings.registerGroup {
         },
         {
             key = 's_KeyMode',
-            renderer = 'select',
+            renderer = hasToolkit and 'UIToolkit/Dropbox' or 'select',
             name = 'SettingKeyMode',
             description = 'SettingKeyModeDesc',
             default = C.KeyModes.Smart,
@@ -234,7 +246,7 @@ I.Settings.registerGroup {
         },
         {
             key = 's_TimeMode',
-            renderer = 'select',
+            renderer = hasToolkit and 'UIToolkit/Dropbox' or 'select',
             name = 'SettingTimeMode',
             description = 'SettingTimeModeDesc',
             default = C.TimeModes.VerySlow,
@@ -250,17 +262,13 @@ I.Settings.registerGroup {
         },
         {
             key = 's_TipProvider',
-            renderer = 'select',
+            renderer = hasToolkit and 'UIToolkit/Dropbox' or 'select',
             name = 'SettingTipProviders',
             description = 'SettingTipProvidersDesc',
-            default = C.TipProviders.UIToolkit,
+            default = hasToolkit and C.TipProviders.UIToolkit or C.TipProviders.Ralts,
             argument = {
                 l10n = MODNAME,
-                items = {
-                    C.TipProviders.UIToolkit,
-                    C.TipProviders.Ralts,
-                    C.TipProviders.Onwlyme,
-                },
+                items = tipProviders,
             }
         },
         {
@@ -283,7 +291,7 @@ I.Settings.registerGroup {
         },
         {
             key = 's_ControllerMode',
-            renderer = 'select',
+            renderer = hasToolkit and 'UIToolkit/Dropbox' or 'select',
             name = 'SettingControllerMode',
             description = 'SettingControllerModeDesc',
             default = C.ControllerMode.Auto,
@@ -298,7 +306,7 @@ I.Settings.registerGroup {
         },
         {
             key = 's_ControllerStick',
-            renderer = 'select',
+            renderer = hasToolkit and 'UIToolkit/Dropbox' or 'select',
             name = 'SettingControllerStick',
             description = 'SettingControllerStickDesc',
             default = C.ControllerStick.Left,
@@ -369,7 +377,7 @@ I.Settings.registerGroup {
         },
         {
             key = 's_SeparateAlcohol',
-            renderer = 'select',
+            renderer = hasToolkit and 'UIToolkit/Dropbox' or 'select',
             name = 'SettingSeparateAlcohol',
             description = 'SettingSeparateAlcoholDesc',
             default = C.AlcoholModes.Show,
@@ -396,7 +404,7 @@ I.Settings.registerGroup {
     settings = {
         {
             key = 's_MagicClickMode',
-            renderer = 'select',
+            renderer = hasToolkit and 'UIToolkit/Dropbox' or 'select',
             name = 'SettingMagicClickMode',
             description = 'SettingMagicClickModeDesc',
             default = C.MagicClickModes.READY,
@@ -448,7 +456,7 @@ I.Settings.registerGroup {
         },
         {
             key = 's_QueueWidgetPosition',
-            renderer = 'select',
+            renderer = hasToolkit and 'UIToolkit/Dropbox' or 'select',
             name = 'SettingMagicQueueWidgetPosition',
             default = C.QueueWidgetPosition.BOTTOM_LEFT,
             argument = {
